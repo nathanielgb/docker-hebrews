@@ -1,0 +1,12 @@
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+@import 'tailwind.output.css';
+
+.applyBtn {
+    background-color: rgb(37 99 235);
+    color: white;
+    border-radius: 0.25rem;
+    padding-top: 10px !important;
+    padding-bottom: 10px !important;
+}

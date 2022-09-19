@@ -1,0 +1,68 @@
+version: "3.8"
+services:
+    hebrews_server:
+        build:
+            args:
+                user: nath
+                uid: 1000
+            context: ./
+            dockerfile: Dockerfile
+        image: hebrews_server
+        container_name: hebrews_server
+        restart: unless-stopped
+        ports:
+            - 5173:5173
+        working_dir: /var/www/
+        networks:
+            - db_net
+        volumes:
+            - ./hebrews:/var/www
+
+    hebrews_nginx:
+        image: nginx:1.22-alpine
+        container_name: hebrews_nginx
+        restart: unless-stopped
+        ports:
+            - 80:80
+        networks:
+            - db_net
+        volumes:
+            - ./hebrews:/var/www
+            - ./docker-compose/nginx:/etc/nginx/conf.d
+
+    hebrews_mysql:
+        image: mysql:5.7
+        container_name: hebrews_mysql
+        ports:
+            - 3306:3306
+        restart: unless-stopped
+        environment:
+            MYSQL_DATABASE: hebrews
+            MYSQL_USER: nathanielgb
+            MYSQL_PASSWORD: Ufgm7&T!a5VhXQmQkRa*^kzrg
+            MYSQL_ROOT_PASSWORD: Ufgm7&T!a5VhXQmQkRa*^kzrg
+            SERVICE_TAGS: dev
+            SERVICE_NAME: mysql
+        networks:
+            - db_net
+        volumes:
+            - ./docker-compose/mysql:/var/lib/mysql
+
+    hebrews_phpmyadmin:
+        image: phpmyadmin/phpmyadmin
+        restart: always
+        container_name: hebrews_phpmyadmin
+        ports:
+            - 8080:80
+        environment:
+            PMA_HOST: hebrews_mysql
+            MYSQL_DATABASE: hebrews
+            MYSQL_USER: nathanielgb
+            MYSQL_PASSWORD: admin123
+            MYSQL_ROOT_PASSWORD: admin123
+        networks:
+            - db_net
+
+networks:
+    db_net:
+        name: db_net

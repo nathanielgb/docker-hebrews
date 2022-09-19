@@ -1,0 +1,46 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+class CreateOrderItemsTable extends Migration
+{
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
+    {
+        Schema::create('order_items', function (Blueprint $table) {
+            $table->id();
+            $table->string('order_id');
+            $table->string('menu_id');
+            $table->string('inventory_id');
+            $table->string('inventory_name');
+            $table->string('name');
+            $table->string('from');
+            $table->string('type');
+            $table->decimal('price', 8, 2);
+            $table->string('unit_label');
+            $table->decimal('units', 8, 2);
+            $table->integer('qty');
+            $table->json('data');
+            $table->decimal('total_amount', 8, 2);
+            $table->string('status')->default('preparing');
+            $table->string('served_by')->nullable();
+            $table->timestamps();
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        Schema::dropIfExists('order_items');
+    }
+}
