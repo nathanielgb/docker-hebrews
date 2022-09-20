@@ -27,7 +27,7 @@ class UserSeeder extends Seeder
                 'username' => 'superadmin',
                 'branch' => 'BRANCH1',
                 'type' => 'SUPERADMIN',
-				'password' => Hash::make('admin123')
+                'password' => Hash::make('admin123')
             ],
             [
                 'name' => 'ADMIN',
@@ -35,7 +35,39 @@ class UserSeeder extends Seeder
                 'username' => 'admin',
                 'branch' => 'BRANCH1',
                 'type' => 'ADMIN',
-				'password' => Hash::make('admin123')
+                'password' => Hash::make('admin123')
+            ],
+            [
+                'name' => 'MANAGER',
+                'email' => 'manager@admin.com',
+                'username' => 'manager',
+                'branch' => 'BRANCH1',
+                'type' => 'MANAGER',
+                'password' => Hash::make('admin123')
+            ],
+            [
+                'name' => 'KITCHEN',
+                'email' => 'kitchen@admin.com',
+                'username' => 'kitchen',
+                'branch' => 'BRANCH1',
+                'type' => 'KITCHEN',
+                'password' => Hash::make('admin123')
+            ],
+            [
+                'name' => 'WAITER',
+                'email' => 'waiter@admin.com',
+                'username' => 'waiter',
+                'branch' => 'BRANCH1',
+                'type' => 'WAITER',
+                'password' => Hash::make('admin123')
+            ],
+            [
+                'name' => 'DISPATCHER',
+                'email' => 'dispatcher@admin.com',
+                'username' => 'dispatcher',
+                'branch' => 'BRANCH1',
+                'type' => 'DISPATCHER',
+                'password' => Hash::make('admin123')
             ],
         ];
         DB::table('users')->insert($data);

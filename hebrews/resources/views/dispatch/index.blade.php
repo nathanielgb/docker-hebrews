@@ -30,7 +30,7 @@
                             <th colspan="4" class="px-4 py-3">
                                 <div class="flex flex-col">
                                     <span class="text-right">
-                                        ORDER ID: {{ $order->id }}
+                                        ORDER ID: {{ $order->order_id }}
                                     </span>
                                     <span class="text-right">
                                         <em>

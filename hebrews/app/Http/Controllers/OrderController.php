@@ -16,6 +16,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Requests\PayOrderRequest;
+use App\Models\AddonOrderItem;
 use App\Models\BankTransaction;
 use App\Models\Customer;
 use App\Models\ErrorLog;
@@ -314,47 +315,56 @@ class OrderController extends Controller
 
             if ($request->discount == 'custom') {
                 $discount_amt = $request->custom_discount ?? 0;
-                $discount_label = "$request->discount ($request->custom_discount)";
+                $discount_label = "$request->discount";
             } else {
                 if ($discount->type == 'percentage') {
                     // calculate percentage base on the subtotal of cart
                     $percentage = $discount->amount/100;
                     $discount_amt = $cart_subtotal * $percentage;
-                    $discount_label = "$discount->type ($discount->amount%)";
+                    $discount_label = "$discount->type";
                 } else {
                     $discount_amt = $discount->amount;
-                    $discount_label = "$discount->type ($discount->amount)";
+                    $discount_label = "$discount->type";
                 }
             }
         }
 
-        if ($discount_amt > $cart_subtotal) {
-            return redirect()->route('order.show_cart')->with('error', "Discount amount cannot be greater than the order subtotal.");
+        $fees = $request->fees >= 0 ? $request->fees : 0;
+        $total_cart = $cart_subtotal + $fees;
+
+        if ($discount_amt > $total_cart) {
+            return redirect()->route('order.show_cart')->with('error', "Discount amount cannot be greater than the order total.");
         }
 
-        $fees = $request->fees >= 0 ? $request->fees : 0;
 
         // Calculate remaining balance
         $deposit_bal = $request->deposit ?? 0;
 
+        $discount_type = isset($discount->type) ? $discount->type : null;
+        $discount_unit = isset($discount->amount) ? $discount->amount : null;
+
         $orderService = new OrderService;
-        $orderInvoice = $orderService->calculateOrderInvoice($cart_subtotal, $discount_amt, $fees, $deposit_bal, 0);
+        $orderInvoice = $orderService->calculateOrderInvoice($cart_subtotal, $discount_type, $discount_unit, $fees, $deposit_bal, 0);
 
         DB::beginTransaction();
         try {
+            $orderId = Order::generateUniqueId();
+
             // Save order
             $order = new Order;
+            $order->order_id = $orderId;
             $order->customer_id =isset($customer->id) ? $customer->id : '';
             $order->customer_name = isset( $customer->name) ? $customer->name : '';
             $order->server_name = auth()->user()->name;
-            $order->subtotal = $cart_subtotal;
-            $order->discount_amount = $discount_amt;
+            $order->subtotal = $orderInvoice['subtotal'];
+            $order->discount_amount = $orderInvoice['discount'];
             $order->fees = $fees;
             $order->deposit_bal = 0;
             $order->remaining_bal = $orderInvoice['remaining_balance'];
             $order->table = $request->tables;
             $order->total_amount = round(floatval($orderInvoice['total_amount']), 2);
             $order->discount_type = $discount_label ?? null;
+            $order->discount_unit = $discount->amount ?? null;
             $order->order_type = $request->order_type;
             $order->delivery_method = $request->delivery_method;
             $order->pending = true;
@@ -362,6 +372,7 @@ class OrderController extends Controller
 
             // Save order items
             $save_items = [];
+            $addon_item = [];
 
             foreach($cart_items as $citem) {
 
@@ -374,16 +385,17 @@ class OrderController extends Controller
 
                 // foreach ($citem->data as $addon) {
                 //     $addonModel = MenuAddOn::where('id', $addon['addon_id'])->first();
-                //     $deduct_addon = $orderService->deductQtyToInventory($addonModel->inventoryAddon, 1, $addon['qty']);
+                //     $deduct_addon = $orderService->deductQtyToInventory($addonModel->inventory, 1, $addon['qty']);
 
                 //     if ($deduct_addon['status'] == 'fail') {
                 //         return redirect()->back()->with('error', "Failed to generate order. Add-on Item $addon->name does not have enough stock.");
                 //     }
                 // }
-
+                $orderItemId = OrderItem::generateUniqueId();
 
                 $save_items[] = [
-                    'order_id' => $order->id,
+                    'order_id' => $order->order_id,
+                    'order_item_id' => $orderItemId,
                     'menu_id' => $citem->menu_id,
                     'inventory_id' => $citem->inventory_id,
                     'inventory_name' => $citem->menu->inventory->name,
@@ -400,13 +412,38 @@ class OrderController extends Controller
                     'created_at' => Carbon::now(),
                     'updated_at' => Carbon::now(),
                 ];
+
+                if (isset($citem->data)) {
+                    foreach ($citem->data as $addon) {
+                        $addonModel = MenuAddOn::where('id', $addon['addon_id'])->first();
+
+                        if (!$addonModel) {
+                            return redirect()->route('order.show_cart')->with('error', "Addon Item (name: $addon->name ) does not exist.");
+                        }
+
+                        $addon_item[] = [
+                            'order_id' => $order->order_id,
+                            'order_item_id' => $orderItemId,
+                            'addon_id' => $addon['addon_id'],
+                            'inventory_id' => $addonModel->inventory_id,
+                            'inventory_name' => $addonModel->inventory->name,
+                            'name' => $addon['name'],
+                            'qty' => $addon['qty'],
+                            'created_at' => Carbon::now(),
+                            'updated_at' => Carbon::now(),
+                        ];
+                    }
+                }
             }
 
             DB::table('order_items')->insert($save_items);
+            if (isset($citem->data)) {
+                DB::table('addon_order_items')->insert($addon_item);
+            }
             $cartModel->delete();
 
             DB::commit();
-            return redirect()->route('order.show_cart')->with('success', 'Order ' . $order->id . ' is sucessfully created. Order is now being prepared.');
+            return redirect()->route('order.show_cart')->with('success', 'Order ' . $order->order_id . ' is sucessfully created. Order is now being prepared.');
 
         } catch (\Exception $exception) {
             //catch $exception;
@@ -429,7 +466,7 @@ class OrderController extends Controller
 
             $orders = Order::where(function ($query) use ($request) {
                 if ($request->order_id) {
-                    $query->where('id', 'LIKE', "%$request->order_id%");
+                    $query->where('order_id', 'LIKE', "%$request->order_id%");
                 }
                 if ($request->cust_name) {
                     $query->where('customer_name', 'LIKE', "%$request->cust_name%");
@@ -470,12 +507,12 @@ class OrderController extends Controller
 
     public function showSummary(Request $request)
     {
-        $order = Order::where('id', $request->order_id)->with('items')->first();
+        $order = Order::where('order_id', $request->order_id)->with('items')->first();
 
         if ($order) {
             $accounts = BankAccount::all();
 
-            $onProgressItems = OrderItem::where('order_id', $order->id)
+            $onProgressItems = OrderItem::where('order_id', $order->order_id)
             ->where('status', 'served')
             ->count();
 
@@ -486,7 +523,7 @@ class OrderController extends Controller
 
     public function printSummary(Request $request)
     {
-        $order = Order::where('id', $request->order_id)->with('items')->first();
+        $order = Order::where('order_id', $request->order_id)->with('items')->first();
 
         if ($order) {
             return view('orders.sections.summary_print',compact('order'));
@@ -495,7 +532,7 @@ class OrderController extends Controller
     }
     public function showAddOrderItem(Request $request)
     {
-        $order = Order::where('id', $request->order_id)->first();
+        $order = Order::where('order_id', $request->order_id)->first();
         $menus = Menu::all();
 
         if ($order) {
@@ -510,7 +547,7 @@ class OrderController extends Controller
 
     public function addOrderItem(Request $request, $order_id,  OrderService $orderService)
     {
-        $order = Order::where('id', $order_id)->first();
+        $order = Order::where('order_id', $order_id)->first();
         if ($order) {
             $request->validate([
                 'menuitem' => 'required|exists:menus,id',
@@ -524,7 +561,7 @@ class OrderController extends Controller
                     return redirect()->back()->with('warning', $addItem['message']);
                 }
 
-                return redirect()->route('order.show_summary', $order->id)->with('success', 'Order item added successfully.');
+                return redirect()->route('order.show_summary', $order->order_id)->with('success', 'Order item added successfully.');
             } catch (\Exception $exception) {
                 //catch $exception;
                 return redirect()->back()->with('error', $exception->getMessage());
@@ -548,8 +585,9 @@ class OrderController extends Controller
         ]);
 
         $item = OrderItem::where('id', $request->item_id)->first();
+
         if ($item) {
-            $order = Order::where('id', $item->order_id)->first();
+            $order = Order::where('order_id', $item->order_id)->first();
             if ($order) {
                 if ($order->confirmed) {
                     return redirect()->back()->with('error', 'Order is confirmed, cannot change order.');
@@ -575,7 +613,7 @@ class OrderController extends Controller
         $order_item = OrderItem::where('id', $request->id)->first();
 
         if ($order_item) {
-            $order = Order::where('id', $order_item->order_id)->first();
+            $order = Order::where('order_id', $order_item->order_id)->first();
             if ($order) {
                 if ($order->confirmed) {
                     return redirect()->back()->with('error', 'Order is confirmed, cannot change order.');
@@ -597,7 +635,7 @@ class OrderController extends Controller
 
     public function showPayForm (Request $request)
     {
-        $order = Order::where('id', $request->order_id)->first();
+        $order = Order::where('order_id', $request->order_id)->first();
         $account = BankAccount::where('id', $order->bank_id)->first();
 
         if ($order) {
@@ -613,7 +651,7 @@ class OrderController extends Controller
 
     public function pay (PayOrderRequest $request, $id)
     {
-        $order = Order::where('id', $id)->first();
+        $order = Order::where('order_id', $id)->first();
         if ($order) {
             if ($order->cancelled) {
                 return redirect()->back()->with('error', 'Order is cancelled.');
@@ -649,7 +687,7 @@ class OrderController extends Controller
 
                         // Save transaction record
                         BankTransaction::create([
-                            'order_id' => $order->id,
+                            'order_id' => $order->order_id,
                             'account_id' => $account->id,
                             'action' => 'Order Payment',
                             'amount' => $amount_credited,
@@ -668,7 +706,7 @@ class OrderController extends Controller
                 $order->save();
                 DB::commit();
 
-                return redirect()->route('order.show_summary', $order->id)->with('success', 'Order is successfully paid.');
+                return redirect()->route('order.show_summary', $order->order_id)->with('success', 'Order is successfully paid.');
 
             } catch (\Exception $exception) {
                 //catch $exception;
@@ -682,8 +720,7 @@ class OrderController extends Controller
     // Edit Fees, Discounts, Initial Deposit and others
     public function edit (Request $request, $id, OrderService $orderService)
     {
-        $order = Order::where('id', $id)->first();
-
+        $order = Order::where('order_id', $id)->first();
         if ($order) {
             $request->validate([
                 'order_type' => 'required|string',
@@ -693,14 +730,30 @@ class OrderController extends Controller
                 'deposit' => 'nullable|numeric|min:0|max:9999999',
             ]);
 
+            if ($request->custom_discount_toggle) {
+                $discount_type = 'custom';
+                $discount_unit = $request->custom_discount ?? 0;
+            } else {
+                $discount_type = $order->discount_type;
+                $discount_unit = $order->discount_unit ?? 0;
+            }
+
             $subtotal = $order->subtotal;
-            $discount = $request->custom_discount ?? 0;
             $fees = $request->fees ?? 0;
             $deposit = $request->deposit ?? 0;
 
-            $invoice = $orderService->calculateOrderInvoice($subtotal, $discount, $fees, $deposit, 0);
+            $invoice = $orderService->calculateOrderInvoice($subtotal, $discount_type, $discount_unit, $fees, $deposit, 0);
+
+            if ($invoice['discount'] > ($invoice['subtotal'] + $invoice['fees'])) {
+                return back()->with('error', "Discount amount cannot be greater than the order total.");
+            }
+
             DB::beginTransaction();
             try {
+                if ($request->custom_discount_toggle) {
+                    $order->discount_type = 'custom';
+                    $order->discount_unit = $request->custom_discount ?? 0;
+                }
                 $order->order_type = $request->order_type;
                 $order->table = $request->tables;
                 $order->delivery_method = $request->delivery_method;
@@ -725,8 +778,7 @@ class OrderController extends Controller
 
     public function confirm (Request $request, $id, OrderService $orderService)
     {
-        $order = Order::where('id', $id)->first();
-
+        $order = Order::where('order_id', $id)->first();
         if ($order) {
             $acccount = BankAccount::where('id', $request->account)->first();
 
@@ -734,11 +786,10 @@ class OrderController extends Controller
                 return redirect()->back()->with('error', 'Failed to confirm order. Bank account does not exist.');
             }
 
-
             DB::beginTransaction();
             try {
                 // Recheck stock of items
-                $ord_items = OrderItem::where('order_id', $order->id)->get();
+                $ord_items = OrderItem::where('order_id', $order->order_id)->get();
 
                 foreach ($ord_items as $ord_item) {
                     $menu = $ord_item->menu;
@@ -750,14 +801,18 @@ class OrderController extends Controller
                         return redirect()->back()->with('error', "Order Item $ord_item->name does not have enough stock.");
                     }
 
-                    foreach ($ord_item->data as $addon) {
-                        $addonModel = MenuAddOn::where('id', $addon['addon_id'])->first();
-                        $deduct_addon = $orderService->deductQtyToInventory($addonModel->inventoryAddon, 1, $addon['qty']);
+                    if (isset($ord_item->data)) {
+                        foreach ($ord_item->data as $addon) {
+                            $orderAddonItem = AddonOrderItem::where('order_item_id', $ord_item->order_item_id)
+                                ->where('addon_id', $addon['addon_id'])->first();
+                            $deduct_addon = $orderService->deductQtyToInventory($orderAddonItem->addon->inventory, 1, $addon['qty']);
 
-                        if ($deduct_addon['status'] == 'fail') {
-                            return redirect()->back()->with('error', "Add-on Item $addon->name does not have enough stock.");
+                            if ($deduct_addon['status'] == 'fail') {
+                                return redirect()->back()->with('error', "Add-on Item $addon->name does not have enough stock.");
+                            }
                         }
                     }
+
                     if ($ord_item->from == 'storage') {
                         $ord_item->status = 'done';
                     } else {
@@ -779,7 +834,7 @@ class OrderController extends Controller
 
                         // Save transaction record
                         BankTransaction::create([
-                            'order_id' => $order->id,
+                            'order_id' => $order->order_id,
                             'account_id' => $account->id,
                             'action' => 'Confirmed Order (Initial Deposit)',
                             'amount' => $order->confirmed_amount,
@@ -822,7 +877,7 @@ class OrderController extends Controller
 
     public function cancel (Request $request, $id)
     {
-        $order = Order::with('items')->where('id', $id)->first();
+        $order = Order::with('items')->where('order_id', $id)->first();
 
         if ($order) {
             if ($order->cancelled) {
@@ -838,14 +893,14 @@ class OrderController extends Controller
             $order->cancelled = true;
             $order->save();
 
-            return redirect()->route('order.show_summary', $order->id)->with('success', 'Order is successfully cancelled.');
+            return redirect()->route('order.show_summary', $order->order_id)->with('success', 'Order is successfully cancelled.');
         }
         return redirect()->route('order.list')->with('error', 'Order does not exist.');
     }
 
     public function complete (Request $request, $id)
     {
-        $order = Order::with('items')->where('id', $id)->first();
+        $order = Order::with('items')->where('order_id', $id)->first();
 
         if ($order) {
             if ($order->cancelled) {
@@ -861,7 +916,7 @@ class OrderController extends Controller
             $order->cancelled = false;
             $order->save();
 
-            return redirect()->route('order.show_summary', $order->id)->with('success', 'Order is successfully completed.');
+            return redirect()->route('order.show_summary', $order->order_id)->with('success', 'Order is successfully completed.');
         }
         return redirect()->route('order.list')->with('error', 'Order does not exist.');
 
@@ -870,7 +925,7 @@ class OrderController extends Controller
     public function print (Request $request)
     {
 
-        $order = Order::with('items')->where('id', $request->order_id)->first();
+        $order = Order::with('items')->where('order_id', $request->order_id)->first();
 
         if ($order) {
             $total_amount = number_format($order->total_amount, 2);
@@ -879,7 +934,7 @@ class OrderController extends Controller
 
             return view('orders.print_receipt', compact('order','total_amount','amount_given','cashback'));
 
-            return redirect()->route('order.show_summary', $order->id)->with('success', 'Order is successfully paid.');
+            return redirect()->route('order.show_summary', $order->order_id)->with('success', 'Order is successfully paid.');
         }
         return redirect()->route('order.list')->with('error', 'Order does not exist.');
 

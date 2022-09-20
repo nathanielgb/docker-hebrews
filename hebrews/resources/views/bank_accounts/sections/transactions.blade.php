@@ -47,7 +47,7 @@
                 <thead>
                 <tr class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase border-b bg-gray-50">
                     <th class="px-4 py-3">ID</th>
-                    <th class="px-4 py-3">Order No.</th>
+                    <th class="px-4 py-3">Order ID</th>
                     <th class="px-4 py-3">Transaction</th>
                     <th class="px-4 py-3">Previous Balance</th>
                     <th class="px-4 py-3">Running Balance</th>

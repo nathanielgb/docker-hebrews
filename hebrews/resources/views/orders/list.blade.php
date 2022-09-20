@@ -69,7 +69,7 @@
                     @forelse ($orders as $order)
                         <tr class="text-gray-700">
                             <td class="px-4 py-3 text-sm">
-                                {{ $order->id }}
+                                {{ $order->order_id }}
                             </td>
                             <td class="px-4 py-3 text-sm">
                                 {{ $order->customer_name }}
@@ -109,7 +109,7 @@
                             <td class="px-4 py-3 text-center">
                                 <div class="flex justify-center space-x-4 text-sm">
                                     <a
-                                        href="{{ route('order.show_summary',$order->id) }}"
+                                        href="{{ route('order.show_summary',$order->order_id) }}"
                                         class="flex items-center inline-block px-6 py-2.5 bg-green-500 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-green-500 hover:shadow-lg focus:bg-green-500 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-green-500 active:shadow-lg transition duration-150 ease-in-out"
                                         >
                                         <span><i class="fa-solid fa-eye"></i> View</span>
@@ -118,21 +118,21 @@
                                         class="flex items-center inline-block px-4 py-2.5 bg-green-500 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-green-500 hover:shadow-lg focus:bg-green-500 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-green-500 active:shadow-lg transition duration-150 ease-in-out"
                                         type="button"
                                         data-bs-toggle="collapse"
-                                        data-bs-target="#collapse{{ $order->id }}"
+                                        data-bs-target="#collapse{{ $order->order_id }}"
                                         aria-expanded="false"
-                                        aria-controls="collapse{{ $order->id }}"
+                                        aria-controls="collapse{{ $order->order_id }}"
                                         >
                                         <span><i class="fa-solid fa-info"></i></span>
                                     </button>
                                 </div>
                             </td>
                         </tr>
-                        <tr class="collapse" id="collapse{{ $order->id }}">
+                        <tr class="collapse" id="collapse{{ $order->order_id }}">
                             <td colspan="11">
                                 <div class="flex text-sm" style="margin: 15px; justify-content: space-around;">
                                     <div class="flex flex-col ml-3 mr-3">
                                         <div class="mb-2 row">
-                                            <span class="">Order Number: {{ $order->id }}</span>
+                                            <span class="">Order Number: {{ $order->order_id }}</span>
                                         </div>
                                         <div class="mb-2 row">
                                             Customer ID: {{ $order->customer_id }}
@@ -172,7 +172,7 @@
                                             Discount Amount: {{ $order->discount_amount }}
                                         </div>
                                         <div class="mb-2 row">
-                                            Discount Type: {{ $order->type ?? 'N/A' }}
+                                            Discount Type: {{ $order->discount_type . ' (' . $order->discount_unit . ')' ?? 'N/A' }}
                                         </div>
                                     </div>
                                     <div class="flex flex-col ml-3 mr-3">

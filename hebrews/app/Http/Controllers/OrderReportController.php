@@ -32,7 +32,7 @@ class OrderReportController extends Controller
             if ($request->order_id !== null) {
                 $_ord_numbers = str_replace(' ', '', $request->order_id);
                 $ord_numbers = explode(',', $_ord_numbers);
-                $query->whereIn('id', $ord_numbers);
+                $query->whereIn('order_id', $ord_numbers);
             }
             if ($request->status !== null) {
                 if ($request->status == 'pending') {
@@ -60,7 +60,7 @@ class OrderReportController extends Controller
         $date_range = $request->date;
         $status = $request->status;
 
-        $order_numbers = $orders->pluck('id');
+        $order_numbers = $orders->pluck('order_id');
         $customers = $orders->pluck('customer_name');
 
         // Use this to be able to use group by, for some reason does not work without this line
@@ -70,16 +70,21 @@ class OrderReportController extends Controller
             ->whereIn('order_id', $order_numbers)
             ->groupBy('menu_id')->get();
 
-            return view('order_reports.summary',compact(
-            'orders_subtotal',
-            'orders_discount',
-            'orders_total',
-            'order_count',
-            'date_range',
-            'status',
-            'order_numbers',
-            'order_items',
-            'customers'
+        $addon_order_items = DB::table('addon_order_items')->select(DB::raw('order_id, addon_id, name, inventory_name, SUM(qty) AS total_qty, SUM(qty*units) AS stock_used, SUM(total_amount) AS total_amount'))
+            ->whereIn('order_id', $order_numbers)
+            ->groupBy('addon_id')->get();
+
+        return view('order_reports.summary',compact(
+        'orders_subtotal',
+        'orders_discount',
+        'orders_total',
+        'order_count',
+        'date_range',
+        'status',
+        'order_numbers',
+        'order_items',
+        'addon_order_items',
+        'customers'
         ));
     }
 }

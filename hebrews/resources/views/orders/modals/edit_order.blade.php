@@ -22,7 +22,7 @@
                 </button>
             </div>
             <div class="relative p-4 modal-body">
-                <form id="edit-order-form" action="{{ route('order.edit', $order->id) }}" method="post">
+                <form id="edit-order-form" action="{{ route('order.edit', $order->order_id) }}" method="post">
                     @csrf
                     <div>
                         <label class="block mb-4 text-sm">
@@ -73,10 +73,24 @@
                             <span class="text-gray-700">Fees</span>
                             <input id="fees-input" class="block w-full mt-1 text-sm focus:border-green-400 focus:outline-none focus:shadow-outline-green form-input" name="fees" step=".01" type="number" min="0"  value="{{ $order->fees }}" placeholder="Enter fees">
                         </label>
-                        <label class="block mb-4 text-sm custom-discount">
+                        <label class="block text-sm custom-discount">
                             <span class="text-gray-700">Discount (Custom)</span>
-                            <input id="custom-discount-input" class="block w-full mt-1 text-sm focus:border-green-400 focus:outline-none focus:shadow-outline-green form-input" name="custom_discount" step=".01" type="number" min="0" value="{{ $order->discount_amount }}"  placeholder="Enter custom discount">
+                            <input
+                                id="custom-discount-input"
+                                class="block w-full mt-1 text-sm focus:outline-none focus:shadow-outline-green form-input"
+                                name="custom_discount"
+                                step=".01"
+                                type="number"
+                                min="0"
+                                value="{{ $order->discount_amount }}"
+                                placeholder="Enter custom discount">
                         </label>
+                        <div class="block mb-4 form-check" style="display: inline-flex;">
+                            <input name="custom_discount_toggle" class="float-left w-4 h-4 mt-1 mr-2 align-top transition duration-200 bg-white bg-center bg-no-repeat bg-contain border border-gray-300 rounded-sm appearance-none cursor-pointer form-check-input checked:bg-blue-600 checked:border-blue-600 focus:outline-none" type="checkbox" id="custom-discount-toggle">
+                            <label class="inline-block mt-1 text-xs text-center text-gray-800 form-check-label" for="custom-discount-toggle">
+                                (WARNING: checking custom discount will overwrite the existing discount type)
+                            </label>
+                        </div>
                         <label class="block mb-4 text-sm">
                             <span class="text-gray-700">Initial Deposit</span>
                             <input class="block w-full mt-1 text-sm focus:border-green-400 focus:outline-none focus:shadow-outline-green form-input" name="deposit" step=".01" type="number" min="0"  value="{{ $order->deposit_bal }}" placeholder="Enter deposit">

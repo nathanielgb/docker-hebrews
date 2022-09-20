@@ -18,7 +18,7 @@
         </div>
         <div class="relative p-4 modal-body">
             <div>
-                Are you sure you want to complete the order?
+                Are you sure you want to pay for the order?
             </div>
         </div>
         <div

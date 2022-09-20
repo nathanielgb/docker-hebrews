@@ -22,7 +22,7 @@
                 </button>
             </div>
             <div class="relative p-4 modal-body">
-                <form id="confirm-order-form" action="{{ route('order.confirm', $order->id) }}" method="post">
+                <form id="confirm-order-form" action="{{ route('order.confirm', $order->order_id) }}" method="post">
                     @csrf
                     <div>
                         <p class="text-center text-tiny">You will not be able to make any changes to the order upon confirming. Are you sure you want to continue?</p>

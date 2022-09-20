@@ -26,12 +26,4 @@ class MenuAddOn extends Model
     {
         return $this->hasOne(MenuInventory::class, 'id', 'inventory_id');
     }
-
-    /**
-     * Get the inventory associated with the addon item.
-     */
-    public function inventoryAddon()
-    {
-        return $this->hasOne(MenuInventory::class, 'id', 'inventory_id');
-    }
 }

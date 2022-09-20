@@ -13,8 +13,14 @@ class UserController extends Controller
 {
     public function index()
     {
-        if (Auth::user()->type == 'SUPERADMIN' && Auth::user()->type == 'ADMIN') {
-            $users = User::where('id', '!=', Auth::user()->id)->where('type', '!=', 'SUPERADMIN')->paginate(20);
+        $admin_types = [];
+
+        if (Auth::user()->type == 'SUPERADMIN') {
+            $users = User::where('id', '!=', Auth::user()->id)->paginate(20);
+        } else if (Auth::user()->type == 'ADMIN') {
+            $users = User::where('id', '!=', Auth::user()->id)
+                ->where('type', '!=', 'SUPERADMIN')
+                ->paginate(20);
         } else {
             $users = User::where('id', '!=', Auth::user()->id)
             ->where('type', '!=', 'SUPERADMIN')
@@ -23,12 +29,17 @@ class UserController extends Controller
         }
 
         $auth_user = Auth::user();
-
-        if ($auth_user->type == 'MANAGER' && $auth_user->type == 'ADMIN') {
+        if ($auth_user->type == 'SUPERADMIN') {
+            $admin_types = AccessAction::orderBy('name')->get();
+        } else if ($auth_user->type == 'ADMIN') {
             $admin_types = AccessAction::where('name', '!=', 'SUPERADMIN')
                 ->where('name', '!=', 'ADMIN')
-                ->where('name', '!=', 'MANAGER')
                 ->orderBy('name')->get();
+        } else if ($auth_user->type == 'MANAGER') {
+            $admin_types = AccessAction::where('name', '!=', 'SUPERADMIN')
+            ->where('name', '!=', 'ADMIN')
+            ->where('name', '!=', 'MANAGER')
+            ->orderBy('name')->get();
         } else {
             $admin_types = AccessAction::where('name', '!=', 'SUPERADMIN')
                 ->where('name', '!=', 'ADMIN')

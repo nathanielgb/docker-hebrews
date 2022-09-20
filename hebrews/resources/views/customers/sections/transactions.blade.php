@@ -33,7 +33,7 @@
             <table class="w-full whitespace-no-wrap">
                 <thead>
                 <tr class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase border-b bg-gray-50">
-                    <th class="px-4 py-3">Order No.</th>
+                    <th class="px-4 py-3">Order ID</th>
                     <th class="px-4 py-3 text-center">Status</th>
                     <th class="px-4 py-3 text-center">Type</th>
                     <th class="px-4 py-3">Total Amount</th>
@@ -45,7 +45,7 @@
                     @forelse ($transactions as $item)
                         <tr class="text-gray-700">
                             <td class="px-4 py-3 text-sm">
-                                {{ $item->id }}
+                                {{ $item->order_id }}
                             </td>
                             <td class="px-4 py-3 text-sm text-center">
                                 @if ($item->cancelled)
@@ -97,7 +97,7 @@
                                 <div class="flex text-sm" style="margin: 15px; justify-content: space-around;">
                                     <div class="flex flex-col ml-3 mr-3">
                                         <div class="mb-2 row">
-                                            <span class="">Order Number: {{ $item->id }}</span>
+                                            <span class="">Order Number: {{ $item->order_id }}</span>
                                         </div>
                                         <div class="mb-2 row">
                                             Customer ID: {{ $item->customer_id }}
@@ -137,7 +137,7 @@
                                             Discount Amount: {{ $item->discount_amount }}
                                         </div>
                                         <div class="mb-2 row">
-                                            Discount Type: {{ $item->type ?? 'N/A' }}
+                                            Discount Type: {{ $item->discount_type . ' (' . $item->discount_unit . ')' ?? 'N/A' }}
                                         </div>
                                     </div>
                                     <div class="flex flex-col ml-3 mr-3">

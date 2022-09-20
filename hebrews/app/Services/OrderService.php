@@ -1,12 +1,14 @@
 <?php
 namespace App\Services;
 
+use App\Models\AddonOrderItem;
 use App\Models\ErrorLog;
 use App\Models\Menu;
 use App\Models\MenuAddOn;
 use App\Models\MenuInventory;
 use App\Models\Order;
 use App\Models\OrderItem;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
 
@@ -37,7 +39,7 @@ class OrderService
         }
 
         // Check if item is already ordered
-        $ord_item = OrderItem::where('order_id', $order->id)
+        $ord_item = OrderItem::where('order_id', $order->order_id)
             ->where('menu_id', $item->id)
             ->first();
 
@@ -88,39 +90,68 @@ class OrderService
 
             // foreach ($response['data'] as $addon) {
             //     $addonModel = MenuAddOn::where('id', $addon['addon_id'])->first();
-            //     $deduct_addon = $this->deductQtyToInventory($addonModel->inventoryAddon, 1, $addon['qty']);
+            //     $deduct_addon = $this->deductQtyToInventory($addonModel->inventory, 1, $addon['qty']);
 
             //     if ($deduct_addon['status'] == 'fail') {
             //         return redirect()->back()->with('error', "Failed to generate order. Add-on Item $addon->name does not have enough stock.");
             //     }
             // }
 
-            // Add item to order items table
-            $ord_item = OrderItem::create([
-                'order_id' => $order->id,
-                'menu_id' => $item->id,
-                'inventory_id' => $item->inventory_id,
-                'inventory_name' => $item->inventory->name,
-                'name' => $item->name,
-                'from' => $item->category->from,
-                'price' => $product_price,
-                'type' => $type,
-                'unit_label' => $item->inventory->unit,
-                'units' => $item->units,
-                'qty' => $qty,
-                'data' => $response['data'] ?? [],
-                'total_amount' => $added_item_subtotal,
-                'status' => 'pending',
-            ]);
+            $orderItemId = OrderItem::generateUniqueId();
+
+            $ord_item = new OrderItem();
+            $ord_item->order_id = $order->order_id;
+            $ord_item->order_item_id = $orderItemId;
+            $ord_item->menu_id = $item->id;
+            $ord_item->inventory_id = $item->inventory_id;
+            $ord_item->inventory_name = $item->inventory->name;
+            $ord_item->name = $item->name;
+            $ord_item->from = $item->category->from;
+            $ord_item->price = $product_price;
+            $ord_item->type = $type;
+            $ord_item->unit_label = $item->inventory->unit;
+            $ord_item->units = $item->units;
+            $ord_item->qty = $qty;
+            $ord_item->data = $response['data'] ?? [];
+            $ord_item->total_amount = $added_item_subtotal;
+            $ord_item->status = 'pending';
+            $ord_item->save();
+
+            if (isset($response['data'])) {
+                $addon_item = [];
+                foreach ($response['data'] as $addon) {
+                    $addonModel = MenuAddOn::where('id', $addon['addon_id'])->first();
+
+                    if (!$addonModel) {
+                        return redirect()->route('order.show_cart')->with('error', "Addon Item (name: $addon->name ) does not exist.");
+                    }
+
+                    $addon_item[] = [
+                        'order_id' => $order->order_id,
+                        'order_item_id' => $orderItemId,
+                        'addon_id' => $addon['addon_id'],
+                        'inventory_id' => $addonModel->inventory_id,
+                        'inventory_name' => $addonModel->inventory->name,
+                        'name' => $addon['name'],
+                        'qty' => $addon['qty'],
+                        'created_at' => Carbon::now(),
+                        'updated_at' => Carbon::now(),
+                    ];
+                }
+
+                DB::table('addon_order_items')->insert($addon_item);
+            }
+
 
             // Re-calculate total order price
-            $new_subtotal = $this->getOrderSubtotal($order->id);
-            $orderInvoice = $this->calculateOrderInvoice($new_subtotal, $order->discount_amount, $order->fees, $order->deposit_bal, 0);
+            $new_subtotal = $this->getOrderSubtotal($order->order_id);
+            $orderInvoice = $this->calculateOrderInvoice($new_subtotal, $order->discount_type, $order->discount_unit, $order->fees, $order->deposit_bal, 0);
 
             // update subtotal of orders table
             $order->subtotal = round(floatval($new_subtotal), 2);
             $order->total_amount = round($orderInvoice['total_amount'], 2);
             $order->remaining_bal = round($orderInvoice['remaining_balance'], 2);
+            $order->discount_amount = round($orderInvoice['discount'], 2);
             $order->save();
 
 
@@ -191,13 +222,43 @@ class OrderService
             $item->data = $response['data'] ?? [];
             $item->save();
 
+            // Manage Addons - Delete Add ons that are not in the list
+            $deleteAddons = AddonOrderItem::where('order_item_id', $item->order_item_id)
+                ->whereNotIn('addon_id', $response['ids'] ?? [])
+                ->delete();
+
+            if (isset($response['data'])) {
+                foreach($response['data'] as $addon) {
+                    $addonModel = MenuAddOn::where('id', $addon['addon_id'])->first();
+
+                    // Update or create
+                    $updateAddons = AddonOrderItem::updateOrCreate(
+                        [
+                            'order_id'  => $item->order_id,
+                            'order_item_id'  => $item->order_item_id,
+                            'addon_id'  => $addon['addon_id'],
+                        ],
+                        [
+                            'inventory_id' => $addonModel->inventory_id,
+                            'inventory_name' => $addonModel->inventory->name,
+                            'name' => $addon['name'],
+                            'qty' => $addon['qty'],
+                            'created_at' => Carbon::now(),
+                            'updated_at' => Carbon::now(),
+                        ]
+                    );
+                }
+            }
+
+
             // Re-calculate total order price
-            $new_subtotal = $this->getOrderSubtotal($order->id);
-            $orderInvoice = $this->calculateOrderInvoice($new_subtotal, $order->discount_amount, $order->fees, $order->deposit_bal, 0);
+            $new_subtotal = $this->getOrderSubtotal($order->order_id);
+            $orderInvoice = $this->calculateOrderInvoice($new_subtotal, $order->discount_type, $order->discount_unit, $order->fees, $order->deposit_bal, 0);
 
             $order->subtotal = round(floatval($new_subtotal), 2);
             $order->total_amount = round($orderInvoice['total_amount'], 2);
             $order->remaining_bal = round($orderInvoice['remaining_balance'], 2);
+            $order->discount_amount = round($orderInvoice['discount'], 2);
             $order->save();
 
             DB::commit();
@@ -231,16 +292,18 @@ class OrderService
 
         try {
             // Delete order item
+            $addOnItems = AddonOrderItem::where('order_item_id', $item->order_item_id)->delete();
             $item->delete();
 
             // Re-calculate total order price
-            $new_subtotal = $this->getOrderSubtotal($order->id);
-            $orderInvoice = $this->calculateOrderInvoice($new_subtotal, $order->discount_amount, $order->fees, $order->deposit_bal, 0);
+            $new_subtotal = $this->getOrderSubtotal($order->order_id);
+            $orderInvoice = $this->calculateOrderInvoice($new_subtotal, $order->discount_type, $order->discount_unit, $order->fees, $order->deposit_bal, 0);
 
             // update subtotal of orders table
             $order->subtotal = round(floatval($new_subtotal), 2);
             $order->total_amount = round($orderInvoice['total_amount'], 2);
             $order->remaining_bal = round($orderInvoice['remaining_balance'], 2);
+            $order->discount_amount = round($orderInvoice['discount'], 2);
             $order->save();
 
             DB::commit();
@@ -262,7 +325,7 @@ class OrderService
     }
 
     /**
-     * Calculate invoice of order total
+     * Calculate invoice of order total (adjust discount according to discount type)
      *
      * total_amount = (subtotal + fees) - discount
      * amount_given = cashgiven + deposit_bal
@@ -272,8 +335,18 @@ class OrderService
      *
      * @return array
      */
-    public function calculateOrderInvoice($subtotal, $discount, $fees, $deposit_bal, $cashgiven)
+    public function calculateOrderInvoice($subtotal, $discount_type, $discount_unit, $fees, $deposit_bal, $cashgiven)
     {
+        $discount = 0;
+        if ($discount_type && $discount_unit) {
+            if ($discount_type == 'percentage') {
+                $percentage = $discount_unit / 100;
+                $discount = ($subtotal + $fees) * $percentage;
+            } else {
+                $discount = $discount_unit;
+            }
+        }
+
         $total_amount = round(floatval($subtotal), 2) + round(floatval($fees), 2) - round(floatval($discount), 2);
         $amount_given = $deposit_bal + $cashgiven;
         $remaining_balance = $amount_given - $total_amount;
@@ -317,7 +390,8 @@ class OrderService
      */
     public function getOrderSubtotal($id)
     {
-        $subtotal = OrderItem::where('order_id', $id)->sum('total_amount');
+        $ord_item = new OrderItem();
+        $subtotal = $ord_item->where('order_id', $id)->sum('total_amount');
 
         return $subtotal;
     }

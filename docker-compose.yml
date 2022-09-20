@@ -3,7 +3,7 @@ services:
     hebrews_server:
         build:
             args:
-                user: nath
+                user: ngbambico
                 uid: 1000
             context: ./
             dockerfile: Dockerfile
@@ -38,7 +38,7 @@ services:
         restart: unless-stopped
         environment:
             MYSQL_DATABASE: hebrews
-            MYSQL_USER: nathanielgb
+            MYSQL_USER: ngbambico
             MYSQL_PASSWORD: admin123
             MYSQL_ROOT_PASSWORD: admin123
             SERVICE_TAGS: dev
@@ -57,7 +57,7 @@ services:
         environment:
             PMA_HOST: hebrews_mysql
             MYSQL_DATABASE: hebrews
-            MYSQL_USER: nathanielgb
+            MYSQL_USER: ngbambico
             MYSQL_PASSWORD: admin123
             MYSQL_ROOT_PASSWORD: admin123
         networks:

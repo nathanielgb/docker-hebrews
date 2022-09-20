@@ -10,11 +10,11 @@
         @include('components.alert-message')
 
         @forelse ($orders as $order)
-            <div class="mt-4 w-full mb-8 overflow-hidden border rounded-lg shadow-xs">
+            <div class="w-full mt-4 mb-8 overflow-hidden border rounded-lg shadow-xs">
                 <div class="w-full overflow-x-auto">
                     <table class="w-full whitespace-no-wrap">
                         <thead>
-                        <tr class="text-sm font-semibold tracking-wide text-left text-gray-500 uppercase border-b bg-white">
+                        <tr class="text-sm font-semibold tracking-wide text-left text-gray-500 uppercase bg-white border-b">
                             <th colspan="3" class="px-4 py-3 text-center">
                                 <div class="flex flex-col">
                                     <span class="text-left">
@@ -28,7 +28,7 @@
                             <th colspan="2" class="px-4 py-3">
                                 <div class="flex flex-col">
                                     <span class="text-right">
-                                        ORDER ID: {{ $order->id }}
+                                        ORDER ID: {{ $order->order_id }}
                                     </span>
                                     <span class="text-right">
                                         <em>
@@ -60,15 +60,15 @@
                                     </td>
                                     <td class="px-4 py-3 text-sm text-center">
                                         @if ($item->status == 'ordered')
-                                            <div class="text-xs inline-flex items-center font-bold leading-sm uppercase px-3 py-1 bg-blue-200 text-blue-700 rounded-full">
+                                            <div class="inline-flex items-center px-3 py-1 text-xs font-bold text-blue-700 uppercase bg-blue-200 rounded-full leading-sm">
                                                 ORDERED
                                             </div>
                                         @elseif ($item->status == 'preparing')
-                                            <div class="text-xs inline-flex items-center font-bold leading-sm uppercase px-3 py-1 bg-orange-200 text-orange-700 rounded-full">
+                                            <div class="inline-flex items-center px-3 py-1 text-xs font-bold text-orange-700 uppercase bg-orange-200 rounded-full leading-sm">
                                                 PREPARING
                                             </div>
                                         @elseif ($item->status == 'done')
-                                            <div class="text-xs inline-flex items-center font-bold leading-sm uppercase px-3 py-1 bg-green-200 text-green-700 rounded-full">
+                                            <div class="inline-flex items-center px-3 py-1 text-xs font-bold text-green-700 uppercase bg-green-200 rounded-full leading-sm">
                                                 DONE
                                             </div>
                                         @endif
@@ -105,14 +105,14 @@
                     </table>
                 </div>
                 @if ($order->note)
-                    <div class="px-4 py-3 text-xs font-semibold tracking-wide text-gray-500 uppercase border-t sm:grid-cols-9 flex flex-col justify-center bg-white">
+                    <div class="flex flex-col justify-center px-4 py-3 text-xs font-semibold tracking-wide text-gray-500 uppercase bg-white border-t sm:grid-cols-9">
                         <h6>Note:</h6>
                         <p>{{ $order->note }}</p>
                     </div>
                 @endif
             </div>
         @empty
-            <div class="mt-4 p-4 bg-white rounded-lg shadow-xs text-center">
+            <div class="p-4 mt-4 text-center bg-white rounded-lg shadow-xs">
                 No pending orders.
             </div>
         @endforelse

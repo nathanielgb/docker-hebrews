@@ -17,19 +17,19 @@
             >
                 <option value="" selected disabled>Select type</option>
                 @if (isset($cart->reg_price))
-                    <option value="regular">Regular</option>
+                    <option value="regular">Regular ({{ $cart->reg_price }})</option>
                 @endif
                 @if (isset($cart->wholesale_price))
-                    <option value="wholesale">Wholesale</option>
+                    <option value="wholesale">Wholesale ({{ $cart->wholesale_price }})</option>
                 @endif
                 @if (isset($cart->rebranding_price))
-                    <option value="rebranding">Rebranding</option>
+                    <option value="rebranding">Rebranding ({{ $cart->rebranding_price }})</option>
                 @endif
                 @if (isset($cart->retail_price))
-                    <option value="retail">Retail</option>
+                    <option value="retail">Retail ({{ $cart->retail_price }})</option>
                 @endif
                 @if (isset($cart->distributor_price))
-                    <option value="distributor">Distributor</option>
+                    <option value="distributor">Distributor ({{ $cart->distributor_price }})</option>
                 @endif
             </select>
         </label>

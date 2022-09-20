@@ -31,7 +31,7 @@
             <div class="flex w-full" style="justify-content:end;">
                 <div class="flex mb-2 space-x-2 jusify-center">
                     <a
-                        href="{{ route('order.summary.print',['order_id'=>$order->id]) }}"
+                        href="{{ route('order.summary.print',['order_id'=>$order->order_id]) }}"
                         class="flex items-center inline-block px-6 py-2.5 bg-green-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-green-700 hover:shadow-lg focus:bg-green-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-green-800 active:shadow-lg transition duration-150 ease-in-out"
                         >
                         <span><i class="fa-solid fa-print"></i> PRINT</span>
@@ -39,7 +39,7 @@
                     @if (!$order->paid && !$order->cancelled && !$order->confirmed)
                         @if(auth()->user()->can('access', 'add-order-item-action'))
                             <a
-                                href="{{ route('order.show_add_item',['order_id'=>$order->id]) }}"
+                                href="{{ route('order.show_add_item',['order_id'=>$order->order_id]) }}"
                                 class="flex items-center inline-block px-6 py-2.5 bg-green-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-green-700 hover:shadow-lg focus:bg-green-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-green-800 active:shadow-lg transition duration-150 ease-in-out"
                                 >
                                 <span><i class="fa-solid fa-circle-plus"></i> ADD</span>
@@ -48,7 +48,7 @@
                         @endif
                         @if(auth()->user()->can('access', 'manage-order-item-action'))
                             <a
-                                href="{{ route('order.edit_items', $order->id) }}"
+                                href="{{ route('order.edit_items', $order->order_id) }}"
                                 class="flex items-center inline-block px-6 py-2.5 bg-green-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-green-700 hover:shadow-lg focus:bg-green-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-green-800 active:shadow-lg transition duration-150 ease-in-out"
                                 >
                                 <span><i class="fa-solid fa-pen"></i> UPDATE</span>
@@ -183,7 +183,7 @@
                     @if (!$order->paid && !$order->cancelled && !$order->confirmed)
                         @if(auth()->user()->can('access', 'manage-order-item-action'))
                             <button
-                                data-url="{{ route('order.edit', $order->id) }}"
+                                data-url="{{ route('order.edit', $order->order_id) }}"
                                 class="flex items-center inline-block px-6 py-2.5 bg-green-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-green-700 hover:shadow-lg focus:bg-green-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-green-800 active:shadow-lg transition duration-150 ease-in-out"
                                 data-bs-toggle="modal"
                                 data-bs-target="#editOrderModal"
@@ -203,7 +203,7 @@
                                 Order ID
                             </td>
                             <td class="w-1/2 p-4 font-semibold text-left text-gray-900 border border-gray-300">
-                                {{ $order->id }}
+                                {{ $order->order_id }}
                             </td>
                         </tr>
                         <tr>
@@ -260,6 +260,39 @@
                         </tr>
                         <tr>
                             <td class="w-1/2 p-4 font-semibold text-left text-gray-900 border border-gray-300">
+                                Subtotal
+                            </td>
+                            <td class="w-1/2 p-4 font-bold text-left text-red-600 border border-gray-300">
+                                -{{ $order->subtotal }}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="w-1/2 p-4 font-semibold text-left text-gray-900 border border-gray-300">
+                                Fees
+                            </td>
+                            <td class="w-1/2 p-4 font-bold text-left text-red-600 border border-gray-300">
+                                -{{ $order->fees }}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="w-1/2 p-4 font-semibold text-left text-gray-900 border border-gray-300">
+                                Discount
+                            </td>
+                            <td class="w-1/2 p-4 font-bold text-left text-green-600 border border-gray-300">
+                                {{ $order->discount_amount }} ({{ $order->discount_type }}: {{ $order->discount_unit }})
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="w-1/2 p-4 font-semibold text-left text-gray-900 border border-gray-300">
+                                Total Balance
+                            </td>
+                            <td class="w-1/2 p-4 font-bold text-left text-red-600 border border-gray-300">
+                                -{{ $order->total_amount }}
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td class="w-1/2 p-4 font-semibold text-left text-gray-900 border border-gray-300">
                                 Deposit Balance
                             </td>
                             <td class="w-1/2 p-4 font-bold text-left text-gray-900 border border-gray-300">
@@ -282,14 +315,8 @@
                                 {{ $order->confirmed_amount }}
                             </td>
                         </tr>
-                        <tr>
-                            <td class="w-1/2 p-4 font-semibold text-left text-gray-900 border border-gray-300">
-                                Total Balance
-                            </td>
-                            <td class="w-1/2 p-4 font-bold text-left text-red-600 border border-gray-300">
-                                -{{ $order->total_amount }}
-                            </td>
-                        </tr>
+
+
                         <tr>
                             <td class="w-1/2 p-4 font-semibold text-left text-gray-900 border border-gray-300">
                                 Remaining Balance
@@ -322,7 +349,7 @@
                     @if (!$order->confirmed)
                         <button
                             id="confirm-order-btn"
-                            data-url="{{ route('order.cancel', $order->id) }}"
+                            data-url="{{ route('order.cancel', $order->order_id) }}"
                             class="text-center inline-block px-6 py-2.5 font-medium leading-tight text-white uppercase transition duration-150 ease-in-out bg-green-800 rounded shadow-lg text-s hover:bg-green-700 hover:shadow-lg focus:bg-green-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-green-800 active:shadow-lg"
                             data-bs-toggle="modal"
                             data-bs-target="#confirmOrderModal"
@@ -332,7 +359,7 @@
                     @else
                         @if ($order->completed == false && !$order->cancelled && $order->remaining_bal < 0)
                             <a
-                                href="{{ route('order.show_payform', $order->id) }}"
+                                href="{{ route('order.show_payform', $order->order_id) }}"
                                 class="text-center inline-block px-6 py-2.5 font-medium leading-tight text-white uppercase transition duration-150 ease-in-out bg-green-800 rounded shadow-lg text-s hover:bg-green-700 hover:shadow-lg focus:bg-green-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-green-800 active:shadow-lg"
                                 >
                                 PAY
@@ -341,17 +368,17 @@
 
                         @if ($order->completed  && !$order->cancelled)
                             <a
-                                href="{{ route('print.receipt', $order->id) }}"
+                                href="{{ route('print.receipt', $order->order_id) }}"
                                 class="inline-block px-6 py-2.5 font-medium leading-tight text-white uppercase transition duration-150 ease-in-out bg-green-800 rounded shadow-lg text-s hover:bg-green-700 hover:shadow-lg focus:bg-green-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-green-800 active:shadow-lg"
                                 >
                                 PRINT
                             </a>
                         @endif
                     @endif
-                    @if (!$order->completed && !$order->cancelled && $order->confirmed && $order->remaining_bal > 0)
+                    @if (!$order->completed && !$order->cancelled && $order->confirmed && $order->remaining_bal >= 0)
                         <button
                             id="complete-order-btn"
-                            data-url="{{ route('order.complete', $order->id) }}"
+                            data-url="{{ route('order.complete', $order->order_id) }}"
                             class="inline-block px-6 py-2.5 font-medium leading-tight text-white uppercase transition duration-150 ease-in-out bg-green-800 rounded shadow-lg text-s hover:bg-green-700 hover:shadow-lg focus:bg-green-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-green-800 active:shadow-lg"
                             data-bs-toggle="modal"
                             data-bs-target="#completeOrderModal"
@@ -362,7 +389,7 @@
                     @if (!$order->completed && !$order->cancelled)
                         <button
                             id="cancel-order-btn"
-                            data-url="{{ route('order.cancel', $order->id) }}"
+                            data-url="{{ route('order.cancel', $order->order_id) }}"
                             class="inline-block px-6 py-2.5 font-medium leading-tight text-white uppercase transition duration-150 ease-in-out bg-green-800 rounded shadow-lg text-s hover:bg-green-700 hover:shadow-lg focus:bg-green-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-green-800 active:shadow-lg"
                             data-bs-toggle="modal"
                             data-bs-target="#cancelOrderModal"
@@ -385,6 +412,12 @@
         <script type="text/javascript">
             new TomSelect('#select-table', {
                 plugins: ['remove_button'],
+            });
+
+            $('#custom-discount-input').hide()
+
+            $('#custom-discount-toggle').on("click", function(){
+                $('#custom-discount-input').toggle();
             });
 
             $('#cancel-order-btn').on("click", function() {

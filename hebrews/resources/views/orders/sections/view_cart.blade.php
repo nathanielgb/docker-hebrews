@@ -214,7 +214,7 @@
                 // Parse discount
                 if (discount?.type == 'percentage') {
                     let percentage = discount.amount / 100;
-                    discount_amt = percentage * subtotal;
+                    discount_amt = percentage * (subtotal+fees);
                     display_discount_amt = discount_amt.toFixed(2) + ' (' + discount.amount + '%)';
                 } else if (discount?.type == 'flat') {
                     discount_amt = discount.amount;
@@ -224,7 +224,7 @@
                     display_discount_amt = discount_amt;
                 }
 
-                total = subtotal + fees - discount_amt;
+                total = (subtotal + fees) - discount_amt;
                 display_discount_amt = parseFloat(display_discount_amt);
                 // Set values
                 $('#ord-subtotal').val(subtotal.toFixed(2));

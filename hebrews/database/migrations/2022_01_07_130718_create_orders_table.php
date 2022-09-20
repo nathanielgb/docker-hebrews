@@ -15,6 +15,7 @@ class CreateOrdersTable extends Migration
     {
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
+            $table->string('order_id')->unique();
             $table->string('customer_id')->nullable();
             $table->string('customer_name')->nullable();
             $table->string('server_name')->nullable();
@@ -29,6 +30,7 @@ class CreateOrdersTable extends Migration
             $table->decimal('amount_given', 8, 2)->default(0);
             $table->string('order_type')->nullable();
             $table->string('discount_type')->nullable();
+            $table->decimal('discount_unit', 8, 2);
             $table->string('delivery_method')->nullable();
             $table->boolean('cancelled')->default(false);
             $table->boolean('completed')->default(false);

@@ -15,6 +15,7 @@ class CreateOrderItemsTable extends Migration
     {
         Schema::create('order_items', function (Blueprint $table) {
             $table->id();
+            $table->string('order_item_id')->unique();
             $table->string('order_id');
             $table->string('menu_id');
             $table->string('inventory_id');

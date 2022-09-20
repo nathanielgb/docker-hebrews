@@ -106,11 +106,14 @@
                             <table class="min-w-full text-center border">
                                 <thead class="border-b">
                                     <tr>
-                                        <th scope="col" colspan="4" class="px-6 py-4 text-gray-900 border-b ">Order Items Summary</th>
+                                        <th scope="col" colspan="5" class="px-6 py-4 text-gray-900 border-b ">Order Items Summary</th>
                                     </tr>
                                     <tr>
                                         <th scope="col" class="px-6 py-4 text-sm font-medium text-gray-900 border-r">
                                             Product Name
+                                        </th>
+                                        <th scope="col" class="px-6 py-4 text-sm font-medium text-gray-900 border-r">
+                                            Type
                                         </th>
                                         <th scope="col" class="px-6 py-4 text-sm font-medium text-gray-900 border-r">
                                             Order Qty
@@ -127,6 +130,7 @@
                                     @foreach ($order_items as $item)
                                         <tr class="border-b">
                                             <td class="px-6 py-4 text-sm font-medium text-gray-900 border-r whitespace-nowrap">{{ $item->name }}</td>
+                                            <td class="px-6 py-4 text-sm font-medium text-gray-900 border-r whitespace-nowrap">Menu Item</td>
                                             <td class="px-6 py-4 text-sm text-gray-900 border-r whitespace-nowrap">
                                                 {{ $item->total_qty }}
                                             </td>
@@ -138,6 +142,24 @@
                                             </td>
                                             <td class="px-6 py-4 text-sm text-gray-900 whitespace-nowrap">
                                                 {{ $item->total_amount }}
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                    @foreach ($addon_order_items as $addon)
+                                        <tr class="border-b">
+                                            <td class="px-6 py-4 text-sm font-medium text-gray-900 border-r whitespace-nowrap">{{ $addon->name }}</td>
+                                            <td class="px-6 py-4 text-sm font-medium text-gray-900 border-r whitespace-nowrap">Addon Item</td>
+                                            <td class="px-6 py-4 text-sm text-gray-900 border-r whitespace-nowrap">
+                                                {{ $addon->total_qty }}
+                                            </td>
+                                            <td class="px-6 py-4 text-sm text-gray-900 border-r whitespace-nowrap">
+                                                <ul>
+                                                    <li>Name: {{ $addon->inventory_name }}</li>
+                                                    <li>Used: {{ $addon->stock_used }}</li>
+                                                </ul>
+                                            </td>
+                                            <td class="px-6 py-4 text-sm text-gray-900 whitespace-nowrap">
+                                                0.00
                                             </td>
                                         </tr>
                                     @endforeach

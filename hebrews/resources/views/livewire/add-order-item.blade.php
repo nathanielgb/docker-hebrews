@@ -1,5 +1,5 @@
 <div>
-    <form id="add-order-item-form" action="{{ route('order.add_item', $order->id) }}" method="post" autocomplete="off">
+    <form id="add-order-item-form" action="{{ route('order.add_item', $order->order_id) }}" method="post" autocomplete="off">
         @csrf
         <label class="block mb-4 text-sm">
             <span class="text-gray-700 dark:text-gray-400">Menu Item</span>
@@ -100,7 +100,7 @@
 
         <div class="flex justify-center space-x-4">
             <a
-                href="{{ route('order.show_summary',$order->id) }}"
+                href="{{ route('order.show_summary',$order->order_id) }}"
                 class="inline-block px-6 py-2.5 font-medium leading-tight text-white uppercase transition duration-150 ease-in-out bg-green-800 rounded shadow-lg text-s hover:bg-green-700 hover:shadow-lg focus:bg-green-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-green-800 active:shadow-lg"
                 >
                 <span>BACK</span>

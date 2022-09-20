@@ -40,7 +40,7 @@ class KitchenController extends Controller
         $item = OrderItem::where('id', $request->item_id)->first();
 
         if ($item) {
-            $order = Order::where('id', $item->order_id)->first();
+            $order = Order::where('order_id', $item->order_id)->first();
             $order->updated_at = Carbon::now();
             $order->save();
 
@@ -57,7 +57,7 @@ class KitchenController extends Controller
         $item = OrderItem::where('id', $request->id)->first();
 
         if ($item) {
-            $order = Order::where('id', $item->order_id)->first();
+            $order = Order::where('order_id', $item->order_id)->first();
             $order->updated_at = Carbon::now();
             $order->save();
 
@@ -70,22 +70,22 @@ class KitchenController extends Controller
 
     public function complete (Request $request)
     {
-        $order = Order::where('id', $request->id)->first();
+        $order = Order::where('order_id', $request->id)->first();
 
         if ($order) {
-            $pending_items = OrderItem::where('order_id', $order->id)
+            $pending_items = OrderItem::where('order_id', $order->order_id)
                         ->where('from', 'kitchen')
                         ->where('status', '!=', 'done')
                         ->count();
 
             if ($pending_items > 0) {
-                return redirect()->route('kitchen.orders.list')->with('error', 'There are still pending orders left. ID ' . $order->id);
+                return redirect()->route('kitchen.orders.list')->with('error', 'There are still pending orders left. ID ' . $order->order_id);
             }
 
             $order->completed = true;
             $order->updated_at = Carbon::now();
             $order->save();
-            return redirect()->route('kitchen.orders.list')->with('success', 'Order ID ' . $order->id .' is completed. ');
+            return redirect()->route('kitchen.orders.list')->with('success', 'Order ID ' . $order->order_id .' is completed. ');
 
         }
         return redirect()->route('kitchen.orders.list')->with('error', 'Order does not exist.');

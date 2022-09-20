@@ -71,7 +71,8 @@ class AddonService
 
             return [
                 'status' => 'success',
-                'data' => $record
+                'data' => $record,
+                'ids' => $ids
             ];
         }
     }

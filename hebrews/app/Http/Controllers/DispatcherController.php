@@ -34,7 +34,7 @@ class DispatcherController extends Controller
         $item = OrderItem::where('id', $request->id)->first();
 
         if ($item) {
-            $order = Order::where('id', $item->order_id)->first();
+            $order = Order::where('order_id', $item->order_id)->first();
             $order->updated_at = Carbon::now();
             $order->save();
 

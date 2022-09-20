@@ -22,7 +22,7 @@
                 </button>
             </div>
             <div class="relative p-4 modal-body">
-                <form id="complete-order-form" action="{{ route('order.complete', $order->id) }}" method="post">
+                <form id="complete-order-form" action="{{ route('order.complete', $order->order_id) }}" method="post">
                     @csrf
                     <div>
                         <p class="text-center text-tiny">Payment and cancellation of order will be disabled upon completion of order. Do you want to complete the order?</p>
