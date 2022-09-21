@@ -49,7 +49,7 @@
                     @forelse ($bank_accounts as $item)
                         <tr class="text-gray-700">
                             <td class="px-4 py-3 text-sm">
-                                {{ $item->bank_id }}
+                                {{ $item->id }}
                             </td>
                             <td class="px-4 py-3 text-sm">
                                 {{ $item->bank }}
