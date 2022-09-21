@@ -242,6 +242,16 @@
                                 @endif
                             </td>
                         </tr>
+                        @if ($order->cancelled)
+                            <tr>
+                                <td class="w-1/2 p-4 font-semibold text-left text-gray-900 border border-gray-300">
+                                    Reason of Cancellation
+                                </td>
+                                <td class="w-1/2 p-4 font-semibold text-left text-red-600 border border-gray-300">
+                                    <p>{{ $order->reason }}</p>
+                                </td>
+                            </tr>
+                        @endif
                         <tr>
                             <td class="w-1/2 p-4 font-semibold text-left text-gray-900 border border-gray-300">
                                 Table/s

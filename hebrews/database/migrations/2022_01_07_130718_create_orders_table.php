@@ -42,6 +42,7 @@ class CreateOrdersTable extends Migration
             $table->string('bank_id')->nullable();
             $table->string('credited_by')->nullable();
             $table->string('confirmed_by')->nullable();
+            $table->text('cancelled_by')->nullable();
             $table->timestamps();
         });
     }

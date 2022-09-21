@@ -42,6 +42,7 @@ class Order extends Model
         'note',
         'credited_by',
         'confirmed_by',
+        'cancelled_by',
         'bank_id'
     ];
 

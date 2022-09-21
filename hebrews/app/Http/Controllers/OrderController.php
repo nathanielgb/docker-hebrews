@@ -409,6 +409,7 @@ class OrderController extends Controller
                     'data' => json_encode($citem->data),
                     'total_amount' => round(floatval($citem->price*$citem->qty), 2),
                     'status' => 'pending',
+                    'note' => $citem->note,
                     'created_at' => Carbon::now(),
                     'updated_at' => Carbon::now(),
                 ];
@@ -878,7 +879,6 @@ class OrderController extends Controller
     public function cancel (Request $request, $id)
     {
         $order = Order::with('items')->where('order_id', $id)->first();
-
         if ($order) {
             if ($order->cancelled) {
                 return redirect()->route('order.list')->with('error', 'Order is already cancelled.');
@@ -888,9 +888,15 @@ class OrderController extends Controller
                 return redirect()->route('order.list')->with('error', 'Cannot cancel completed orders.');
             }
 
+            $request->validate([
+                'reason' => 'required|string|min:10|max:300',
+            ]);
+
             $order->pending = false;
             $order->completed = false;
             $order->cancelled = true;
+            $order->reason = $request->reason;
+            $order->cancelled_by = auth()->user()->name;
             $order->save();
 
             return redirect()->route('order.show_summary', $order->order_id)->with('success', 'Order is successfully cancelled.');

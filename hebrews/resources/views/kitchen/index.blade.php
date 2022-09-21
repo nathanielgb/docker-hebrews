@@ -15,7 +15,7 @@
                     <table class="w-full whitespace-no-wrap">
                         <thead>
                         <tr class="text-sm font-semibold tracking-wide text-left text-gray-500 uppercase bg-white border-b">
-                            <th colspan="4" class="px-4 py-3 text-center">
+                            <th colspan="5" class="px-4 py-3 text-center">
                                 <div class="flex flex-col">
                                     <span class="text-left">
                                         Table/s:
@@ -46,6 +46,7 @@
                             <th class="px-2 py-3 text-center">Order Type</th>
                             <th class="px-2 py-3 text-center">Add-ons</th>
                             <th class="px-2 py-3 text-center">Status</th>
+                            <th class="px-2 py-3 text-center">Note</th>
                             <th class="px-2 py-3 text-center">Action</th>
                         </tr>
                         </thead>
@@ -90,6 +91,11 @@
                                                 DONE
                                             </div>
                                         @endif
+                                    </td>
+                                    <td class="px-4 py-3 text-sm text-center">
+                                        <p>
+                                            {{ $item->note }}
+                                        </p>
                                     </td>
                                     </td>
                                     <td class="px-4 py-3">

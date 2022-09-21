@@ -36,6 +36,7 @@ class OrderItem extends Model
         'type',
         'total_amount',
         'status',
+        'note',
         'served_by',
     ];
 
