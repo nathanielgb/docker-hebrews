@@ -162,7 +162,11 @@
                                     Discount Amount
                                 </td>
                                 <td class="px-4 py-2 text-sm font-semibold text-center" colspan="1">
-                                    -{{ $order->discount_amount }}
+                                    @if (!empty($order->discount_type))
+                                        -{{ $order->discount_amount }}
+                                    @else
+                                        0.00
+                                    @endif
                                 </td>
                             </tr>
                             <tr>
@@ -279,7 +283,12 @@
                                 Discount
                             </td>
                             <td class="w-1/2 p-4 font-bold text-left text-green-600 border border-gray-300">
-                                {{ $order->discount_amount }} ({{ $order->discount_type }}: {{ $order->discount_unit }})
+                                @if (!empty($order->discount_type))
+                                    {{ $order->discount_amount }} ({{ $order->discount_type }}: {{ $order->discount_unit }})
+
+                                @else
+                                    0.00
+                                @endif
                             </td>
                         </tr>
                         <tr>

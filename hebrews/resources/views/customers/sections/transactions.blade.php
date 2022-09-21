@@ -170,7 +170,7 @@
                                         </div>
                                         <div class="mb-2 row">
                                             @if ($item->order_type == 'dinein')
-                                                Table/s: {{ implode(',',$item->table) }}
+                                                Table/s: {{ implode($item->table, ',') }}
                                             @else
                                                 Delivery Method: {{ $item->delivery_method }}
                                             @endif

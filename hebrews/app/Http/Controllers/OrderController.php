@@ -340,7 +340,7 @@ class OrderController extends Controller
         // Calculate remaining balance
         $deposit_bal = $request->deposit ?? 0;
 
-        $discount_type = isset($discount->type) ? $discount->type : 'n/a';
+        $discount_type = isset($discount->type) ? $discount->type : '';
         $discount_unit = isset($discount->amount) ? $discount->amount : 0;
 
         $orderService = new OrderService;
