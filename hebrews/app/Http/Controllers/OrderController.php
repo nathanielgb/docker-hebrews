@@ -340,8 +340,8 @@ class OrderController extends Controller
         // Calculate remaining balance
         $deposit_bal = $request->deposit ?? 0;
 
-        $discount_type = isset($discount->type) ? $discount->type : null;
-        $discount_unit = isset($discount->amount) ? $discount->amount : null;
+        $discount_type = isset($discount->type) ? $discount->type : 'n/a';
+        $discount_unit = isset($discount->amount) ? $discount->amount : 0;
 
         $orderService = new OrderService;
         $orderInvoice = $orderService->calculateOrderInvoice($cart_subtotal, $discount_type, $discount_unit, $fees, $deposit_bal, 0);
@@ -363,8 +363,8 @@ class OrderController extends Controller
             $order->remaining_bal = $orderInvoice['remaining_balance'];
             $order->table = $request->tables;
             $order->total_amount = round(floatval($orderInvoice['total_amount']), 2);
-            $order->discount_type = $discount_label ?? null;
-            $order->discount_unit = $discount->amount ?? null;
+            $order->discount_type = $discount_type;
+            $order->discount_unit = $discount_unit;
             $order->order_type = $request->order_type;
             $order->delivery_method = $request->delivery_method;
             $order->pending = true;
