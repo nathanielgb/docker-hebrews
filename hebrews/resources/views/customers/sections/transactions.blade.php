@@ -170,7 +170,12 @@
                                         </div>
                                         <div class="mb-2 row">
                                             @if ($item->order_type == 'dinein')
-                                                Table/s: {{ implode($item->table, ',') }}
+                                                Table/s:
+                                                @if ($item->table)
+                                                @foreach ($item->table as $table)
+                                                    <span>{{ $table }}@if(!$loop->last),@endif</span>
+                                                @endforeach
+                                            @endif
                                             @else
                                                 Delivery Method: {{ $item->delivery_method }}
                                             @endif
