@@ -211,10 +211,6 @@
             $('#confirm_payment').one("click", function() {
                 $( "#pay_form" ).submit();
             });
-
-            $('#add-cart-form').on("submit", function() {
-                $('.cart-submit').prop('disabled', true);
-            });
         </script>
     </x-slot>
 
