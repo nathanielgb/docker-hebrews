@@ -127,6 +127,15 @@
 
             @if(auth()->user()->can('access', 'generate-order-report-action'))
                 <li class="relative px-6 py-3">
+                    <x-nav-link href="{{ route('expense.report.show') }}" :active="request()->routeIs('expense.report.show')">
+                        <x-slot name="icon">
+                            <i class="fa-solid fa-money-bill"></i>
+                        </x-slot>
+                        {{ __('Expense Report') }}
+                    </x-nav-link>
+                </li>
+
+                <li class="relative px-6 py-3">
                     <x-nav-link href="{{ route('orders.report.show') }}" :active="request()->routeIs('orders.report.show')">
                         <x-slot name="icon">
                             <i class="fa-solid fa-file-invoice"></i>

@@ -195,6 +195,9 @@ Route::middleware('auth')->group(function () {
 
     // Generate Order Reports
     Route::group(['middleware' => 'CheckAccessActions:generate-order-report-action'], function () {
+        Route::get('expense-report', [\App\Http\Controllers\OrderReportController::class, 'showExpenseReport'])->name('expense.report.show');
+        Route::post('expense-report', [\App\Http\Controllers\OrderReportController::class, 'addExpense'])->name('expense.report.add');
+        Route::delete('expense-report', [\App\Http\Controllers\OrderReportController::class, 'deleteExpense'])->name('expense.report.delete');
         Route::get('orders-report', [\App\Http\Controllers\OrderReportController::class, 'showGenerateReport'])->name('orders.report.show');
         Route::get('generate-report', [\App\Http\Controllers\OrderReportController::class, 'generate'])->name('orders.report.generate');
     });

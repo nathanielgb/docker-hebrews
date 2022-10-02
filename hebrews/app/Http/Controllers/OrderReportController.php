@@ -8,6 +8,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;;
 use App\Models\Customer;
+use App\Models\Expense;
 
 class OrderReportController extends Controller
 {
@@ -74,10 +75,27 @@ class OrderReportController extends Controller
             ->whereIn('order_id', $order_numbers)
             ->groupBy('addon_id')->get();
 
+        // Get expenses
+        $expenses = Expense::where(function ($query) use ($request) {
+            if ($request->date) {
+                $date_range = explode('-', str_replace(' ', '', $request->date));
+                $start_date = Carbon::parse($date_range[0])->startOfDay();
+                $end_date = Carbon::parse($date_range[1])->endOfDay();
+                $query->whereBetween('created_at', [$start_date, $end_date]);
+            }
+        });
+
+        $total_expense = $expenses->sum('amount');
+
+        // Calculate net profit
+        $profit = $orders_total - $total_expense;
+
         return view('order_reports.summary',compact(
         'orders_subtotal',
         'orders_discount',
         'orders_total',
+        'total_expense',
+        'profit',
         'order_count',
         'date_range',
         'status',
@@ -86,5 +104,60 @@ class OrderReportController extends Controller
         'addon_order_items',
         'customers'
         ));
+    }
+
+    public function showExpenseReport(Request $request)
+    {
+
+        $date_range = Carbon::today()->format('Y/m/d') . ' - ' . Carbon::today()->format('Y/m/d');
+        $expenses = Expense::whereDate('created_at', '>=',Carbon::today());
+
+        if ($request->except(['page'])) {
+
+            $expenses = Expense::where(function ($query) use ($request) {
+                if ($request->name) {
+                    $query->where('name', 'LIKE', "%$request->name%");
+                }
+                if ($request->date) {
+                    $date_range = explode('-', str_replace(' ', '', $request->date));
+                    $start_date = Carbon::parse($date_range[0])->startOfDay();
+                    $end_date = Carbon::parse($date_range[1])->endOfDay();
+                    $query->whereBetween('created_at', [$start_date, $end_date]);
+                }
+            });
+
+        }
+
+        $expenses = $expenses->orderBy('created_at', 'DESC')->paginate(20);
+        $total_expense = $expenses->sum('amount');
+
+        return view('expense_reports.index', compact('expenses','date_range','total_expense'));
+    }
+
+    public function addExpense(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|min:1|max:300',
+            'amount' => 'required|numeric|min:1|max:9999999',
+        ]);
+
+
+        $expense = new Expense;
+        $expense->name = $request->name;
+        $expense->amount = $request->amount;
+        $expense->save();
+
+        return back()->with('success', 'Successfully added ' . $request->name . '.');
+    }
+
+    public function deleteExpense(Request $request)
+    {
+        $expense = Expense::where('id', $request->id)->first();
+
+        if ($expense) {
+            $expense->delete();
+            return back()->with('success', 'Successfully deleted expense.');
+        }
+        return back()->with('error', 'Record does not exist.');
     }
 }

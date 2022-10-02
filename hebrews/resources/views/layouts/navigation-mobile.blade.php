@@ -28,11 +28,7 @@
             <li class="relative px-6 py-3">
                 <x-nav-link href="{{ route('dashboard') }}" :active="request()->routeIs('dashboard')">
                     <x-slot name="icon">
-                        <svg class="w-5 h-5" aria-hidden="true" fill="none" stroke-linecap="round"
-                            stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" stroke="currentColor"
-                        >
-                            <path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
-                        </svg>
+                        <i class="fa-solid fa-house"></i>
                     </x-slot>
                     {{ __('Dashboard') }}
                 </x-nav-link>
@@ -42,11 +38,31 @@
                 <li class="relative px-6 py-3">
                     <x-nav-link href="{{ route('users.index') }}" :active="request()->routeIs('users.index')">
                         <x-slot name="icon">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
-                            </svg>
+                            <i class="fa-solid fa-users"></i>
                         </x-slot>
                         {{ __('Users') }}
+                    </x-nav-link>
+                </li>
+            @endif
+
+            @if(auth()->user()->can('access', 'view-customers-action'))
+                <li class="relative px-6 py-3">
+                    <x-nav-link href="{{ route('customers.index') }}" :active="request()->routeIs('customers.index')">
+                        <x-slot name="icon">
+                            <i class="fa-solid fa-users"></i>
+                        </x-slot>
+                        {{ __('Customers') }}
+                    </x-nav-link>
+                </li>
+            @endif
+
+            @if(auth()->user()->can('access', 'view-bank-accounts-action'))
+                <li class="relative px-6 py-3">
+                    <x-nav-link href="{{ route('bank.accounts.index') }}" :active="request()->routeIs('bank.accounts.index')">
+                        <x-slot name="icon">
+                            <i class="fa-solid fa-wallet"></i>
+                        </x-slot>
+                        {{ __('Bank Accounts') }}
                     </x-nav-link>
                 </li>
             @endif
@@ -55,20 +71,50 @@
                 <li class="relative px-6 py-3">
                     <x-nav-link href="{{ route('menu.index') }}" :active="request()->routeIs('menu.index')">
                         <x-slot name="icon">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-book w-5 h-5"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+                            <i class="fa-solid fa-book-open"></i>
                         </x-slot>
                         {{ __('Menu') }}
                     </x-nav-link>
                 </li>
             @endif
 
-            @if(auth()->user()->can('access', 'take-orders-action'))
+            @if(auth()->user()->can('access', 'view-menu-addons-action'))
                 <li class="relative px-6 py-3">
+                    <x-nav-link href="{{ route('menu.addon.index') }}" :active="request()->routeIs('menu.index')">
+                        <x-slot name="icon">
+                            <i class="fa-solid fa-link"></i>
+                        </x-slot>
+                        {{ __('Add-ons') }}
+                    </x-nav-link>
+                </li>
+            @endif
+
+            @if(auth()->user()->can('access', 'view-discounts-action'))
+                <li class="relative px-6 py-3">
+                    <x-nav-link href="{{ route('discount.index') }}" :active="request()->routeIs('discount.index')">
+                        <x-slot name="icon">
+                            <i class="fa-solid fa-percent"></i>
+                        </x-slot>
+                        {{ __('Discount') }}
+                    </x-nav-link>
+                </li>
+            @endif
+
+            @if(auth()->user()->can('access', 'take-orders-action'))
+                {{-- <li class="relative px-6 py-3">
                     <x-nav-link href="{{ route('order.show_take_order') }}" :active="request()->routeIs('order.show_take_order')">
                         <x-slot name="icon">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="ionicon w-5 h-5" viewBox="0 0 512 512"><title>Clipboard</title><path d="M336 64h32a48 48 0 0148 48v320a48 48 0 01-48 48H144a48 48 0 01-48-48V112a48 48 0 0148-48h32" fill="none" stroke="currentColor" stroke-linejoin="round" stroke-width="32"/><rect x="176" y="32" width="160" height="64" rx="26.13" ry="26.13" fill="none" stroke="currentColor" stroke-linejoin="round" stroke-width="32"/></svg>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 ionicon" viewBox="0 0 512 512"><title>Clipboard</title><path d="M336 64h32a48 48 0 0148 48v320a48 48 0 01-48 48H144a48 48 0 01-48-48V112a48 48 0 0148-48h32" fill="none" stroke="currentColor" stroke-linejoin="round" stroke-width="32"/><rect x="176" y="32" width="160" height="64" rx="26.13" ry="26.13" fill="none" stroke="currentColor" stroke-linejoin="round" stroke-width="32"/></svg>
                         </x-slot>
                         {{ __('Take New Orders') }}
+                    </x-nav-link>
+                </li> --}}
+                <li class="relative px-6 py-3">
+                    <x-nav-link href="{{ route('order.show_add_cart') }}" :active="request()->routeIs('order.show_add_cart')">
+                        <x-slot name="icon">
+                            <i class="fa-solid fa-clipboard"></i>
+                        </x-slot>
+                        {{ __('Take Orders') }}
                     </x-nav-link>
                 </li>
             @endif
@@ -77,9 +123,29 @@
                 <li class="relative px-6 py-3">
                     <x-nav-link href="{{ route('order.list') }}" :active="request()->routeIs('order.list')">
                         <x-slot name="icon">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="ionicon w-5 h-5" viewBox="0 0 512 512"><title>Receipt</title><path fill="none" stroke="currentColor" stroke-linejoin="round" stroke-width="32" d="M160 336V48l32 16 32-16 31.94 16 32.37-16L320 64l31.79-16 31.93 16L416 48l32.01 16L480 48v224"/><path d="M480 272v112a80 80 0 01-80 80h0a80 80 0 01-80-80v-48H48a15.86 15.86 0 00-16 16c0 64 6.74 112 80 112h288" fill="none" stroke="currentColor" stroke-linejoin="round" stroke-width="32"/><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32" d="M224 144h192M288 224h128"/></svg>
+                            <i class="fa-solid fa-receipt"></i>
                         </x-slot>
                         {{ __('Orders') }}
+                    </x-nav-link>
+                </li>
+            @endif
+
+            @if(auth()->user()->can('access', 'generate-order-report-action'))
+                <li class="relative px-6 py-3">
+                    <x-nav-link href="{{ route('expense.report.show') }}" :active="request()->routeIs('expense.report.show')">
+                        <x-slot name="icon">
+                            <i class="fa-solid fa-money-bill"></i>
+                        </x-slot>
+                        {{ __('Expense Report') }}
+                    </x-nav-link>
+                </li>
+
+                <li class="relative px-6 py-3">
+                    <x-nav-link href="{{ route('orders.report.show') }}" :active="request()->routeIs('orders.report.show')">
+                        <x-slot name="icon">
+                            <i class="fa-solid fa-file-invoice"></i>
+                        </x-slot>
+                        {{ __('Order Report') }}
                     </x-nav-link>
                 </li>
             @endif
@@ -88,41 +154,34 @@
                 <li class="relative px-6 py-3">
                     <x-nav-link href="{{ route('kitchen.orders.list') }}" :active="request()->routeIs('kitchen.orders.list')">
                         <x-slot name="icon">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
-                            </svg>
+                            <i class="fa-solid fa-utensils"></i>
                         </x-slot>
                         {{ __('Kitchen Orders') }}
                     </x-nav-link>
                 </li>
             @endif
 
-            @if(auth()->user()->can('access', 'view-bar-dashboard-action'))
+            {{-- @if(auth()->user()->can('access', 'view-bar-dashboard-action'))
                 <li class="relative px-6 py-3">
                     <x-nav-link href="{{ route('bar.orders.list') }}" :active="request()->routeIs('bar.orders.list')">
                         <x-slot name="icon">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
-                            </svg>
+                            <i class="fa-solid fa-martini-glass"></i>
                         </x-slot>
                         {{ __('Bar Orders') }}
                     </x-nav-link>
                 </li>
-            @endif
+            @endif --}}
 
             @if(auth()->user()->can('access', 'view-dispatch-dashboard-action'))
                 <li class="relative px-6 py-3">
                     <x-nav-link href="{{ route('dispatch.list') }}" :active="request()->routeIs('disptach.list')">
                         <x-slot name="icon">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
-                            </svg>
+                            <i class="fa-solid fa-bell-concierge"></i>
                         </x-slot>
                         {{ __('Dispatch Orders') }}
                     </x-nav-link>
                 </li>
             @endif
-
         </ul>
     </div>
 </aside>
