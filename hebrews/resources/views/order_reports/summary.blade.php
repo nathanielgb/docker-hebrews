@@ -92,9 +92,31 @@
                             <td class="w-1/2 p-4 font-semibold text-left text-gray-900 border border-gray-300">
                                 Total Amount
                             </td>
-                            <td class="w-1/2 p-4 font-semibold text-left text-gray-900 border border-gray-300">
+                            <td class="w-1/2 p-4 font-bold text-left text-green-600 border border-gray-300">
                                 {{ $orders_total }}
                             </td>
+                        </tr>
+                        <tr>
+                            <td class="w-1/2 p-4 font-semibold text-left text-gray-900 border border-gray-300">
+                                Total Expenses
+                            </td>
+                            <td class="w-1/2 p-4 font-bold text-left text-red-600 border border-gray-300">
+                                -{{ $total_expense }}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="w-1/2 p-4 font-semibold text-left text-gray-900 border border-gray-300">
+                                Net Profit
+                            </td>
+                            @if ($profit < 0)
+                                <td class="w-1/2 p-4 font-bold text-left text-red-600 border border-gray-300">
+                                    {{ $profit }}
+                                </td>
+                            @else
+                                <td class="w-1/2 p-4 font-bold text-left text-green-600 border border-gray-300">
+                                    {{ $profit }}
+                                </td>
+                            @endif
                         </tr>
                     </table>
                 </div>

@@ -31,7 +31,7 @@ class CreateOrderItemsTable extends Migration
             $table->decimal('total_amount', 8, 2);
             $table->string('status')->default('preparing');
             $table->string('served_by')->nullable();
-            $table->text('note');
+            $table->text('note')->nullable();
             $table->timestamps();
         });
     }
