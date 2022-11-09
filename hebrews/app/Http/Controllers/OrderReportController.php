@@ -118,7 +118,7 @@ class OrderReportController extends Controller
                 if ($request->name) {
                     $query->where('name', 'LIKE', "%$request->name%");
                 }
-                if ($request->date) {
+                if ($request->date  && $request->date !== 'all') {
                     $date_range = explode('-', str_replace(' ', '', $request->date));
                     $start_date = Carbon::parse($date_range[0])->startOfDay();
                     $end_date = Carbon::parse($date_range[1])->endOfDay();

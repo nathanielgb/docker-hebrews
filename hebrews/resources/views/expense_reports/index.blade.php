@@ -21,7 +21,7 @@
 
     @include('components.alert-message')
 
-    <div class="flex justify-between items-end my-3">
+    <div class="flex items-end justify-between my-3">
         <div>
             <ul>
                 <li>Total Expense: <span class="font-bold">{{ number_format($total_expense, 2) }}</span></li>
@@ -142,7 +142,7 @@
 
 
                 $('input[name="date"]').on('cancel.daterangepicker', function(ev, picker) {
-                    $('input[name="date"]').val('');
+                    $('input[name="date"]').val('all');
                 });
             });
         </script>
