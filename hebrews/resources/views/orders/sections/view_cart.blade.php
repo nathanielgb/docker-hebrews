@@ -151,9 +151,12 @@
         <script type="text/javascript">
             $('.custom-discount').hide();
 
-            new TomSelect('#select-table', {
+            var select = new TomSelect('#select-table', {
                 plugins: ['remove_button'],
             });
+
+            select.addOption({value:'test'});
+
             $("#confirm-order, #order-discounts").click(function(){
                 calculateOrderPrices();
             });

@@ -102,6 +102,7 @@ Route::middleware('auth')->group(function () {
 
         Route::group(['middleware' => 'CheckAccessActions:manage-categories-action'], function () {
             Route::post('add-category', [\App\Http\Controllers\MenuController::class, 'addCategory'])->name('menu.add_category');
+            Route::post('update-category', [\App\Http\Controllers\MenuController::class, 'updateCategory'])->name('menu.update_category');
             Route::post('delete-category', [\App\Http\Controllers\MenuController::class, 'deleteCategory'])->name('menu.delete_category');
         });
     });
