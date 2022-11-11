@@ -1,8 +1,8 @@
 <!-- Modal -->
 <div class="fixed top-0 left-0 hidden w-full h-full overflow-x-hidden overflow-y-auto bg-black bg-opacity-50 outline-none modal fade"
-    id="updateCategoryModal"
+    id="updateModal"
     tabindex="-1"
-    aria-labelledby="updateCategoryModalLabel"
+    aria-labelledby="updateModalLabel"
     aria-hidden="true"
     >
     <div class="relative w-auto pointer-events-none modal-dialog modal-dialog-centered">
@@ -12,7 +12,7 @@
             <div
                 class="flex items-center justify-between flex-shrink-0 p-4 border-b border-gray-200 modal-header rounded-t-md"
                 >
-                <h5 class="text-xl font-medium leading-normal text-gray-800" id="updateCategoryModalLabel">
+                <h5 class="text-xl font-medium leading-normal text-gray-800" id="updateModalLabel">
                     Update Category
                 </h5>
                 <button type="button"
@@ -24,17 +24,17 @@
             <div class="relative p-4 modal-body">
                 <form id="update-category-form" action="{{ route('menu.update_category') }}" method="post">
                     @csrf
-                    <input type="hidden" name="category_id" :value="$store.category.updateData?.id">
+                    <input type="hidden" name="category_id" :value="$store.data.update?.id">
                     <label class="block mb-4 text-sm">
                         <span class="text-gray-700">Name</span>
-                        <input class="block w-full mt-1 text-sm focus:outline-none focus:shadow-outline-gray form-input" name="name" type="text" placeholder="Enter Category" :value="$store.category.updateData?.name">
+                        <input class="block w-full mt-1 text-sm focus:outline-none focus:shadow-outline-gray form-input" name="name" type="text" placeholder="Enter Category" :value="$store.data.update?.name">
                     </label>
 
                     <label class="block mb-4 text-sm">
                         <span class="text-gray-700">From</span>
                         <select class="block w-full mt-1 text-sm form-select focus:outline-none focus:shadow-outline-gray" name="from">
-                            <option value="kitchen" :selected="$store.category.updateData?.from === 'kitchen'">Kitchen</option>
-                            <option value="storage" :selected="$store.category.updateData?.from === 'storage'">Storage</option>
+                            <option value="kitchen" :selected="$store.data.update?.from === 'kitchen'">Kitchen</option>
+                            <option value="storage" :selected="$store.data.update?.from === 'storage'">Storage</option>
                         </select>
                         <p class="text-xs text-yellow-500">note: menu items with kitchen cateogry will appear in kitchen page, while storage menu item will appear in dispatch page.</p>
                     </label>

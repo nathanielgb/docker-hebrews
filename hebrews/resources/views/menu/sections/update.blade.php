@@ -12,16 +12,16 @@
                 @csrf
                 <label class="block mb-4 text-sm">
                     <span class="text-gray-700">Item ID</span>
-                    <input class="block w-full mt-1 text-sm bg-gray-100 border focus:border-purple-400 focus:outline-none focus:shadow-outline-purple form-input" disabled readonly value="{{ $item->id }}">
+                    <input class="block w-full mt-1 text-sm bg-gray-100 border focus:outline-none focus:shadow-outline-gray form-input" disabled readonly value="{{ $item->id }}">
                 </label>
                 <label class="block mb-4 text-sm">
                     <span class="text-gray-700">Name</span>
-                    <input class="block w-full mt-1 text-sm focus:border-purple-400 focus:outline-none focus:shadow-outline-purple form-input" name="menu" type="text" placeholder="Cheeseburger" value="{{ $item->name }}">
+                    <input class="block w-full mt-1 text-sm focus:outline-none focus:shadow-outline-gray form-input" name="menu" type="text" placeholder="Cheeseburger" value="{{ $item->name }}">
                 </label>
 
                 <label class="block mb-4 text-sm">
                     <span class="text-gray-700">Category</span>
-                    <select class="block w-full mt-1 text-sm form-select focus:border-purple-400 focus:outline-none focus:shadow-outline-purple" name="category">
+                    <select class="block w-full mt-1 text-sm form-select focus:outline-none focus:shadow-outline-gray" name="category">
                         <option value="" disabled>Select a category</option>
                         {{-- @foreach ($categories as $category)
                             <option value="{{ $category->id }}" @if($category->id == $item->category_id) selected @endif>{{ $category->name }}</option>

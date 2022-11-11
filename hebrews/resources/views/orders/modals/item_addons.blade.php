@@ -59,7 +59,7 @@
         <label class="block mb-4 text-sm">
             <span class="text-gray-700 dark:text-gray-400">Dine-in/Take-out</span>
             <select
-                class="block w-full mt-1 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 form-select focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:focus:shadow-outline-gray"
+                class="block w-full mt-1 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 form-select focus:outline-none focus:shadow-outline-gray dark:focus:shadow-outline-gray"
                 x-model="orderType"
             >
                 <option value="dinein" selected>Dine-in</option>
@@ -69,7 +69,7 @@
         <label class="block mb-4 text-sm">
             <span class="text-gray-700 dark:text-gray-400">Quantity</span>
             <select
-                class="block w-full mt-1 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 form-select focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:focus:shadow-outline-gray"
+                class="block w-full mt-1 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 form-select focus:outline-none focus:shadow-outline-gray dark:focus:shadow-outline-gray"
                 x-model="itemQuantity"
             >
                 <template x-for="i in tempOrderItem.stock">

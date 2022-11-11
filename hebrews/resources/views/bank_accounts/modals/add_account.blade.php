@@ -26,15 +26,15 @@
                     @csrf
                     <label class="block mb-4 text-sm">
                         <span class="text-gray-700">Bank Name</span>
-                        <input class="block w-full mt-1 text-sm focus:border-purple-400 focus:outline-none focus:shadow-outline-purple form-input" name="bank" type="text" placeholder="Enter bank" required>
+                        <input class="block w-full mt-1 text-sm focus:outline-none focus:shadow-outline-gray form-input" name="bank" type="text" placeholder="Enter bank" required>
                     </label>
                     <label class="block mb-4 text-sm">
                         <span class="text-gray-700">Account Name</span>
-                        <input class="block w-full mt-1 text-sm focus:border-purple-400 focus:outline-none focus:shadow-outline-purple form-input" name="account_name" type="text" placeholder="Enter account name" required>
+                        <input class="block w-full mt-1 text-sm focus:outline-none focus:shadow-outline-gray form-input" name="account_name" type="text" placeholder="Enter account name" required>
                     </label>
                     <label class="block mb-4 text-sm">
                         <span class="text-gray-700">Account Number</span>
-                        <input class="block w-full mt-1 text-sm focus:border-purple-400 focus:outline-none focus:shadow-outline-purple form-input" name="account_number" type="text" placeholder="Enter account number">
+                        <input class="block w-full mt-1 text-sm focus:outline-none focus:shadow-outline-gray form-input" name="account_number" type="text" placeholder="Enter account number">
                     </label>
                 </form>
             </div>

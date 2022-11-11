@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\AccessAction;
+use App\Models\Branch;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rules;
 use Illuminate\Support\Facades\Auth;
@@ -47,7 +48,9 @@ class UserController extends Controller
                 ->get();
         }
 
-        return view('users.index', compact('users','admin_types'));
+        $branches = Branch::all('id','name')->toArray();
+
+        return view('users.index', compact('users','admin_types','branches'));
     }
 
     public function viewAdd(Request $request)
@@ -68,11 +71,16 @@ class UserController extends Controller
     {
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'branch' => ['required', 'string', 'max:255'],
+            'branch' => ['required'],
             'username' => ['required', 'string', 'max:255', 'unique:users'],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
             'type' => ['required'],
         ]);
+
+        // Check if branch exist
+        if (Branch::whereIn('id', $request->branch)->count() <= 0) {
+            return redirect()->back()->with('error', 'Failed to add user. Branch does not exist please try again.');
+        }
 
         $user = User::create([
             'name' => $request->name,
@@ -94,11 +102,6 @@ class UserController extends Controller
         return redirect()->route('users.index')->with('error', 'User does not exist.');
     }
 
-    public function update(Request $request)
-    {
-        return abort(500);
-    }
-
     public function delete(Request $request)
     {
         $user = User::where('id', $request->id)->first();
@@ -111,21 +114,94 @@ class UserController extends Controller
         return redirect()->route('users.index')->with('error', 'User does not exist.');
     }
 
-    public function reset(Request $request)
+    public function update(Request $request)
     {
         $user = User::where('id', $request->id)->first();
         if ($user) {
             $request->validate([
-                'password' => ['required', 'confirmed', Rules\Password::defaults()],
+                'type' => ['required'],
+                'branch' => ['required'],
+                'password' => ['nullable', 'confirmed', Rules\Password::defaults()],
             ]);
 
-            $user->update([
-                'password' => Hash::make($request->password),
-            ]);
+            // Check if branch exist
+            if (Branch::whereIn('id', $request->branch)->count() <= 0) {
+                return redirect()->back()->with('error', 'Failed to update user. Branch does not exist please try again.');
+            }
 
-            return redirect()->route('users.index')->with('success', 'User is successfully reset.');
+            if ($request->password) {
+                $user->update([
+                    'type' => $request->type,
+                    'branch' => $request->branch,
+                    'password' => Hash::make($request->password)
+                ]);
+            } else {
+                $user->update([
+                    'type' => $request->type,
+                    'branch' => $request->branch
+                ]);
+            }
+
+
+            return redirect()->route('users.index')->with('success', 'User is successfully updated.');
         }
 
         return redirect()->route('users.index')->with('error', 'User does not exist.');
     }
+
+
+    public function viewBranches(Request $request)
+    {
+        $branches = Branch::paginate(20);
+
+        return view('users.branches', compact('branches'));
+    }
+
+    public function addBranch(Request $request)
+    {
+        $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'branch' => ['nullable', 'string', 'max:255'],
+        ]);
+
+        Branch::create([
+            'name' => $request->name,
+            'location' => $request->location,
+        ]);
+        return redirect()->back()->with('success', 'Branch is successfully created.');
+    }
+
+    public function updateBranch(Request $request)
+    {
+        $branch = Branch::where('id', $request->branch_id)->first();
+
+        if ($branch) {
+            $request->validate([
+                'name' => ['required', 'string', 'max:255'],
+                'branch' => ['nullable', 'string', 'max:255'],
+            ]);
+
+            $branch->update([
+                'name' => $request->name,
+                'location' => $request->location,
+            ]);
+
+            return redirect()->back()->with('success', 'Branch is successfully updated.');
+        }
+
+        return redirect()->back()->with('error', 'Error updating branch. Record does not exist.');
+    }
+
+    public function deleteBranch(Request $request)
+    {
+        $branch = Branch::where('id', $request->branch_id)->first();
+
+        if ($branch) {
+            $branch->delete();
+            return redirect()->back()->with('success', 'Branch is successfully removed.');
+        }
+
+        return redirect()->back()->with('error', 'Error deleting branch. Record does not exist.');
+    }
+
 }

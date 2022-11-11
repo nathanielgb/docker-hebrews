@@ -4,12 +4,11 @@
         <script src="{{ asset('js/focus-trap.js') }}"></script>
         <script>
             document.addEventListener('alpine:init', () => {
-                Alpine.store('category', {
-                    deleteData: [],
-                    updateData: [],
+                Alpine.store('data', {
+                    delete: [],
+                    update: [],
                 })
             })
-
         </script>
 
     </x-slot>
@@ -121,8 +120,8 @@
                                             type="button"
                                             data-sub="{{ json_encode($category->sub) }}"
                                             data-bs-toggle="modal"
-                                            data-bs-target="#updateCategoryModal"
-                                            @click="$store.category.updateData={{ json_encode([
+                                            data-bs-target="#updateModal"
+                                            @click="$store.data.update={{ json_encode([
                                                 'id' => $category->id,
                                                 'name' => $category->name,
                                                 'from' => $category->from
@@ -130,13 +129,15 @@
                                             <span><i class="fa-solid fa-pen"></i> Update</span>
                                         </button>
                                         <button
-                                            @if (count($category->menus) > 0) disabled @endif
                                             type="button"
                                             class="inline-block px-6 py-2.5 bg-red-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-red-700 hover:shadow-lg focus:bg-red-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-red-800 active:shadow-lg transition duration-150 ease-in-out"
                                             aria-label="Delete"
                                             data-bs-toggle="modal"
-                                            data-bs-target="#deleteMenuModal"
-                                            >
+                                            data-bs-target="#deleteModal"
+                                            @click="$store.data.delete={{ json_encode([
+                                                'id' => $category->id,
+                                                'name' => $category->name,
+                                            ]) }}">
                                             <i class="fa-solid fa-trash"></i> Delete
                                         </button>
                                     </div>

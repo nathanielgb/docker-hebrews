@@ -53,7 +53,7 @@
                                     <select
                                         wire:model="orderItemAddons.{{ $index }}.addon_id"
                                         name="orderItemAddon[{{ $index }}][addon_id]"
-                                        class="block w-full text-sm form-select focus:border-purple-400 focus:outline-none focus:shadow-outline-purple"
+                                        class="block w-full text-sm form-select focus:outline-none focus:shadow-outline-gray"
                                     >
                                         <option value="" selected disabled>Select Add-on</option>
                                         @foreach ($addons as $addon)
@@ -64,7 +64,7 @@
                                 <td class="px-4 py-3 text-sm text-center" style="max-width: 100px;">
                                     <input
                                         wire:model="orderItemAddons.{{ $index }}.qty"
-                                        class="block w-full text-sm focus:border-purple-400 focus:outline-none focus:shadow-outline-purple form-input"
+                                        class="block w-full text-sm focus:outline-none focus:shadow-outline-gray form-input"
                                         name="orderItemAddon[{{ $index }}][qty]"
                                         type="number"
                                         min="1"

@@ -13,7 +13,7 @@
             <span class="text-gray-700 dark:text-gray-400">Product Type</span>
             <select
                 name="type"
-                class="block w-full mt-1 text-sm form-select focus:border-purple-400 focus:outline-none focus:shadow-outline-purple"
+                class="block w-full mt-1 text-sm form-select focus:outline-none focus:shadow-outline-gray"
             >
                 <option value="" selected disabled>Select type</option>
                 @if (isset($cart->reg_price))
@@ -35,7 +35,7 @@
         </label>
         <label class="block mb-4 text-sm">
             <span class="text-gray-700">Quantity</span>
-            <input class="block w-full mt-1 text-sm focus:border-purple-400 focus:outline-none focus:shadow-outline-purple form-input" name="qty" type="number" min="1"  placeholder="1" required>
+            <input class="block w-full mt-1 text-sm focus:outline-none focus:shadow-outline-gray form-input" name="qty" type="number" min="1"  placeholder="1" required>
         </label>
 
         <div class="w-full mb-8 overflow-hidden border rounded-lg shadow-xs">
@@ -55,7 +55,7 @@
                                     <select
                                         wire:model="cartAddons.{{ $index }}.addon_id"
                                         name="cartAddon[{{ $index }}][addon_id]"
-                                        class="block w-full text-sm form-select focus:border-purple-400 focus:outline-none focus:shadow-outline-purple"
+                                        class="block w-full text-sm form-select focus:outline-none focus:shadow-outline-gray"
                                     >
                                         <option value="" selected disabled>Select Add-on</option>
                                         @foreach ($addons as $addon)
@@ -66,7 +66,7 @@
                                 <td class="px-4 py-3 text-sm text-center" style="max-width: 100px;">
                                     <input
                                     wire:model="cartAddons.{{ $index }}.qty"
-                                    class="block w-full text-sm focus:border-purple-400 focus:outline-none focus:shadow-outline-purple form-input"
+                                    class="block w-full text-sm focus:outline-none focus:shadow-outline-gray form-input"
                                     name="cartAddon[{{ $index }}][qty]"
                                     type="number"
                                     min="1"

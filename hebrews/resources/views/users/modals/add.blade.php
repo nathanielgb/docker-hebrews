@@ -26,7 +26,7 @@
                     @csrf
                     <label class="block mb-4 text-sm">
                         <span class="text-gray-700 dark:text-gray-400">Admin Type</span>
-                        <select class="block w-full mt-1 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 form-select focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:focus:shadow-outline-gray" name="type">
+                        <select class="block w-full mt-1 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 form-select focus:outline-none focus:shadow-outline-gray dark:focus:shadow-outline-gray" name="type">
                             <option value="" selected disabled>Select Admin Type</option>
                             @foreach ($admin_types as $type)
                                 <option value="{{ $type->name }}" >{{ $type->name }}</option>
@@ -35,23 +35,35 @@
                     </label>
                     <label class="block mb-4 text-sm">
                         <span class="text-gray-700">Name</span>
-                        <input class="block w-full mt-1 text-sm focus:border-purple-400 focus:outline-none focus:shadow-outline-purple form-input" name="name" type="text" placeholder="Enter name" required>
+                        <input class="block w-full mt-1 text-sm focus:outline-none focus:shadow-outline-gray form-input" name="name" type="text" placeholder="Enter name" required>
                     </label>
                     <label class="block mb-4 text-sm">
-                        <span class="text-gray-700">Branch</span>
-                        <input class="block w-full mt-1 text-sm focus:border-purple-400 focus:outline-none focus:shadow-outline-purple form-input" name="branch" type="text" placeholder="Enter branch" required>
+                        <span class="text-gray-700 dark:text-gray-400">Branch/s</span>
+                        <select
+                            id="select-branch"
+                            name="branch[]"
+                            placeholder="Enter Branch/s..."
+                            autocomplete="off"
+                            class="block w-full rounded-sm cursor-pointer focus:outline-none"
+                            multiple
+                        >
+                            @foreach ($branches as $branch)
+                                <option value="{{ $branch['id'] }}">{{ $branch['name'] }}</option>
+                            @endforeach
+                        </select>
+                        <p class="text-xs text-yellow-500">note: You can enter single or multiple branch for an admin user.</p>
                     </label>
                     <label class="block mb-4 text-sm">
                         <span class="text-gray-700">Username</span>
-                        <input class="block w-full mt-1 text-sm focus:border-purple-400 focus:outline-none focus:shadow-outline-purple form-input" name="username" type="text" placeholder="enter username" required>
+                        <input class="block w-full mt-1 text-sm focus:outline-none focus:shadow-outline-gray form-input" name="username" type="text" placeholder="enter username" required>
                     </label>
                     <label class="block mb-4 text-sm">
                         <span class="text-gray-700">Password</span>
-                        <input class="block w-full mt-1 text-sm focus:border-purple-400 focus:outline-none focus:shadow-outline-purple form-input" name="password" type="password"  placeholder="Enter password" required>
+                        <input class="block w-full mt-1 text-sm focus:outline-none focus:shadow-outline-gray form-input" name="password" type="password"  placeholder="Enter password" required>
                     </label>
                     <label class="block mb-4 text-sm">
                         <span class="text-gray-700">Confirm Password</span>
-                        <input class="block w-full mt-1 text-sm focus:border-purple-400 focus:outline-none focus:shadow-outline-purple form-input" name="password_confirmation" type="password"  placeholder="Confirm password" required>
+                        <input class="block w-full mt-1 text-sm focus:outline-none focus:shadow-outline-gray form-input" name="password_confirmation" type="password"  placeholder="Confirm password" required>
                     </label>
                 </form>
             </div>
