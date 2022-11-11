@@ -155,12 +155,41 @@ class MenuController extends Controller
             'from' => 'required|max:255',
         ]);
 
-        $menu = MenuCategory::create([
+        MenuCategory::create([
             'name' => strtoupper($request->name),
             'from' => $request->from,
+            'sub' => $request->subcat,
         ]);
 
         return back()->with('success', 'Category added successfully.');
+    }
+
+    public function updateCategory(Request $request)
+    {
+        $category = MenuCategory::where('id', $request->category_id)->first();
+
+        if ($category) {
+            // Prevent deletion if there is still linked products
+            if (count($category->menus) >= 1) {
+                return redirect()->back()->with('error', 'You cannot update category that has a menu item linked to it.');
+            }
+
+            $request->validate([
+                'name' => 'required|max:255',
+                'from' => 'required|max:255',
+            ]);
+
+
+            $category->update([
+                'name' => strtoupper($request->name),
+                'from' => $request->from,
+                'sub' => $request->subcat,
+            ]);
+
+            return back()->with('success', "Category $category->name updated successfully.");
+        }
+
+        return back()->with('error', 'Failed to update category. Record does not exist.');
     }
 
     public function deleteCategory(Request $request)
@@ -168,6 +197,11 @@ class MenuController extends Controller
         $category = MenuCategory::where('id', $request->id)->first();
 
         if ($category) {
+            // Prevent deletion if there is still linked products
+            if (count($category->menus) >= 1) {
+                return redirect()->back()->with('error', 'You cannot delete category that has a menu item linked to it.');
+            }
+
             // Delete all menu item with the same category
             $deleted_menu_items = DB::table('menus')->where('category_id', '=', $category->id)->delete();
             $deleted_category = DB::table('menu_categories')->where('id', '=', $category->id)->delete();

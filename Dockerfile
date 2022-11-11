@@ -13,9 +13,11 @@ RUN apt-get update && apt-get install -y \
     libonig-dev \
     libxml2-dev \
     zip \
-    unzip
+    unzip \
+    libpq-dev \
+    zlib1g-dev libzip-dev libpng-dev \
+    libfreetype6-dev libjpeg62-turbo-dev libgd-dev
 
-    
 # Clear cache
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
@@ -26,7 +28,17 @@ RUN npm install npm@latest -g && \
 
 
 # Install PHP extensions
-RUN docker-php-ext-install intl pdo_mysql mbstring exif pcntl bcmath
+RUN docker-php-ext-configure gd --with-jpeg=/usr/include/ --with-freetype=/usr/include/
+
+RUN docker-php-ext-install \
+    intl \
+    pdo_mysql \
+    mbstring \
+    exif \
+    pcntl \
+    bcmath \
+    zip \
+    gd
 
 # Get latest Composer
 COPY --from=composer:2.2.12 /usr/bin/composer /usr/bin/composer
