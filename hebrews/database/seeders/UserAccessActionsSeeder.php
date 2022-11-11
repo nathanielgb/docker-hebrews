@@ -104,8 +104,8 @@ class UserAccessActionsSeeder extends Seeder
                     'manage-menu-addons-action',
 
                     // Categories
-                    // 'view-categories-action',
-                    // 'manage-categories-action',
+                    'view-categories-action',
+                    'manage-categories-action',
 
                     // Inventory
                     'view-inventory-action',
