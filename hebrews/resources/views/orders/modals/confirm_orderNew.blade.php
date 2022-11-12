@@ -29,7 +29,7 @@
                         <br>
                         <label class="block mb-4 text-sm">
                             <span class="text-gray-700 dark:text-gray-400">Credit to Bank Account</span>
-                            <select class="block w-full mt-1 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 form-select focus:border-green-400 focus:outline-none focus:shadow-outline-green dark:focus:shadow-outline-gray" name="account">
+                            <select class="block w-full mt-1 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 form-select focus:outline-none focus:shadow-outline-gray" name="account">
                                 <option value="" selected disabled>Select account</option>
                                 <option value="">None</option>
                                     @foreach ($accounts as $account)

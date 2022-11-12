@@ -27,7 +27,7 @@
                     <div>
                         <label class="block mb-4 text-sm">
                             <span class="text-gray-700">Dine-in/Take-out</span>
-                            <select class="block w-full mt-1 text-sm form-select focus:border-green-400 focus:outline-none focus:shadow-outline-green" name="order_type">
+                            <select class="block w-full mt-1 text-sm form-select focus:outline-none focus:shadow-outline-gray" name="order_type">
                                 <option value="" selected disabled>Select a choice</option>
                                 <option value="dinein">Dine-in</option>
                                 <option value="takeout">Takeout</option>
@@ -59,7 +59,7 @@
                         </label>
                         <label class="block mb-4 text-sm">
                             <span class="text-gray-700">Delivery method</span>
-                            <select class="block w-full mt-1 text-sm form-select focus:border-green-400 focus:outline-none focus:shadow-outline-green" name="delivery_method">
+                            <select class="block w-full mt-1 text-sm form-select focus:outline-none focus:shadow-outline-gray" name="delivery_method">
                                 <option value="" selected>Select a courier</option>
                                 <option value="grab">Grab</option>
                                 <option value="lalamove">Lalamove</option>
@@ -70,7 +70,7 @@
 
                         <label class="block mb-4 text-sm">
                             <span class="text-gray-700">Customer</span>
-                            <select class="block w-full mt-1 text-sm form-select focus:border-green-400 focus:outline-none focus:shadow-outline-green" name="customer">
+                            <select class="block w-full mt-1 text-sm form-select focus:outline-none focus:shadow-outline-gray" name="customer">
                                 <option value="" selected disabled>Select an account</option>
                                 <option value="" >none</option>
                                 @foreach ($customers as $customer)
@@ -80,11 +80,11 @@
                         </label>
                         <label class="block mb-4 text-sm">
                             <span class="text-gray-700">Fees</span>
-                            <input id="fees-input" class="block w-full mt-1 text-sm focus:border-green-400 focus:outline-none focus:shadow-outline-green form-input" name="fees" step=".01" type="number" min="0"  value="0" placeholder="Enter fees">
+                            <input id="fees-input" class="block w-full mt-1 text-sm focus:outline-none focus:shadow-outline-gray form-input" name="fees" step=".01" type="number" min="0"  value="0" placeholder="Enter fees">
                         </label>
                         <label class="block mb-4 text-sm">
                             <span class="text-gray-700">Discount</span>
-                            <select id="order-discounts" class="block w-full mt-1 text-sm form-select focus:border-green-400 focus:outline-none focus:shadow-outline-green" name="discount">
+                            <select id="order-discounts" class="block w-full mt-1 text-sm form-select focus:outline-none focus:shadow-outline-gray" name="discount">
                                 <option value="" selected disabled>Select a discount</option>
                                 <option value="" >none</option>
                                 <option value="custom" data-discount="custom">Custom</option>
@@ -95,11 +95,11 @@
                         </label>
                         <label class="block mb-4 text-sm custom-discount">
                             <span class="text-gray-700">Discount (Custom)</span>
-                            <input id="custom-discount-input" class="block w-full mt-1 text-sm focus:border-green-400 focus:outline-none focus:shadow-outline-green form-input" name="custom_discount" step=".01" type="number" min="0" value="0"  placeholder="Enter custom discount">
+                            <input id="custom-discount-input" class="block w-full mt-1 text-sm focus:outline-none focus:shadow-outline-gray form-input" name="custom_discount" step=".01" type="number" min="0" value="0"  placeholder="Enter custom discount">
                         </label>
                         {{-- <label class="block mb-4 text-sm">
                             <span class="text-gray-700">Initial Deposit</span>
-                            <input class="block w-full mt-1 text-sm focus:border-green-400 focus:outline-none focus:shadow-outline-green form-input" name="deposit" step=".01" type="number" min="0"  value="0" placeholder="Enter deposit">
+                            <input class="block w-full mt-1 text-sm focus:outline-none focus:shadow-outline-gray form-input" name="deposit" step=".01" type="number" min="0"  value="0" placeholder="Enter deposit">
                         </label> --}}
                     </div>
                     <hr>

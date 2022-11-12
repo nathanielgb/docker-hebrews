@@ -11,7 +11,7 @@
         </label>
         <label class="block mb-4 text-sm">
             <span class="text-gray-700">Quantity</span>
-            <input class="block w-full mt-1 text-sm focus:border-green-400 focus:outline-none focus:shadow-outline-green form-input" name="quantity" type="number" placeholder="Enter Quantity" min="1" value="{{ $order->qty ?? 1 }}" required>
+            <input class="block w-full mt-1 text-sm focus:outline-none focus:shadow-outline-gray form-input" name="quantity" type="number" placeholder="Enter Quantity" min="1" value="{{ $order->qty ?? 1 }}" required>
         </label>
 
         <div class="w-full mb-8 overflow-hidden border rounded-lg shadow-xs">

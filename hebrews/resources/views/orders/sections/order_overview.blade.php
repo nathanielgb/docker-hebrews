@@ -102,7 +102,7 @@
             <select
                 x-model="transDiscount"
                 id="order-discount"
-                class="block w-full mt-1 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 form-select focus:border-green-400 focus:outline-none focus:shadow-outline-green dark:focus:shadow-outline-gray"
+                class="block w-full mt-1 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 form-select focus:outline-none focus:shadow-outline-gray"
             >
                 <option value="">None</option>
                 <option value="pwd">Person with disability (PWD)</option>
@@ -114,7 +114,7 @@
             <span class="text-gray-700 dark:text-gray-400">Note</span>
             <textarea
                 x-model="transNote"
-                class="block w-full mt-1 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 form-textarea focus:border-green-400 focus:outline-none focus:shadow-outline-green dark:focus:shadow-outline-gray"
+                class="block w-full mt-1 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 form-textarea focus:outline-none focus:shadow-outline-gray"
                 rows="3"
                 placeholder="Enter some additional note (optional)."
             ></textarea>

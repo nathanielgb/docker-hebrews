@@ -40,11 +40,12 @@ Route::middleware('auth')->group(function () {
             // Route::post('update-user', [\App\Http\Controllers\UserController::class, 'update'])->name('users.update');
             Route::post('delete-user', [\App\Http\Controllers\UserController::class, 'delete'])->name('users.delete');
             Route::post('update-user', [\App\Http\Controllers\UserController::class, 'update'])->name('users.update');
-
-            Route::get('user-branches', [\App\Http\Controllers\UserController::class, 'viewBranches'])->name('users.view_branches');
-            Route::post('user-branches', [\App\Http\Controllers\UserController::class, 'addBranch'])->name('users.branch.add');
-            Route::post('update-branches', [\App\Http\Controllers\UserController::class, 'updateBranch'])->name('users.branch.update');
-            Route::post('delete-branches', [\App\Http\Controllers\UserController::class, 'deleteBranch'])->name('users.branch.delete');
+            Route::group(['middleware' => 'CheckAccessActions:manage-branches-action'], function () {
+                Route::get('user-branches', [\App\Http\Controllers\UserController::class, 'viewBranches'])->name('users.view_branches');
+                Route::post('user-branches', [\App\Http\Controllers\UserController::class, 'addBranch'])->name('users.branch.add');
+                Route::post('update-branches', [\App\Http\Controllers\UserController::class, 'updateBranch'])->name('users.branch.update');
+                Route::post('delete-branches', [\App\Http\Controllers\UserController::class, 'deleteBranch'])->name('users.branch.delete');
+            });
         });
     });
 

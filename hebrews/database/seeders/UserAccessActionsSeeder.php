@@ -26,6 +26,7 @@ class UserAccessActionsSeeder extends Seeder
                     'view-users-action',
                     'manage-user-action',
                     'manage-manager-action',
+                    'manage-branches-action',
 
                     // Customer
                     'view-customers-action',
@@ -94,6 +95,7 @@ class UserAccessActionsSeeder extends Seeder
                     // Customer
                     'view-customers-action',
                     'manage-customer-action',
+                    'manage-branches-action',
 
                     // Bank Accounts
                     'view-bank-accounts-action',
@@ -193,13 +195,7 @@ class UserAccessActionsSeeder extends Seeder
                     'add-inventory-action',
 
                     // Orders
-                    'view-order-list-action',
-                    'add-order-item-action',
-                    'manage-order-item-action',
-                    'manage-orders-action',
-
-                    // Manager
-                    'manage-order-process-action',
+                    'view-order-list-action'
                 ]),
                 'created_at' => Carbon::now(),
 				'updated_at' => Carbon::now()
@@ -217,13 +213,7 @@ class UserAccessActionsSeeder extends Seeder
                     'add-inventory-action',
 
                     // Orders
-                    'view-order-list-action',
-                    'add-order-item-action',
-                    'manage-order-item-action',
-                    'manage-orders-action',
-
-                    // Manager
-                    'manage-order-process-action',
+                    'view-order-list-action'
                 ]),
                 'created_at' => Carbon::now(),
 				'updated_at' => Carbon::now()

@@ -20,12 +20,12 @@
             <form id="search-expense-form" action="{{ route('expense.report.show') }}" method="get" autocomplete="off">
                 <label class="block mb-4 text-sm">
                     <span class="text-gray-700 dark:text-gray-400">Name</span>
-                    <input class="block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-green-400 focus:outline-none focus:shadow-outline-green dark:text-gray-300 dark:focus:shadow-outline-gray form-input" name="name" type="text" placeholder="Enter name">
+                    <input class="block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:outline-none focus:shadow-outline-gray dark:text-gray-300 dark:focus:shadow-outline-gray form-input" name="name" type="text" placeholder="Enter name">
                 </label>
 
                 <label class="block mb-4 text-sm">
                     <span class="text-gray-700">Date</span>
-                    <input name="date" class="block w-full mt-1 text-sm focus:border-green-400 focus:outline-none focus:shadow-outline-green form-input" type="text" placeholder="Enter date range">
+                    <input name="date" class="block w-full mt-1 text-sm focus:outline-none focus:shadow-outline-gray form-input" type="text" placeholder="Enter date range">
                 </label>
             </form>
         </div>

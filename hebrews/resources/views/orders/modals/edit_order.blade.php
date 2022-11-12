@@ -27,7 +27,7 @@
                     <div>
                         <label class="block mb-4 text-sm">
                             <span class="text-gray-700">Dine-in/Take-out</span>
-                            <select id="order_type" class="block w-full mt-1 text-sm form-select focus:border-green-400 focus:outline-none focus:shadow-outline-green" name="order_type">
+                            <select id="order_type" class="block w-full mt-1 text-sm form-select focus:outline-none focus:shadow-outline-gray" name="order_type">
                                 <option value="" selected disabled>Select a choice</option>
                                 <option value="dinein" @if ($order->order_type == 'dinein') selected @endif>Dine-in</option>
                                 <option value="takeout" @if ($order->order_type == 'takeout') selected @endif>Takeout</option>
@@ -61,7 +61,7 @@
                         </label>
                         <label class="block mb-4 text-sm">
                             <span class="text-gray-700">Delivery method</span>
-                            <select class="block w-full mt-1 text-sm form-select focus:border-green-400 focus:outline-none focus:shadow-outline-green" name="delivery_method">
+                            <select class="block w-full mt-1 text-sm form-select focus:outline-none focus:shadow-outline-gray" name="delivery_method">
                                 <option value="" selected>Select a courier</option>
                                 <option value="grab"  @if ($order->delivery_method == 'grab') selected @endif>Grab</option>
                                 <option value="lalamove"  @if ($order->delivery_method == 'lalamove') selected @endif>Lalamove</option>
@@ -71,7 +71,7 @@
                         </label>
                         <label class="block mb-4 text-sm">
                             <span class="text-gray-700">Fees</span>
-                            <input id="fees-input" class="block w-full mt-1 text-sm focus:border-green-400 focus:outline-none focus:shadow-outline-green form-input" name="fees" step=".01" type="number" min="0"  value="{{ $order->fees }}" placeholder="Enter fees">
+                            <input id="fees-input" class="block w-full mt-1 text-sm focus:outline-none focus:shadow-outline-gray form-input" name="fees" step=".01" type="number" min="0"  value="{{ $order->fees }}" placeholder="Enter fees">
                         </label>
                         <label class="block text-sm custom-discount">
                             <span class="text-gray-700">Discount (Custom)</span>
@@ -93,7 +93,7 @@
                         </div>
                         <label class="block mb-4 text-sm">
                             <span class="text-gray-700">Initial Deposit</span>
-                            <input class="block w-full mt-1 text-sm focus:border-green-400 focus:outline-none focus:shadow-outline-green form-input" name="deposit" step=".01" type="number" min="0"  value="{{ $order->deposit_bal }}" placeholder="Enter deposit">
+                            <input class="block w-full mt-1 text-sm focus:outline-none focus:shadow-outline-gray form-input" name="deposit" step=".01" type="number" min="0"  value="{{ $order->deposit_bal }}" placeholder="Enter deposit">
                         </label>
                     </div>
                 </form>
