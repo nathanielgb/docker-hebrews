@@ -28,6 +28,13 @@
         </script>
     </x-slot>
 
+    <x-slot name="styles">
+        <link
+            href="https://cdn.jsdelivr.net/npm/tom-select/dist/css/tom-select.css"
+            rel="stylesheet"
+        />
+    </x-slot>
+
     <x-slot name="header">
         {{ __('Menu') }}
     </x-slot>
@@ -72,7 +79,7 @@
                     >
                     <i class="fa-solid fa-magnifying-glass"></i> SEARCH
                 </button>
-                @if(auth()->user()->can('access', 'manage-menu-action'))
+                @if(auth()->user()->can('access', 'add-menu-action'))
                     <button
                         type="button"
                         class="inline-block px-6 py-2.5 bg-green-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-green-700 hover:shadow-lg focus:bg-green-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-green-800 active:shadow-lg transition duration-150 ease-in-out"
@@ -127,7 +134,7 @@
                                             </li>
                                             <li>stock:
                                                 <span class="font-bold">
-                                                    @if ($item->inventory->unit == 'pcs')
+                                                    @if ($item->inventory->unit == 'pcs' || $item->inventory->unit == 'boxes')
                                                         {{ intval($item->inventory->stock) }}
                                                     @else
                                                         {{ $item->inventory->stock }}
@@ -160,17 +167,20 @@
                                     </span>
                                 </td>
                                 <td class="px-4 py-3 text-center">
-                                    @if(auth()->user()->can('access', 'manage-menu-action'))
+                                    @if(auth()->user()->can('access', 'update-menu-action'))
                                         <div class="flex items-center space-x-4 text-sm">
                                             <button
-                                                class="flex items-center inline-block px-6 py-2.5 bg-green-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-green-700 hover:shadow-lg focus:bg-green-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-green-800 active:shadow-lg transition duration-150 ease-in-out"
-                                                @click="$store.menu.updateMenuData={{ json_encode($item) }}, $store.menu.setCategories({{ $categories }}) ,$store.menu.setSubCategories({{ json_encode( $item->category->sub) }})"
+                                                class="flex btn-update-menu items-center inline-block px-6 py-2.5 bg-green-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-green-700 hover:shadow-lg focus:bg-green-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-green-800 active:shadow-lg transition duration-150 ease-in-out"
                                                 type="button"
                                                 data-bs-toggle="modal"
                                                 data-bs-target="#updateMenuModal"
+                                                data-inventory="{{ $item->inventory_id }}"
+                                                @click="$store.menu.updateMenuData={{ json_encode($item) }}, $store.menu.setCategories({{ $categories }}) ,$store.menu.setSubCategories({{ json_encode( $item->category->sub) }})"
                                                 >
                                                 <span><i class="fa-solid fa-pen"></i> Update</span>
                                             </button>
+                                    @endif
+                                    @if(auth()->user()->can('access', 'delete-menu-action'))
                                             <button
                                                 @click="$store.menu.deleteMenuData={{ json_encode([
                                                     'id' => $item->id,
@@ -211,7 +221,39 @@
     </div>
 
     <x-slot name="scripts">
+        <script src="https://cdn.jsdelivr.net/npm/tom-select/dist/js/tom-select.complete.min.js"></script>
         <script type="text/javascript">
+
+
+            new TomSelect("#select-inventory",{
+                allowEmptyOption: false,
+                create: false
+            });
+
+
+            var updateControl = new TomSelect('#select-update-inventory', {
+                valueField: 'id',
+                labelField: 'name',
+                searchField: 'name',
+                options: [],
+            });
+
+            $(".btn-update-menu").click(function() {
+                updateControl.clear();
+                var inventories = @json($inventory_items);
+                var inventory_id = $(this).data("inventory");
+
+                inventories.forEach(inventory => {
+                    updateControl.addOption({
+                        id: inventory.id,
+                        name: inventory.name
+                    });
+
+                    if (inventory.id == inventory_id) {
+                        updateControl.addItem(inventory.id);
+                    }
+                });
+            });
 
             $("#addCategory").change(function() {
                 var selectedItem = $(this).val();

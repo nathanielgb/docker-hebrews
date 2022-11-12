@@ -16,7 +16,7 @@ class MenuController extends Controller
     public function index(Request $request)
     {
         $menu = Menu::with('category');
-        $inventory_items = MenuInventory::all();
+        $inventory_items = MenuInventory::all()->toArray();
 
         if ($request->except(['page'])) {
             $menu=$menu->where(function ($query) use ($request) {
@@ -41,8 +41,12 @@ class MenuController extends Controller
     {
         $inventory = MenuInventory::where('id', $request->inventory)->first();
 
-        if (true) {
+        if ($inventory) {
             // Check the minimum unit required
+            if($inventory->unit == 'boxes' && $request->unit < 1) {
+                return back()->with('error', "The box must be at least 1.");
+            }
+
             if($inventory->unit == 'pcs' && $request->unit < 1) {
                 return back()->with('error', "The unit must be at least 1.");
             }
@@ -100,6 +104,10 @@ class MenuController extends Controller
             }
 
             // Check the minimum unit required
+            if($menu->inventory->unit == 'boxes' && $request->unit < 1) {
+                return back()->with('error', "The box must be at least 1.");
+            }
+
             if($menu->inventory->unit == 'pcs' && $request->unit < 1) {
                 return back()->with('error', "The unit must be at least 1.");
             }

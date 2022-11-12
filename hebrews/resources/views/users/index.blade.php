@@ -97,7 +97,6 @@
                                                     data-bs-toggle="modal"
                                                     data-bs-target="#resetUserModal"
                                                     data-userbranches="{{ json_encode($user->branch) }}"
-                                                    data-branches="{{ json_encode($branches) }}"
                                                     @click="$store.data.update={{ json_encode([
                                                         'id' => $user->id,
                                                         'name' => $user->name,
@@ -160,7 +159,7 @@
             $(".btn-update-user").click(function() {
                 updateControl.clear();
                 var userbranches = $(this).data("userbranches");
-                var branches = $(this).data("branches");
+                var branches = @json($branches);
                 var selectedbranch = {}
 
                 branches.forEach(branch => {

@@ -37,7 +37,9 @@ class UserAccessActionsSeeder extends Seeder
 
                     //Menu
                     'view-menus-action',
-                    'manage-menu-action',
+                    'add-menu-action',
+                    'update-menu-action',
+                    'delete-menu-action',
 
                     'view-menu-addons-action',
                     'manage-menu-addons-action',
@@ -48,6 +50,7 @@ class UserAccessActionsSeeder extends Seeder
 
                     // Inventory
                     'view-inventory-action',
+                    'add-inventory-action',
                     'manage-inventory-action',
 
                     // Discounts
@@ -98,7 +101,9 @@ class UserAccessActionsSeeder extends Seeder
 
                     //Menu
                     'view-menus-action',
-                    'manage-menu-action',
+                    'add-menu-action',
+                    'update-menu-action',
+                    'delete-menu-action',
 
                     'view-menu-addons-action',
                     'manage-menu-addons-action',
@@ -109,6 +114,7 @@ class UserAccessActionsSeeder extends Seeder
 
                     // Inventory
                     'view-inventory-action',
+                    'add-inventory-action',
                     'manage-inventory-action',
 
                     // Discounts
@@ -150,11 +156,65 @@ class UserAccessActionsSeeder extends Seeder
 
                     //Menu
                     'view-menus-action',
-                    'manage-menu-action',
+                    'add-menu-action',
+                    'update-menu-action',
+                    'delete-menu-action',
 
                     // Inventory
                     'view-inventory-action',
+                    'add-inventory-action',
                     'manage-inventory-action',
+
+                    // Orders
+                    'view-order-list-action',
+                    'add-order-item-action',
+                    'manage-order-item-action',
+                    'manage-orders-action',
+
+                    // Manager
+                    'manage-order-process-action',
+                ]),
+                'created_at' => Carbon::now(),
+				'updated_at' => Carbon::now()
+            ],
+            [
+                'name' => 'TEAMLEADER',
+                'access' => json_encode([
+                    // User
+                    'view-users-action',
+
+                    //Menu
+                    'view-menus-action',
+                    'add-menu-action',
+                    'update-menu-action',
+
+                    // Inventory
+                    'view-inventory-action',
+                    'add-inventory-action',
+
+                    // Orders
+                    'view-order-list-action',
+                    'add-order-item-action',
+                    'manage-order-item-action',
+                    'manage-orders-action',
+
+                    // Manager
+                    'manage-order-process-action',
+                ]),
+                'created_at' => Carbon::now(),
+				'updated_at' => Carbon::now()
+            ],
+            [
+                'name' => 'PRODUCTION',
+                'access' => json_encode([
+                    //Menu
+                    'view-menus-action',
+                    'add-menu-action',
+                    'update-menu-action',
+
+                    // Inventory
+                    'view-inventory-action',
+                    'add-inventory-action',
 
                     // Orders
                     'view-order-list-action',
@@ -193,10 +253,12 @@ class UserAccessActionsSeeder extends Seeder
 
                     //Menu
                     'view-menus-action',
-                    'manage-menu-action',
+                    'add-menu-action',
+                    'update-menu-action',
 
                     // Inventory
                     'view-inventory-action',
+                    'add-inventory-action',
                     'manage-inventory-action',
 
                     // Orders
@@ -215,10 +277,12 @@ class UserAccessActionsSeeder extends Seeder
 
                     //Menu
                     'view-menus-action',
-                    'manage-menu-action',
+                    'add-menu-action',
+                    'update-menu-action',
 
                     // Inventory
                     'view-inventory-action',
+                    'add-inventory-action',
                     'manage-inventory-action',
 
                     // Orders

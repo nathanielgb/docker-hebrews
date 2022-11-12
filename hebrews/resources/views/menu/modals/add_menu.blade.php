@@ -43,7 +43,7 @@
                             <option value="" selected disabled>Select a sub-category</option>
                         </select>
                     </label>
-                    <label class="block mb-4 text-sm">
+                    {{-- <label class="block mb-4 text-sm">
                         <span class="text-gray-700">Inventory</span>
                         <select class="block w-full mt-1 text-sm form-select focus:outline-none focus:shadow-outline-gray" name="inventory">
                             <option value="" selected disabled>Select inventory</option>
@@ -52,7 +52,25 @@
                             @endforeach
                         </select>
                         <p class="text-xs text-yellow-500">note: ordering this item will deduct the quantity to the stock of the selected inventory</p>
+                    </label> --}}
+
+                    <label class="block mb-4 text-sm">
+                        <span class="text-gray-700 dark:text-gray-400">Inventory</span>
+                        <select
+                            id="select-inventory"
+                            name="inventory"
+                            placeholder="Enter Inventory..."
+                            autocomplete="off"
+                            class="block w-full rounded-sm cursor-pointer focus:outline-none"
+                        >
+                            <option value="" selected disabled>Select inventory</option>
+                            @foreach ($inventory_items as $i_item)
+                                <option value="{{ $i_item['id'] }}" >{{ $i_item['name'] }}</option>
+                            @endforeach
+                        </select>
+                        <p class="text-xs text-yellow-500">note: ordering this item will deduct the quantity to the stock of the selected inventory</p>
                     </label>
+
                     <label class="block mb-4 text-sm">
                         <span class="text-gray-700">No. of Unit</span>
                         <input class="block w-full mt-1 text-sm focus:outline-none focus:shadow-outline-gray form-input" name="unit" type="number" step=".01" min="0"  placeholder="1">

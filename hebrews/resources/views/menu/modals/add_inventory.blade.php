@@ -32,13 +32,10 @@
                         <span class="text-gray-700">Unit</span>
                         <select class="block w-full mt-1 text-sm form-select focus:outline-none focus:shadow-outline-gray" name="unit">
                             <option value="" selected disabled>Select a unit</option>
-                            {{-- <option value="Kg">Kilogram (Kg)</option>
-                            <option value="g">gram (g)</option>
-                            <option value="L">Liter (L)</option>
-                            <option value="mL">Mililiter (mL)</option> --}}
-                            <option value="Kg" :selected="updateInventoryUnit === 'Kg'">Kilogram (Kg)</option>
+                            <option value="Kg">Kilogram (Kg)</option>
                             <option value="g">gram (g)</option>
                             <option value="pcs">Pieces (pcs)</option>
+                            <option value="boxes">Boxes</option>
                         </select>
                     </label>
                     <label class="block mb-4 text-sm">
