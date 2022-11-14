@@ -26,11 +26,11 @@
                     @csrf
                     <label class="block mb-4 text-sm">
                         <span class="text-gray-700">Name</span>
-                        <input class="block w-full mt-1 text-sm focus:outline-none focus:shadow-outline-gray form-input" name="menu" type="text" placeholder="Cheeseburger">
+                        <input class="styled-input" name="menu" type="text" placeholder="Cheeseburger">
                     </label>
                     <label class="block mb-4 text-sm">
                         <span class="text-gray-700">Category</span>
-                        <select id="addCategory" class="block w-full mt-1 text-sm form-select focus:outline-none focus:shadow-outline-gray" name="category">
+                        <select id="addCategory" class="styled-input" name="category">
                             <option value="" selected disabled>Select a category</option>
                             @foreach ($categories as $category)
                                 <option value="{{ $category->id }}" data-sub="{{ json_encode($category->sub) }}">{{ $category->name }}</option>
@@ -39,7 +39,7 @@
                     </label>
                     <label class="block mb-4 text-sm">
                         <span class="text-gray-700">Sub-Category</span>
-                        <select id="addSubCategory" class="block w-full mt-1 text-sm form-select focus:outline-none focus:shadow-outline-gray" name="sub_category">
+                        <select id="addSubCategory" class="styled-input" name="sub_category">
                             <option value="" selected disabled>Select a sub-category</option>
                         </select>
                     </label>
@@ -73,28 +73,28 @@
 
                     <label class="block mb-4 text-sm">
                         <span class="text-gray-700">No. of Unit</span>
-                        <input class="block w-full mt-1 text-sm focus:outline-none focus:shadow-outline-gray form-input" name="unit" type="number" step=".01" min="0"  placeholder="1">
+                        <input class="styled-input" name="unit" type="number" step=".01" min="0"  placeholder="1">
                         <p class="text-xs text-yellow-500">note: number of units to be deducted to the current stock of inventory for every quantity ordered</p>
                     </label>
                     <label class="block mb-4 text-sm">
                         <span class="text-gray-700">Regular Price</span>
-                        <input class="block w-full mt-1 text-sm focus:outline-none focus:shadow-outline-gray form-input" name="reg_price" type="number" min="0" step="0.01" placeholder="2.50">
+                        <input class="styled-input" name="reg_price" type="number" min="0" step="0.01" placeholder="2.50">
                     </label>
                     <label class="block mb-4 text-sm">
                         <span class="text-gray-700">Retail Price</span>
-                        <input class="block w-full mt-1 text-sm focus:outline-none focus:shadow-outline-gray form-input" name="retail_price" type="number" min="0" step="0.01" placeholder="2.50">
+                        <input class="styled-input" name="retail_price" type="number" min="0" step="0.01" placeholder="2.50">
                     </label>
                     <label class="block mb-4 text-sm">
                         <span class="text-gray-700">Wholesale Price</span>
-                        <input class="block w-full mt-1 text-sm focus:outline-none focus:shadow-outline-gray form-input" name="wholesale_price" type="number" min="0" step="0.01" placeholder="3.50">
+                        <input class="styled-input" name="wholesale_price" type="number" min="0" step="0.01" placeholder="3.50">
                     </label>
                     <label class="block mb-4 text-sm">
                         <span class="text-gray-700">Distributor Price</span>
-                        <input class="block w-full mt-1 text-sm focus:outline-none focus:shadow-outline-gray form-input" name="distributor_price" type="number" min="0" step="0.01" placeholder="3.50">
+                        <input class="styled-input" name="distributor_price" type="number" min="0" step="0.01" placeholder="3.50">
                     </label>
                     <label class="block mb-4 text-sm">
                         <span class="text-gray-700">Rebranding Price</span>
-                        <input class="block w-full mt-1 text-sm focus:outline-none focus:shadow-outline-gray form-input" name="rebranding_price" type="number" min="0" step="0.01" placeholder="3.50">
+                        <input class="styled-input" name="rebranding_price" type="number" min="0" step="0.01" placeholder="3.50">
                     </label>
                 </form>
             </div>

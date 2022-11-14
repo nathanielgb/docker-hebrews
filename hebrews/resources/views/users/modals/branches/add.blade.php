@@ -26,11 +26,11 @@
                     @csrf
                     <label class="block mb-4 text-sm">
                         <span class="text-gray-700">Name</span>
-                        <input class="block w-full mt-1 text-sm focus:outline-none focus:shadow-outline-gray form-input" name="name" type="text" placeholder="Enter name" required>
+                        <input class="styled-input" name="name" type="text" placeholder="Enter name" required>
                     </label>
                     <label class="block mb-4 text-sm">
                         <span class="text-gray-700">Location</span>
-                        <input class="block w-full mt-1 text-sm focus:outline-none focus:shadow-outline-gray form-input" name="location" type="text" placeholder="Enter location">
+                        <input class="styled-input" name="location" type="text" placeholder="Enter location">
                     </label>
                 </form>
             </div>

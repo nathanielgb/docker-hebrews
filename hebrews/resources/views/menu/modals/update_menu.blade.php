@@ -27,11 +27,11 @@
                     <input type="hidden" name="menu_id" :value="$store.menu.updateMenuData?.id">
                     <label class="block mb-4 text-sm">
                         <span class="text-gray-700">Name</span>
-                        <input class="block w-full mt-1 text-sm focus:outline-none focus:shadow-outline-gray form-input" name="menu" type="text" placeholder="Cheeseburger" :value="$store.menu.updateMenuData?.name">
+                        <input class="styled-input" name="menu" type="text" placeholder="Cheeseburger" :value="$store.menu.updateMenuData?.name">
                     </label>
                     <label class="block mb-4 text-sm">
                         <span class="text-gray-700">Category</span>
-                        <select id="updateCategory" class="block w-full mt-1 text-sm form-select focus:outline-none focus:shadow-outline-gray" name="category">
+                        <select id="updateCategory" class="styled-input" name="category">
                             <option value="" selected disabled>Select a category</option>
                             @foreach ($categories as $category)
                                 <option value="{{ $category->id }}" :selected="$store.menu.updateMenuData?.category_id === '{{ $category->id }}'" data-sub="{{ json_encode($category->sub) }}">{{ $category->name }}</option>
@@ -40,7 +40,7 @@
                     </label>
                     <label class="block mb-4 text-sm">
                         <span class="text-gray-700">Sub-Category</span>
-                        <select x-model="subCat" id="updateSubCategory" class="block w-full mt-1 text-sm form-select focus:outline-none focus:shadow-outline-gray" name="sub_category">
+                        <select x-model="subCat" id="updateSubCategory" class="styled-input" name="sub_category">
                             <option value="" disabled>Select a sub-category</option>
                             <template x-for="subCat in $store.menu.subCategories">
                                 <option x-text="subCat" :value="subCat" :selected="$store.menu.updateMenuData?.sub_category === subCat"></option>
@@ -49,7 +49,7 @@
                     </label>
                     {{-- <label class="block mb-4 text-sm">
                         <span class="text-gray-700">Inventory</span>
-                        <select class="block w-full mt-1 text-sm form-select focus:outline-none focus:shadow-outline-gray" name="inventory">
+                        <select class="styled-input" name="inventory">
                             <option value="" selected disabled>Select inventory</option>
                             @foreach ($inventory_items as $i_item)
                                 <option value="{{ $i_item->id }}" :selected="$store.menu.updateMenuData?.inventory_id === '{{ $i_item->id }}'">{{ $i_item->name }}</option>
@@ -77,7 +77,7 @@
 
                     <label class="block mb-4 text-sm">
                         <span class="text-gray-700">No. of Unit</span>
-                        <input class="block w-full mt-1 text-sm focus:outline-none focus:shadow-outline-gray form-input"
+                        <input class="styled-input"
                             name="unit"
                             type="number"
                             step=".01"
@@ -88,23 +88,23 @@
                     </label>
                     <label class="block mb-4 text-sm">
                         <span class="text-gray-700">Regular Price</span>
-                        <input class="block w-full mt-1 text-sm focus:outline-none focus:shadow-outline-gray form-input" name="reg_price" type="number" min="0" step="0.01" placeholder="2.50" :value="$store.menu.updateMenuData?.reg_price">
+                        <input class="styled-input" name="reg_price" type="number" min="0" step="0.01" placeholder="2.50" :value="$store.menu.updateMenuData?.reg_price">
                     </label>
                     <label class="block mb-4 text-sm">
                         <span class="text-gray-700">Retail Price</span>
-                        <input class="block w-full mt-1 text-sm focus:outline-none focus:shadow-outline-gray form-input" name="retail_price" type="number" min="0" step="0.01" placeholder="2.50" :value="$store.menu.updateMenuData?.retail_price">
+                        <input class="styled-input" name="retail_price" type="number" min="0" step="0.01" placeholder="2.50" :value="$store.menu.updateMenuData?.retail_price">
                     </label>
                     <label class="block mb-4 text-sm">
                         <span class="text-gray-700">Wholesale Price</span>
-                        <input class="block w-full mt-1 text-sm focus:outline-none focus:shadow-outline-gray form-input" name="wholesale_price" type="number" min="0" step="0.01" placeholder="3.50" :value="$store.menu.updateMenuData?.wholesale_price">
+                        <input class="styled-input" name="wholesale_price" type="number" min="0" step="0.01" placeholder="3.50" :value="$store.menu.updateMenuData?.wholesale_price">
                     </label>
                     <label class="block mb-4 text-sm">
                         <span class="text-gray-700">Distributor Price</span>
-                        <input class="block w-full mt-1 text-sm focus:outline-none focus:shadow-outline-gray form-input" name="distributor_price" type="number" min="0" step="0.01" placeholder="3.50" :value="$store.menu.updateMenuData?.distributor_price">
+                        <input class="styled-input" name="distributor_price" type="number" min="0" step="0.01" placeholder="3.50" :value="$store.menu.updateMenuData?.distributor_price">
                     </label>
                     <label class="block mb-4 text-sm">
                         <span class="text-gray-700">Rebranding Price</span>
-                        <input class="block w-full mt-1 text-sm focus:outline-none focus:shadow-outline-gray form-input" name="rebranding_price" type="number" min="0" step="0.01" placeholder="3.50" :value="$store.menu.updateMenuData?.rebranding_price">
+                        <input class="styled-input" name="rebranding_price" type="number" min="0" step="0.01" placeholder="3.50" :value="$store.menu.updateMenuData?.rebranding_price">
                     </label>
                 </form>
             </div>

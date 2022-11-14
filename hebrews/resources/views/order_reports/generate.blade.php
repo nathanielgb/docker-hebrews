@@ -16,16 +16,16 @@
             <form action="{{ route('orders.report.generate') }}" method="get" autocomplete="off">
                 <label class="block mb-4 text-sm">
                     <span class="text-gray-700">Date</span>
-                    <input name="date" class="block w-full mt-1 text-sm focus:outline-none focus:shadow-outline-gray form-input" type="text" placeholder="Enter date range">
+                    <input name="date" class="styled-input" type="text" placeholder="Enter date range">
                 </label>
                 <label class="block mb-4 text-sm">
                     <span class="text-gray-700 dark:text-gray-400">Order Number/s</span>
-                    <input class="block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:outline-none focus:shadow-outline-gray dark:text-gray-300 dark:focus:shadow-outline-gray form-input" name="order_id" type="text" placeholder="Enter order number/s">
+                    <input class="styled-input" name="order_id" type="text" placeholder="Enter order number/s">
                     <p class="text-xs text-yellow-500">note: you can search for single or multiple order numbers thru comma separated i/e. "432,123,567"</p>
                 </label>
                 <label class="block mb-4 text-sm">
                     <span class="text-gray-700 dark:text-gray-400">Order status</span>
-                    <select class="block w-full mt-1 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 form-select focus:outline-none focus:shadow-outline-gray dark:focus:shadow-outline-gray" name="status">
+                    <select class="styled-input" name="status">
                         <option value="" selected disabled>Select status</option>
                         <option value="pending">Pending</option>
                         <option value="confirmed">Confirmed</option>
@@ -35,7 +35,7 @@
                 </label>
                 <label class="block mb-4 text-sm">
                     <span class="text-gray-700">Server name</span>
-                    <select class="block w-full mt-1 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 form-select focus:outline-none focus:shadow-outline-gray dark:focus:shadow-outline-gray" name="servername">
+                    <select class="styled-input" name="servername">
                         <option value="" selected disabled>Select a user</option>
                         @foreach ($admins as $admin)
                             <option value="{{ $admin }}">{{ $admin }}</option>
@@ -44,7 +44,7 @@
                 </label>
                 <label class="block mb-4 text-sm">
                     <span class="text-gray-700">Customer name</span>
-                    <select class="block w-full mt-1 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 form-select focus:outline-none focus:shadow-outline-gray dark:focus:shadow-outline-gray" name="customer_name">
+                    <select class="styled-input" name="customer_name">
                         <option value="" selected disabled>Select a customer</option>
                         @foreach ($customers as $customer)
                             <option value="{{ $customer }}">{{ $customer }}</option>

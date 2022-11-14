@@ -27,7 +27,7 @@
                     <input type="hidden" name="id" :value="$store.data.update?.id">
                     <label class="block mb-4 text-sm">
                         <span class="text-gray-700 dark:text-gray-400">Admin Type</span>
-                        <select class="block w-full mt-1 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 form-select focus:outline-none focus:shadow-outline-gray dark:focus:shadow-outline-gray" name="type">
+                        <select class="styled-input" name="type">
                             <option value="" selected disabled>Select Admin Type</option>
                             @foreach ($admin_types as $type)
                                 <option value="{{ $type->name }}" :selected="$store.data.update?.type == '{{$type->name}}'">{{ $type->name }}</option>
@@ -53,11 +53,11 @@
 
                     <label class="block mb-4 text-sm">
                         <span class="text-gray-700">New Password</span>
-                        <input class="block w-full mt-1 text-sm focus:outline-none focus:shadow-outline-gray form-input" name="password" type="password"  placeholder="Enter new password">
+                        <input class="styled-input" name="password" type="password"  placeholder="Enter new password">
                     </label>
                     <label class="block mb-4 text-sm">
                         <span class="text-gray-700">Confirm Password</span>
-                        <input class="block w-full mt-1 text-sm focus:outline-none focus:shadow-outline-gray form-input" name="password_confirmation" type="password"  placeholder="Confirm password">
+                        <input class="styled-input" name="password_confirmation" type="password"  placeholder="Confirm password">
                     </label>
                 </form>
             </div>

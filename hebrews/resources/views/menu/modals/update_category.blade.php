@@ -27,12 +27,12 @@
                     <input type="hidden" name="category_id" :value="$store.data.update?.id">
                     <label class="block mb-4 text-sm">
                         <span class="text-gray-700">Name</span>
-                        <input class="block w-full mt-1 text-sm focus:outline-none focus:shadow-outline-gray form-input" name="name" type="text" placeholder="Enter Category" :value="$store.data.update?.name">
+                        <input class="styled-input" name="name" type="text" placeholder="Enter Category" :value="$store.data.update?.name">
                     </label>
 
                     <label class="block mb-4 text-sm">
                         <span class="text-gray-700">From</span>
-                        <select class="block w-full mt-1 text-sm form-select focus:outline-none focus:shadow-outline-gray" name="from">
+                        <select class="styled-input" name="from">
                             <option value="kitchen" :selected="$store.data.update?.from === 'kitchen'">Kitchen</option>
                             <option value="storage" :selected="$store.data.update?.from === 'storage'">Storage</option>
                         </select>

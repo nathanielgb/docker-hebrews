@@ -7,13 +7,19 @@
         <input type="hidden" name="item_id" value="{{ $cart->id ?? null }}">
         <label class="block mb-4 text-sm">
             <span class="text-gray-700 dark:text-gray-400">Name</span>
-            <input class="block w-full mt-1 text-sm bg-gray-100 form-input" value="{{ $cart->name ?? null }}" disabled>
+            <input
+            type="text"
+            class="styled-input--readonly"
+            value="{{ $cart->name ?? null }}"
+            aria-label="menu item name"
+            readonly/>
+            {{-- <input class="block w-full m-0 mt-1 text-sm font-normal text-gray-700 transition ease-in-out bg-gray-100 border border-gray-300 border-solid rounded form-control bg-clip-padding focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none" value="{{ $cart->name ?? null }}" disabled> --}}
         </label>
         <label class="block mb-4 text-sm">
             <span class="text-gray-700 dark:text-gray-400">Product Type</span>
             <select
                 name="type"
-                class="block w-full mt-1 text-sm form-select focus:outline-none focus:shadow-outline-gray"
+                class="styled-input"
             >
                 <option value="" selected disabled>Select type</option>
                 @if (isset($cart->reg_price))
@@ -35,7 +41,7 @@
         </label>
         <label class="block mb-4 text-sm">
             <span class="text-gray-700">Quantity</span>
-            <input class="block w-full mt-1 text-sm focus:outline-none focus:shadow-outline-gray form-input" name="qty" type="number" min="1"  placeholder="1" required>
+            <input class="styled-input" name="qty" type="number" min="1"  placeholder="1" required>
         </label>
 
         <div class="w-full mb-8 overflow-hidden border rounded-lg shadow-xs">
@@ -55,7 +61,7 @@
                                     <select
                                         wire:model="cartAddons.{{ $index }}.addon_id"
                                         name="cartAddon[{{ $index }}][addon_id]"
-                                        class="block w-full text-sm form-select focus:outline-none focus:shadow-outline-gray"
+                                        class="styled-input"
                                     >
                                         <option value="" selected disabled>Select Add-on</option>
                                         @foreach ($addons as $addon)
@@ -66,7 +72,7 @@
                                 <td class="px-4 py-3 text-sm text-center" style="max-width: 100px;">
                                     <input
                                     wire:model="cartAddons.{{ $index }}.qty"
-                                    class="block w-full text-sm focus:outline-none focus:shadow-outline-gray form-input"
+                                    class="styled-input"
                                     name="cartAddon[{{ $index }}][qty]"
                                     type="number"
                                     min="1"

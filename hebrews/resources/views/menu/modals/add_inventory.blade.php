@@ -26,11 +26,11 @@
                     @csrf
                     <label class="block mb-4 text-sm">
                         <span class="text-gray-700">Name</span>
-                        <input class="block w-full mt-1 text-sm focus:outline-none focus:shadow-outline-gray form-input" name="name" type="text" placeholder="Enter name">
+                        <input class="styled-input" name="name" type="text" placeholder="Enter name">
                     </label>
                     <label class="block mb-4 text-sm">
                         <span class="text-gray-700">Unit</span>
-                        <select class="block w-full mt-1 text-sm form-select focus:outline-none focus:shadow-outline-gray" name="unit">
+                        <select class="styled-input" name="unit">
                             <option value="" selected disabled>Select a unit</option>
                             <option value="Kg">Kilogram (Kg)</option>
                             <option value="g">gram (g)</option>
@@ -40,7 +40,7 @@
                     </label>
                     <label class="block mb-4 text-sm">
                         <span class="text-gray-700">Stock</span>
-                        <input class="block w-full mt-1 text-sm focus:outline-none focus:shadow-outline-gray form-input" name="stock" type="number" step="0.01" placeholder="1">
+                        <input class="styled-input" name="stock" type="number" step="0.01" placeholder="1">
                     </label>
                 </form>
             </div>

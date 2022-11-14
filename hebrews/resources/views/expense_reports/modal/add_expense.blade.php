@@ -26,11 +26,11 @@
                     @csrf
                     <label class="block mb-4 text-sm">
                         <span class="text-gray-700">Name</span>
-                        <input class="block w-full mt-1 text-sm focus:outline-none focus:shadow-outline-gray form-input" name="name" type="text" placeholder="Enter name">
+                        <input class="styled-input" name="name" type="text" placeholder="Enter name">
                     </label>
                     <label class="block mb-4 text-sm">
                         <span class="text-gray-700">Expense Amount</span>
-                        <input class="block w-full mt-1 text-sm focus:outline-none focus:shadow-outline-gray form-input" name="amount" type="number" step=".01" placeholder="Enter expense amount">
+                        <input class="styled-input" name="amount" type="number" step=".01" placeholder="Enter expense amount">
                     </label>
                 </form>
             </div>

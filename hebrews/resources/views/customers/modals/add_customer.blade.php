@@ -26,19 +26,19 @@
                     @csrf
                     <label class="block mb-4 text-sm">
                         <span class="text-gray-700">Customer Name</span>
-                        <input class="block w-full mt-1 text-sm focus:outline-none focus:shadow-outline-gray form-input" name="name" type="text" placeholder="Enter name" required>
+                        <input class="styled-input" name="name" type="text" placeholder="Enter name" required>
                     </label>
                     <label class="block mb-4 text-sm">
                         <span class="text-gray-700">Email</span>
-                        <input class="block w-full mt-1 text-sm focus:outline-none focus:shadow-outline-gray form-input" name="email" type="email" placeholder="Enter email">
+                        <input class="styled-input" name="email" type="email" placeholder="Enter email">
                     </label>
                     <label class="block mb-4 text-sm">
                         <span class="text-gray-700">Contact Number</span>
-                        <input class="block w-full mt-1 text-sm focus:outline-none focus:shadow-outline-gray form-input" name="contact_number" type="text" placeholder="Enter contact number">
+                        <input class="styled-input" name="contact_number" type="text" placeholder="Enter contact number">
                     </label>
                     <label class="block mb-4 text-sm">
                         <span class="text-gray-700">Address</span>
-                        <input class="block w-full mt-1 text-sm focus:outline-none focus:shadow-outline-gray form-input" name="address" type="text" placeholder="Enter address">
+                        <input class="styled-input" name="address" type="text" placeholder="Enter address">
                     </label>
                 </form>
             </div>

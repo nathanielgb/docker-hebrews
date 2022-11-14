@@ -28,11 +28,11 @@
                     <label class="block mb-4 text-sm">
                         <span class="text-gray-700">Quantity</span>
                         <div class="flex space-x-2 align-center">
-                            <input class="block w-1/5 mt-1 text-sm bg-gray-100 border focus:outline-none focus:shadow-outline-gray form-input" disabled readonly :value="$store.inventory.updateInventoryData?.stock">
+                            <input class="styled-input" style="width: 30%;" readonly :value="$store.inventory.updateInventoryData?.stock">
                             <div class="grid place-items-center">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-plus"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
                             </div>
-                            <input class="block w-full mt-1 text-sm focus:outline-none focus:shadow-outline-gray form-input" name="increment_qty" type="number" step="0.01" placeholder="Enter quantity to add/subtract">
+                            <input class="styled-input" name="increment_qty" type="number" step="0.01" placeholder="Enter quantity to add/subtract">
                         </div>
                     </label>
                 </form>

@@ -7,11 +7,16 @@
         <input type="hidden" name="item_id" value="{{ $order->id ?? null }}">
         <label class="block mb-4 text-sm">
             <span class="text-gray-700">Name</span>
-            <input class="block w-full mt-1 text-sm bg-gray-100 border focus:outline-none focus:shadow-outline-gray form-input" disabled readonly value="{{ $order->name ?? '' }}">
+            <input
+            type="text"
+            class="styled-input--readonly"
+            value="{{ $order->name ?? null }}"
+            aria-label="menu item name"
+            readonly/>
         </label>
         <label class="block mb-4 text-sm">
             <span class="text-gray-700">Quantity</span>
-            <input class="block w-full mt-1 text-sm focus:outline-none focus:shadow-outline-gray form-input" name="quantity" type="number" placeholder="Enter Quantity" min="1" value="{{ $order->qty ?? 1 }}" required>
+            <input class="styled-input" name="quantity" type="number" placeholder="Enter Quantity" min="1" value="{{ $order->qty ?? 1 }}" required>
         </label>
 
         <div class="w-full mb-8 overflow-hidden border rounded-lg shadow-xs">
@@ -31,7 +36,7 @@
                                     <select
                                         wire:model="orderItemAddons.{{ $index }}.addon_id"
                                         name="orderItemAddon[{{ $index }}][addon_id]"
-                                        class="block w-full text-sm form-select focus:outline-none focus:shadow-outline-gray"
+                                        class="styled-input"
                                     >
                                         <option value="" selected disabled>Select Add-on</option>
                                         @foreach ($addons as $addon)
@@ -42,7 +47,7 @@
                                 <td class="px-4 py-3 text-sm text-center" style="max-width: 100px;">
                                     <input
                                         wire:model="orderItemAddons.{{ $index }}.qty"
-                                        class="block w-full text-sm focus:outline-none focus:shadow-outline-gray form-input"
+                                        class="styled-input"
                                         name="orderItemAddon[{{ $index }}][qty]"
                                         type="number"
                                         min="1"

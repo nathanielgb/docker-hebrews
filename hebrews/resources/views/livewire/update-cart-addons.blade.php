@@ -8,7 +8,7 @@
         <label class="block mb-4 text-sm">
             <span class="text-gray-700">Quantity</span>
             <div class="flex space-x-2 align-center">
-                <input class="block w-full mt-1 text-sm focus:outline-none focus:shadow-outline-gray form-input" name="qty" type="number" placeholder="Enter quantity" value="{{ $cart->qty ?? null }}">
+                <input class="styled-input" name="qty" type="number" placeholder="Enter quantity" value="{{ $cart->qty ?? null }}">
             </div>
         </label>
 
@@ -29,7 +29,7 @@
                                     <select
                                         wire:model="cartAddons.{{ $index }}.addon_id"
                                         name="cartAddon[{{ $index }}][addon_id]"
-                                        class="block w-full text-sm form-select focus:outline-none focus:shadow-outline-gray"
+                                        class="styled-input"
                                     >
                                         <option value="" selected disabled>Select Add-on</option>
                                         @foreach ($addons as $addon)
@@ -40,7 +40,7 @@
                                 <td class="px-4 py-3 text-sm text-center" style="max-width: 100px;">
                                     <input
                                     wire:model="cartAddons.{{ $index }}.qty"
-                                    class="block w-full text-sm focus:outline-none focus:shadow-outline-gray form-input"
+                                    class="styled-input"
                                     name="cartAddon[{{ $index }}][qty]"
                                     type="number"
                                     min="1"
@@ -77,7 +77,7 @@
             <span class="text-gray-700 dark:text-gray-400">Note</span>
             <textarea
                 name="note"
-                class="block w-full mt-1 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 form-textarea focus:outline-none focus:shadow-outline-gray dark:focus:shadow-outline-gray"
+                class="styled-textarea"
                 rows="3"
                 placeholder="Enter some additional note (optional)."
             >{{ $cart->note ?? '' }}</textarea>

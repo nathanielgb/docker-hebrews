@@ -26,7 +26,7 @@
                     @csrf
                     <label class="block mb-4 text-sm">
                         <span class="text-gray-700 dark:text-gray-400">Admin Type</span>
-                        <select class="block w-full mt-1 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 form-select focus:outline-none focus:shadow-outline-gray dark:focus:shadow-outline-gray" name="type">
+                        <select class="styled-input" name="type">
                             <option value="" selected disabled>Select Admin Type</option>
                             @foreach ($admin_types as $type)
                                 <option value="{{ $type->name }}" >{{ $type->name }}</option>
@@ -35,7 +35,7 @@
                     </label>
                     <label class="block mb-4 text-sm">
                         <span class="text-gray-700">Name</span>
-                        <input class="block w-full mt-1 text-sm focus:outline-none focus:shadow-outline-gray form-input" name="name" type="text" placeholder="Enter name" required>
+                        <input class="styled-input" name="name" type="text" placeholder="Enter name" required>
                     </label>
                     <label class="block mb-4 text-sm">
                         <span class="text-gray-700 dark:text-gray-400">Branch/s</span>
@@ -55,15 +55,15 @@
                     </label>
                     <label class="block mb-4 text-sm">
                         <span class="text-gray-700">Username</span>
-                        <input class="block w-full mt-1 text-sm focus:outline-none focus:shadow-outline-gray form-input" name="username" type="text" placeholder="enter username" required>
+                        <input class="styled-input" name="username" type="text" placeholder="enter username" required>
                     </label>
                     <label class="block mb-4 text-sm">
                         <span class="text-gray-700">Password</span>
-                        <input class="block w-full mt-1 text-sm focus:outline-none focus:shadow-outline-gray form-input" name="password" type="password"  placeholder="Enter password" required>
+                        <input class="styled-input" name="password" type="password"  placeholder="Enter password" required>
                     </label>
                     <label class="block mb-4 text-sm">
                         <span class="text-gray-700">Confirm Password</span>
-                        <input class="block w-full mt-1 text-sm focus:outline-none focus:shadow-outline-gray form-input" name="password_confirmation" type="password"  placeholder="Confirm password" required>
+                        <input class="styled-input" name="password_confirmation" type="password"  placeholder="Confirm password" required>
                     </label>
                 </form>
             </div>

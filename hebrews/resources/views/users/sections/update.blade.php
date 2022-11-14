@@ -16,15 +16,15 @@
                 </label>
                 <label class="block mb-4 text-sm">
                     <span class="text-gray-700">Name</span>
-                    <input class="block w-full mt-1 text-sm focus:outline-none focus:shadow-outline-gray form-input" name="menu" type="text" placeholder="Cheeseburger" value="{{ $user->name }}">
+                    <input class="styled-input" name="menu" type="text" placeholder="Cheeseburger" value="{{ $user->name }}">
                 </label>
                 <label class="block mb-4 text-sm">
                     <span class="text-gray-700">Username</span>
-                    <input class="block w-full mt-1 text-sm focus:outline-none focus:shadow-outline-gray form-input" name="dinein_price" type="number" step="0.01" placeholder="2.50" value="{{ $user->username }}">
+                    <input class="styled-input" name="dinein_price" type="number" step="0.01" placeholder="2.50" value="{{ $user->username }}">
                 </label>
                 <label class="block mb-4 text-sm">
                     <span class="text-gray-700">Admin Type</span>
-                    <input class="block w-full mt-1 text-sm focus:outline-none focus:shadow-outline-gray form-input" name="takeout_price" type="number" step="0.01" placeholder="3.50" value="{{ $user->type }}">
+                    <input class="styled-input" name="takeout_price" type="number" step="0.01" placeholder="3.50" value="{{ $user->type }}">
                 </label>
                 <div class="flex justify-center space-x-4">
                     <a href="{{ route('users.index') }}" class="px-10 py-4 font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-lg active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple">

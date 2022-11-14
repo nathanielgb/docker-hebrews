@@ -26,11 +26,11 @@
                     @csrf
                     <label class="block mb-4 text-sm">
                         <span class="text-gray-700">Name</span>
-                        <input class="block w-full mt-1 text-sm focus:outline-none focus:shadow-outline-gray form-input" name="name" type="text" placeholder="Enter name">
+                        <input class="styled-input" name="name" type="text" placeholder="Enter name">
                     </label>
                     <label class="block mb-4 text-sm">
                         <span class="text-gray-700">Type</span>
-                        <select class="block w-full mt-1 text-sm form-select focus:outline-none focus:shadow-outline-gray" name="type">
+                        <select class="block w-full mt-1 text-sm form-select styled-input" name="type">
                             <option value="" selected disabled>Select a type</option>
                             <option value="flat">flat</option>
                             <option value="percentage">percentage</option>
@@ -39,11 +39,11 @@
                     </label>
                     <label class="block mb-4 text-sm">
                         <span class="text-gray-700">Amount</span>
-                        <input class="block w-full mt-1 text-sm focus:outline-none focus:shadow-outline-gray form-input" name="amount" type="number" min="0" step="0.01" placeholder="Enter amount">
+                        <input class="styled-input" name="amount" type="number" min="0" step="0.01" placeholder="Enter amount">
                     </label>
                     <div class="form-check">
-                        <input name="active" class="form-check-input appearance-none h-4 w-4 border border-gray-300 rounded-sm bg-white checked:bg-blue-600 checked:border-blue-600 focus:outline-none transition duration-200 mt-1 align-top bg-no-repeat bg-center bg-contain float-left mr-2 cursor-pointer" type="checkbox" id="flexCheckChecked" checked>
-                        <label class="form-check-label inline-block text-gray-800" for="flexCheckChecked">
+                        <input name="active" class="float-left w-4 h-4 mt-1 mr-2 align-top transition duration-200 bg-white bg-center bg-no-repeat bg-contain border border-gray-300 rounded-sm appearance-none cursor-pointer form-check-input checked:bg-blue-600 checked:border-blue-600 focus:outline-none" type="checkbox" id="flexCheckChecked" checked>
+                        <label class="inline-block text-gray-800 form-check-label" for="flexCheckChecked">
                             Is Active
                         </label>
                     </div>

@@ -21,19 +21,19 @@
                 </label>
                 <label class="block mb-4 text-sm">
                     <span class="text-gray-700">Name</span>
-                    <input class="block w-full mt-1 text-sm focus:outline-none focus:shadow-outline-gray form-input" name="name" type="text" placeholder="Enter name" required>
+                    <input class="styled-input" name="name" type="text" placeholder="Enter name" required>
                 </label>
                 <label class="block mb-4 text-sm">
                     <span class="text-gray-700">Username</span>
-                    <input class="block w-full mt-1 text-sm focus:outline-none focus:shadow-outline-gray form-input" name="username" type="text" placeholder="enter username" required>
+                    <input class="styled-input" name="username" type="text" placeholder="enter username" required>
                 </label>
                 <label class="block mb-4 text-sm">
                     <span class="text-gray-700">Password</span>
-                    <input class="block w-full mt-1 text-sm focus:outline-none focus:shadow-outline-gray form-input" name="password" type="password"  placeholder="Enter password" required>
+                    <input class="styled-input" name="password" type="password"  placeholder="Enter password" required>
                 </label>
                 <label class="block mb-4 text-sm">
                     <span class="text-gray-700">Confirm Password</span>
-                    <input class="block w-full mt-1 text-sm focus:outline-none focus:shadow-outline-gray form-input" name="password_confirmation" type="password"  placeholder="Confirm password" required>
+                    <input class="styled-input" name="password_confirmation" type="password"  placeholder="Confirm password" required>
                 </label>
                 <div class="flex justify-center space-x-4">
                     <a href="{{ route('users.index') }}" class="px-10 py-4 font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-lg active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple">

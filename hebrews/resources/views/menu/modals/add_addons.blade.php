@@ -26,11 +26,11 @@
                     @csrf
                     <label class="block mb-4 text-sm">
                         <span class="text-gray-700">Name</span>
-                        <input class="block w-full mt-1 text-sm focus:outline-none focus:shadow-outline-gray form-input" name="name" type="text" placeholder="Enter name">
+                        <input class="styled-input" name="name" type="text" placeholder="Enter name">
                     </label>
                     <label class="block mb-4 text-sm">
                         <span class="text-gray-700">Inventory</span>
-                        <select class="block w-full mt-1 text-sm form-select focus:outline-none focus:shadow-outline-gray" name="inventory">
+                        <select class="styled-input" name="inventory">
                             <option value="" selected disabled>Select inventory</option>
                             @foreach ($inventory_items as $i_item)
                                 <option value="{{ $i_item->id }}" >{{ $i_item->name }}</option>

@@ -16,7 +16,7 @@
                 </label>
                 <label class="block mb-4 text-sm">
                     <span class="text-gray-700">Name</span>
-                    <input class="block w-full mt-1 text-sm focus:outline-none focus:shadow-outline-gray form-input" name="menu" type="text" placeholder="Cheeseburger" value="{{ $item->name }}">
+                    <input class="styled-input" name="menu" type="text" placeholder="Cheeseburger" value="{{ $item->name }}">
                 </label>
 
                 <label class="block mb-4 text-sm">

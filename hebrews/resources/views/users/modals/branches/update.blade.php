@@ -27,11 +27,11 @@
                     <input type="hidden" name="branch_id" :value="$store.data.update?.id">
                     <label class="block mb-4 text-sm">
                         <span class="text-gray-700">Name</span>
-                        <input class="block w-full mt-1 text-sm focus:outline-none focus:shadow-outline-gray form-input" name="name" type="text" placeholder="Enter name" :value="$store.data.update?.name" required>
+                        <input class="styled-input" name="name" type="text" placeholder="Enter name" :value="$store.data.update?.name" required>
                     </label>
                     <label class="block mb-4 text-sm">
                         <span class="text-gray-700">Location</span>
-                        <input class="block w-full mt-1 text-sm focus:outline-none focus:shadow-outline-gray form-input" name="location" type="text" placeholder="Enter location" :value="$store.data.update?.location">
+                        <input class="styled-input" name="location" type="text" placeholder="Enter location" :value="$store.data.update?.location">
                     </label>
                 </form>
             </div>

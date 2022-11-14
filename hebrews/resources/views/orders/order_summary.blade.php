@@ -363,13 +363,13 @@
                     </table>
                 </div>
             </div>
-            <div class="flex flex-col flex-wrap justify-center mb-4 space-y-4 md:flex-row md:items-end md:space-x-4">
+            <div class="flex flex-wrap justify-center mb-4 md:flex-row md:items-end md:space-x-4">
                 @if(auth()->user()->can('access', 'manage-order-process-action') && !$order->cancelled)
                     @if (!$order->confirmed)
                         <button
                             id="confirm-order-btn"
                             data-url="{{ route('order.cancel', $order->order_id) }}"
-                            class="text-center inline-block px-6 py-2.5 font-medium leading-tight text-white uppercase transition duration-150 ease-in-out bg-green-800 rounded shadow-lg text-s hover:bg-green-700 hover:shadow-lg focus:bg-green-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-green-800 active:shadow-lg"
+                            class="text-center inline-block px-6 mr-1 py-2.5 font-medium leading-tight text-white uppercase transition duration-150 ease-in-out bg-green-800 rounded shadow-lg text-s hover:bg-green-700 hover:shadow-lg focus:bg-green-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-green-800 active:shadow-lg"
                             data-bs-toggle="modal"
                             data-bs-target="#confirmOrderModal"
                             >
@@ -379,7 +379,7 @@
                         @if ($order->completed == false && !$order->cancelled && $order->remaining_bal < 0)
                             <a
                                 href="{{ route('order.show_payform', $order->order_id) }}"
-                                class="text-center inline-block px-6 py-2.5 font-medium leading-tight text-white uppercase transition duration-150 ease-in-out bg-green-800 rounded shadow-lg text-s hover:bg-green-700 hover:shadow-lg focus:bg-green-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-green-800 active:shadow-lg"
+                                class="text-center inline-block mr-1 px-6 py-2.5 font-medium leading-tight text-white uppercase transition duration-150 ease-in-out bg-green-800 rounded shadow-lg text-s hover:bg-green-700 hover:shadow-lg focus:bg-green-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-green-800 active:shadow-lg"
                                 >
                                 PAY
                             </a>
@@ -388,7 +388,7 @@
                         @if ($order->completed  && !$order->cancelled)
                             <a
                                 href="{{ route('print.receipt', $order->order_id) }}"
-                                class="inline-block px-6 py-2.5 font-medium leading-tight text-white uppercase transition duration-150 ease-in-out bg-green-800 rounded shadow-lg text-s hover:bg-green-700 hover:shadow-lg focus:bg-green-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-green-800 active:shadow-lg"
+                                class="inline-block px-6 mr-1 py-2.5 font-medium leading-tight text-white uppercase transition duration-150 ease-in-out bg-green-800 rounded shadow-lg text-s hover:bg-green-700 hover:shadow-lg focus:bg-green-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-green-800 active:shadow-lg"
                                 >
                                 PRINT
                             </a>
@@ -398,7 +398,7 @@
                         <button
                             id="complete-order-btn"
                             data-url="{{ route('order.complete', $order->order_id) }}"
-                            class="inline-block px-6 py-2.5 font-medium leading-tight text-white uppercase transition duration-150 ease-in-out bg-green-800 rounded shadow-lg text-s hover:bg-green-700 hover:shadow-lg focus:bg-green-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-green-800 active:shadow-lg"
+                            class="inline-block px-6 mr-1 py-2.5 font-medium leading-tight text-white uppercase transition duration-150 ease-in-out bg-green-800 rounded shadow-lg text-s hover:bg-green-700 hover:shadow-lg focus:bg-green-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-green-800 active:shadow-lg"
                             data-bs-toggle="modal"
                             data-bs-target="#completeOrderModal"
                             >
@@ -409,7 +409,7 @@
                         <button
                             id="cancel-order-btn"
                             data-url="{{ route('order.cancel', $order->order_id) }}"
-                            class="inline-block px-6 py-2.5 font-medium leading-tight text-white uppercase transition duration-150 ease-in-out bg-green-800 rounded shadow-lg text-s hover:bg-green-700 hover:shadow-lg focus:bg-green-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-green-800 active:shadow-lg"
+                            class="inline-block px-6 mr-1 py-2.5 font-medium leading-tight text-white uppercase transition duration-150 ease-in-out bg-green-800 rounded shadow-lg text-s hover:bg-green-700 hover:shadow-lg focus:bg-green-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-green-800 active:shadow-lg"
                             data-bs-toggle="modal"
                             data-bs-target="#cancelOrderModal"
                             >
