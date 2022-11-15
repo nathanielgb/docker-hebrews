@@ -20,12 +20,12 @@
 
     <div class="flex justify-between my-3">
         <div>
-            <a
+            {{-- <a
                 href="{{ route('menu.index') }}"
                 class="flex items-center inline-block px-6 py-2.5 bg-green-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-green-700 hover:shadow-lg focus:bg-green-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-green-800 active:shadow-lg transition duration-150 ease-in-out"
                 >
                 <span><i class="fa-solid fa-circle-arrow-left"></i> BACK</span>
-            </a>
+            </a> --}}
         </div>
 
         <div class="flex space-x-2 jusify-center">
@@ -64,6 +64,7 @@
                 <thead>
                 <tr class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase border-b bg-gray-50">
                     <th class="px-4 py-3">ID</th>
+                    <th class="px-4 py-3">Code</th>
                     <th class="px-4 py-3">Name</th>
                     <th class="px-4 py-3">Linked Products</th>
                     <th class="px-4 py-3">Stock</th>
@@ -77,6 +78,9 @@
                         <tr class="text-gray-700">
                             <td class="px-4 py-3 text-sm">
                                 {{ $item->id }}
+                            </td>
+                            <td class="px-4 py-3 text-sm">
+                                {{ $item->inventory_code }}
                             </td>
                             <td class="px-4 py-3 text-sm">
                                 {{ $item->name }}
@@ -120,7 +124,18 @@
                             </td>
                             <td class="px-4 py-3 text-center">
                                 @if (auth()->user()->can('access', 'manage-inventory-action'))
-                                    <div class="flex items-center space-x-4 text-sm">
+                                    <div class="flex justify-center space-x-4 text-sm">
+                                        @if (auth()->user()->can('access', 'transfer-inventory-action'))
+                                            <button
+                                                class="flex items-center inline-block px-6 py-2.5 bg-blue-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-blue-700 hover:shadow-lg focus:bg-blue-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-blue-800 active:shadow-lg transition duration-150 ease-in-out"
+                                                type="button"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#transferInventoryModal"
+                                                @click="$store.inventory.updateInventoryData={{ json_encode($item) }}"
+                                                >
+                                                <span><i class="fa-solid fa-right-left"></i> Transfer</span>
+                                            </button>
+                                        @endif
                                         <button
                                             class="flex items-center inline-block px-6 py-2.5 bg-green-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-green-700 hover:shadow-lg focus:bg-green-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-green-800 active:shadow-lg transition duration-150 ease-in-out"
                                             type="button"
@@ -132,7 +147,7 @@
                                         </button>
                                         <button
                                             type="button"
-                                            class="inline-block px-6 py-2.5 bg-red-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-red-700 hover:shadow-lg focus:bg-red-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-red-800 active:shadow-lg transition duration-150 ease-in-out"                                            aria-label="Delete"
+                                            class="inline-block px-6 py-2.5 bg-red-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-red-700 hover:shadow-lg focus:bg-red-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-red-800 active:shadow-lg transition duration-150 ease-in-out" aria-label="Delete"
                                             data-bs-toggle="modal"
                                             data-bs-target="#deleteInventoryModal"
                                             @click="$store.inventory.deleteInventoryData={{ json_encode([
@@ -162,6 +177,7 @@
             </div>
         @endif
     </div>
+    @include('menu.modals.transfer_inventory')
     @include('menu.modals.update_inventory')
     @include('menu.modals.search_inventory')
     @include('menu.modals.add_inventory')

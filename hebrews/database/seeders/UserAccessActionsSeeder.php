@@ -53,6 +53,7 @@ class UserAccessActionsSeeder extends Seeder
                     'view-inventory-action',
                     'add-inventory-action',
                     'manage-inventory-action',
+                    'transfer-inventory-action',
 
                     // Discounts
                     'view-discounts-action',
@@ -118,6 +119,7 @@ class UserAccessActionsSeeder extends Seeder
                     'view-inventory-action',
                     'add-inventory-action',
                     'manage-inventory-action',
+                    'transfer-inventory-action',
 
                     // Discounts
                     'view-discounts-action',
@@ -166,6 +168,7 @@ class UserAccessActionsSeeder extends Seeder
                     'view-inventory-action',
                     'add-inventory-action',
                     'manage-inventory-action',
+                    'transfer-inventory-action',
 
                     // Orders
                     'view-order-list-action',

@@ -89,18 +89,23 @@ Route::middleware('auth')->group(function () {
         Route::group(['middleware' => 'CheckAccessActions:delete-menu-action'], function () {
             Route::post('delete-menu', [\App\Http\Controllers\MenuController::class, 'delete'])->name('menu.delete');
         });
+    });
 
-        Route::group(['middleware' => 'CheckAccessActions:view-inventory-action'], function () {
-            Route::get('inventory', [\App\Http\Controllers\MenuController::class, 'viewInventory'])->name('menu.view_inventory');
+    // Inventory
+    Route::group(['middleware' => 'CheckAccessActions:view-inventory-action'], function () {
+        Route::get('inventory', [\App\Http\Controllers\MenuController::class, 'viewInventory'])->name('menu.view_inventory');
 
-            Route::group(['middleware' => 'CheckAccessActions:add-inventory-action'], function () {
-                Route::post('add-inventory', [\App\Http\Controllers\MenuController::class, 'addInventory'])->name('menu.add_inventory');
-            });
+        Route::group(['middleware' => 'CheckAccessActions:add-inventory-action'], function () {
+            Route::post('add-inventory', [\App\Http\Controllers\MenuController::class, 'addInventory'])->name('menu.add_inventory');
+        });
 
-            Route::group(['middleware' => 'CheckAccessActions:manage-inventory-action'], function () {
-                Route::post('update-inventory', [\App\Http\Controllers\MenuController::class, 'updateInventory'])->name('menu.update_inventory');
-                Route::post('delete-inventory', [\App\Http\Controllers\MenuController::class, 'deleteInventory'])->name('menu.delete_inventory');
-            });
+        Route::group(['middleware' => 'CheckAccessActions:transfer-inventory-action'], function () {
+            Route::post('transfer-inventory', [\App\Http\Controllers\MenuController::class, 'transferInventory'])->name('menu.transfer_inventory');
+        });
+
+        Route::group(['middleware' => 'CheckAccessActions:manage-inventory-action'], function () {
+            Route::post('update-inventory', [\App\Http\Controllers\MenuController::class, 'updateInventory'])->name('menu.update_inventory');
+            Route::post('delete-inventory', [\App\Http\Controllers\MenuController::class, 'deleteInventory'])->name('menu.delete_inventory');
         });
     });
 

@@ -14,6 +14,7 @@ class MenuInventory extends Model
      * @var array<int, string>
      */
     protected $fillable = [
+        'inventory_code',
         'name',
         'unit',
         'stock',

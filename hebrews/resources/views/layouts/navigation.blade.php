@@ -73,9 +73,48 @@
                 </li>
             @endif
 
+            @if(auth()->user()->can('access', 'view-inventory-action'))
+                <li class="relative px-6 py-3">
+                    <x-nav-dropdown-link
+                        data-bs-target="#collapseInventory"
+                        aria-controls="collapseInventory"
+                        :active="request()->routeIs('menu.view_inventory')">
+                        <x-slot name="icon">
+                            <i class="fa-solid fa-warehouse"></i>
+                        </x-slot>
+                        {{ __('Inventory') }}
+                    </x-nav-dropdown-link>
+                    <ul
+                        class="p-2 mt-2 space-y-2 overflow-hidden text-sm font-medium text-gray-500 rounded-md shadow-inner collapse bg-gray-50 dark:text-gray-400 dark:bg-gray-900"
+                        id="collapseInventory"
+                    >
+                        @if(auth()->user()->can('access', 'view-inventory-action'))
+                            <li
+                                @if (request()->routeIs('menu.view_inventory'))
+                                    class="px-2 py-1 text-green-700"
+                                @else
+                                    class="px-2 py-1"
+                                @endif >
+                                <a class="w-full" href="{{ route('menu.view_inventory') }}">Main Inventory</a>
+                            </li>
+                        @endif
+                        <li
+                            @if (request()->routeIs('menu.index'))
+                                class="px-2 py-1 text-green-700"
+                            @else
+                                class="px-2 py-1"
+                            @endif >
+                            <a class="w-full" href="pages/create-account.html">
+                                Branch Inventory
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+            @endif
+
             @if(auth()->user()->can('access', 'view-menu-addons-action'))
                 <li class="relative px-6 py-3">
-                    <x-nav-link href="{{ route('menu.addon.index') }}" :active="request()->routeIs('menu.index')">
+                    <x-nav-link href="{{ route('menu.addon.index') }}" :active="request()->routeIs('menu.addon.index')">
                         <x-slot name="icon">
                             <i class="fa-solid fa-link"></i>
                         </x-slot>

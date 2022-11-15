@@ -25,6 +25,11 @@
                 <form id="add-inventory-form" action="{{ route('menu.add_inventory') }}" method="post" autocomplete="off">
                     @csrf
                     <label class="block mb-4 text-sm">
+                        <span class="text-gray-700">Inventory Code</span>
+                        <input class="styled-input" name="inventory_code" type="text" placeholder="Enter code">
+                        <p class="text-xs text-yellow-500">note: unique identifier for the inventory item.</p>
+                    </label>
+                    <label class="block mb-4 text-sm">
                         <span class="text-gray-700">Name</span>
                         <input class="styled-input" name="name" type="text" placeholder="Enter name">
                     </label>
