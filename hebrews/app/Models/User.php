@@ -19,7 +19,7 @@ class User extends Authenticatable
      */
     protected $fillable = [
         'name',
-        'branch',
+        'branch_id',
         'username',
         'email',
         'password',
@@ -43,7 +43,6 @@ class User extends Authenticatable
      */
     protected $casts = [
         'email_verified_at' => 'datetime',
-        'branch' => 'array'
     ];
 
     /**
@@ -55,18 +54,26 @@ class User extends Authenticatable
     }
 
     /**
-     * Set the user's name.
-     *
-     * @param  string  $value
-     * @return void
+     * Get the branch related to admin user.
      */
-    public function getBranchNamesAttribute()
+    public function branch()
     {
-        if ($this->branch) {
-            $labels = Branch::whereIn('id', $this->branch)->pluck('name')->toArray();
-
-            return $labels;
-        }
+        return $this->belongsTo(Branch::class, 'branch_id', 'id');
     }
+
+    // /**
+    //  * Set the user's name.
+    //  *
+    //  * @param  string  $value
+    //  * @return void
+    //  */
+    // public function getBranchNamesAttribute()
+    // {
+    //     if ($this->branch) {
+    //         $labels = Branch::whereIn('id', $this->branch)->pluck('name')->toArray();
+
+    //         return $labels;
+    //     }
+    // }
 
 }

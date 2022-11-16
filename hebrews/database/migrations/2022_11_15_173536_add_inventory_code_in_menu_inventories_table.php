@@ -16,6 +16,7 @@ class AddInventoryCodeInMenuInventoriesTable extends Migration
         Schema::table('menu_inventories', function (Blueprint $table) {
             //
             $table->string('inventory_code')->nullable();
+            $table->string('branch_id')->nullable();
         });
     }
 

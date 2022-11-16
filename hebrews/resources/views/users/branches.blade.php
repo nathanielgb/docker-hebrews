@@ -62,6 +62,9 @@
                             </td>
                             <td class="px-4 py-3 text-sm">
                                 {{ $branch->name }}
+                                @if ($branch->id == 1)
+                                    <i class="text-green-700 fa-solid fa-house"></i>
+                                @endif
                             </td>
                             <td class="px-4 py-3 text-sm">
                                 {{ $branch->location }}
@@ -86,19 +89,21 @@
                                                 >
                                                 <span><i class="fa-solid fa-pen"></i> Update</span>
                                             </button>
-                                            <button
-                                                type="button"
-                                                class="inline-block px-6 py-2.5 bg-red-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-red-700 hover:shadow-lg focus:bg-red-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-red-800 active:shadow-lg transition duration-150 ease-in-out"
-                                                aria-label="Delete"
-                                                data-bs-toggle="modal"
-                                                data-bs-target="#deleteModal"
-                                                @click="$store.data.delete={{ json_encode([
-                                                    'id' => $branch->id,
-                                                    'name' => $branch->name,
-                                                ]) }}"
-                                                >
-                                                <i class="fa-solid fa-trash"></i> Delete
-                                            </button>
+                                            @if ($branch->id != 1)
+                                                <button
+                                                    type="button"
+                                                    class="inline-block px-6 py-2.5 bg-red-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-red-700 hover:shadow-lg focus:bg-red-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-red-800 active:shadow-lg transition duration-150 ease-in-out"
+                                                    aria-label="Delete"
+                                                    data-bs-toggle="modal"
+                                                    data-bs-target="#deleteModal"
+                                                    @click="$store.data.delete={{ json_encode([
+                                                        'id' => $branch->id,
+                                                        'name' => $branch->name,
+                                                    ]) }}"
+                                                    >
+                                                    <i class="fa-solid fa-trash"></i> Delete
+                                                </button>
+                                            @endif
                                         </div>
                                     @endif
                                 </div>

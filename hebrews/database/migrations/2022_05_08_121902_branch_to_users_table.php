@@ -15,7 +15,7 @@ class BranchToUsersTable extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             //
-            $table->string('branch')->nullable();
+            $table->string('branch_id')->nullable();
 
         });
     }

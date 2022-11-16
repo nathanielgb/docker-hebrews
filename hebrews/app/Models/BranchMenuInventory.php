@@ -9,9 +9,6 @@ class BranchMenuInventory extends Model
 {
     use HasFactory;
 
-    protected $table = 'branch_menu_inventories';
-
-
     protected $fillable = [
         'name',
         'unit',
@@ -22,4 +19,27 @@ class BranchMenuInventory extends Model
         'modified_by',
     ];
 
+    /**
+     * Get the products associated with the inventory item.
+     */
+    public function products()
+    {
+        return $this->hasMany(Menu::class, 'inventory_id', 'id');
+    }
+
+    /**
+     * Get the products associated with the inventory item.
+     */
+    public function addons()
+    {
+        return $this->hasMany(MenuAddOn::class, 'inventory_id', 'id');
+    }
+
+    /**
+     * Get the branch associated with the inventory item.
+     */
+    public function branch()
+    {
+        return $this->belongsTo(Branch::class, 'branch_id', 'id');
+    }
 }

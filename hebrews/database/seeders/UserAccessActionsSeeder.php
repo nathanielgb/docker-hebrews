@@ -55,6 +55,12 @@ class UserAccessActionsSeeder extends Seeder
                     'manage-inventory-action',
                     'transfer-inventory-action',
 
+                    // Branch Inventory
+                    'view-branch-inventory-action',
+                    'add-branch-inventory-action',
+                    'manage-branch-inventory-action',
+                    'transfer-branch-inventory-action',
+
                     // Discounts
                     'view-discounts-action',
                     'manage-discounts-action',
@@ -121,6 +127,12 @@ class UserAccessActionsSeeder extends Seeder
                     'manage-inventory-action',
                     'transfer-inventory-action',
 
+                    // Branch Inventory
+                    'view-branch-inventory-action',
+                    'add-branch-inventory-action',
+                    'manage-branch-inventory-action',
+                    'transfer-branch-inventory-action',
+
                     // Discounts
                     'view-discounts-action',
                     'manage-discounts-action',
@@ -170,6 +182,12 @@ class UserAccessActionsSeeder extends Seeder
                     'manage-inventory-action',
                     'transfer-inventory-action',
 
+                    // Branch Inventory
+                    'view-branch-inventory-action',
+                    'add-branch-inventory-action',
+                    'manage-branch-inventory-action',
+                    'transfer-branch-inventory-action',
+
                     // Orders
                     'view-order-list-action',
                     'add-order-item-action',
@@ -215,6 +233,10 @@ class UserAccessActionsSeeder extends Seeder
                     'view-inventory-action',
                     'add-inventory-action',
 
+                    // Branch Inventory
+                    'view-branch-inventory-action',
+                    'add-branch-inventory-action',
+
                     // Orders
                     'view-order-list-action'
                 ]),
@@ -226,9 +248,6 @@ class UserAccessActionsSeeder extends Seeder
                 'access' => json_encode([
                     //Menu
                     'view-menus-action',
-
-                    // Inventory
-                    'view-inventory-action',
 
                     // Orders
                     'take-orders-action',
@@ -249,10 +268,8 @@ class UserAccessActionsSeeder extends Seeder
                     'add-menu-action',
                     'update-menu-action',
 
-                    // Inventory
-                    'view-inventory-action',
-                    'add-inventory-action',
-                    'manage-inventory-action',
+                    // Branch Inventory
+                    'view-branch-inventory-action',
 
                     // Orders
                     'view-order-list-action',
@@ -273,10 +290,8 @@ class UserAccessActionsSeeder extends Seeder
                     'add-menu-action',
                     'update-menu-action',
 
-                    // Inventory
-                    'view-inventory-action',
-                    'add-inventory-action',
-                    'manage-inventory-action',
+                    // Branch Inventory
+                    'view-branch-inventory-action',
 
                     // Orders
                     'view-order-list-action',
@@ -294,8 +309,8 @@ class UserAccessActionsSeeder extends Seeder
                     //Menu
                     'view-menus-action',
 
-                    // Inventory
-                    'view-inventory-action',
+                    // Branch Inventory
+                    'view-branch-inventory-action',
 
                     // Orders
                     'view-order-list-action',

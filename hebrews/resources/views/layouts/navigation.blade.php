@@ -73,7 +73,7 @@
                 </li>
             @endif
 
-            @if(auth()->user()->can('access', 'view-inventory-action'))
+            @if(auth()->user()->can('access', 'view-inventory-action') || auth()->user()->can('access', 'view-branch-inventory-action'))
                 <li class="relative px-6 py-3">
                     <x-nav-dropdown-link
                         data-bs-target="#collapseInventory"
@@ -95,19 +95,21 @@
                                 @else
                                     class="px-2 py-1"
                                 @endif >
-                                <a class="w-full" href="{{ route('menu.view_inventory') }}">Main Inventory</a>
+                                <a class="w-full" href="{{ route('menu.view_inventory') }}">Warehouse</a>
                             </li>
                         @endif
-                        <li
-                            @if (request()->routeIs('menu.index'))
-                                class="px-2 py-1 text-green-700"
-                            @else
-                                class="px-2 py-1"
-                            @endif >
-                            <a class="w-full" href="pages/create-account.html">
-                                Branch Inventory
-                            </a>
-                        </li>
+                        @if (auth()->user()->can('access', 'view-branch-inventory-action'))
+                            <li
+                                @if (request()->routeIs('branch.inventory.index'))
+                                    class="px-2 py-1 text-green-700"
+                                @else
+                                    class="px-2 py-1"
+                                @endif >
+                                <a class="w-full" href="{{ route('branch.inventory.index') }}">
+                                    Branches
+                                </a>
+                            </li>
+                        @endif
                     </ul>
                 </li>
             @endif

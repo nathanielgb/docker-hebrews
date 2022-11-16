@@ -15,13 +15,13 @@ class CreateBranchMenuInventoriesTable extends Migration
     {
         Schema::create('branch_menu_inventories', function (Blueprint $table) {
             $table->id();
+            $table->string('inventory_code');
             $table->string('name');
             $table->string('unit');
             $table->decimal('stock', 8, 2)->nullable();
             $table->decimal('previous_stock', 8, 2)->nullable();
-            $table->string('branch_id')->nullable();
-            $table->string('inventory_code')->nullable();
             $table->string('modified_by');
+            $table->string('branch_id')->nullable();
             $table->timestamps();
         });
     }

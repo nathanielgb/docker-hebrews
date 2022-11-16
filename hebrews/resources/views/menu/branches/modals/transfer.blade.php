@@ -22,7 +22,7 @@
                 </button>
             </div>
             <div class="relative p-4 modal-body">
-                <form id="transfer-inventory-form" action="{{ route('menu.transfer_inventory') }}" method="post">
+                <form id="transfer-inventory-form" action="{{ route('branch.inventory.transfer') }}" method="post">
                     @csrf
                     <input type="hidden" name="inventory_id" :value="$store.inventory.updateInventoryData?.id">
                     <label class="block mb-4 text-sm">
@@ -66,12 +66,11 @@
                     <label class="block mb-4 text-sm">
                         <span class="text-gray-700">Branch to transfer</span>
                         <select class="styled-input" name="transfer_branch">
-                            @foreach ($branches as $branch)
-                                @if ($branch['id'] != 1)
-                                    <option value="{{ $branch['id'] }}">{{ $branch['name'] }}</option>
-                                @endif
+                            @foreach ($transfer_branches as $branch)
+                                <option value="{{ $branch['id'] }}">{{ $branch['name'] }}</option>
                             @endforeach
                             <option value="dispose">Dispose (Delete)</option>
+                            <option value="warehouse">Warehouse</option>
                         </select>
                         <p class="text-xs text-yellow-500">note: Specify the branch and number of units you want to transfer. Otherwise, you can select "dispose" to remove some items.</p>
                     </label>

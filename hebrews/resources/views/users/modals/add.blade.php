@@ -38,20 +38,22 @@
                         <input class="styled-input" name="name" type="text" placeholder="Enter name" required>
                     </label>
                     <label class="block mb-4 text-sm">
-                        <span class="text-gray-700 dark:text-gray-400">Branch/s</span>
+                        <span class="text-gray-700 dark:text-gray-400">Branch</span>
                         <select
                             id="select-branch"
-                            name="branch[]"
-                            placeholder="Enter Branch/s..."
+                            name="branch_id"
+                            placeholder="Enter Branch..."
                             autocomplete="off"
                             class="block w-full rounded-sm cursor-pointer focus:outline-none"
-                            multiple
                         >
+                            <option value=""></option>
                             @foreach ($branches as $branch)
                                 <option value="{{ $branch['id'] }}">{{ $branch['name'] }}</option>
                             @endforeach
                         </select>
-                        <p class="text-xs text-yellow-500">note: You can enter single or multiple branch for an admin user.</p>
+                        <p class="text-xs text-yellow-500">note:
+                            leave empty to access all branches.
+                        </p>
                     </label>
                     <label class="block mb-4 text-sm">
                         <span class="text-gray-700">Username</span>
@@ -59,7 +61,7 @@
                     </label>
                     <label class="block mb-4 text-sm">
                         <span class="text-gray-700">Password</span>
-                        <input class="styled-input" name="password" type="password"  placeholder="Enter password" required>
+                        <input class="styled-input" name="password" type="password"  placeholder="Enter password" required autocomplete="new-password">
                     </label>
                     <label class="block mb-4 text-sm">
                         <span class="text-gray-700">Confirm Password</span>

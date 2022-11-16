@@ -13,7 +13,7 @@
     </x-slot>
 
     <x-slot name="header">
-        {{ __('Inventory - Warehouse') }}
+        {{ __('Inventory - Branches') }}
     </x-slot>
 
     @include('components.alert-message')
@@ -30,7 +30,7 @@
 
         <div class="flex space-x-2 jusify-center">
             <a
-                href="{{ route('menu.view_inventory') }}"
+                href="{{ route('branch.inventory.index') }}"
                 class="flex items-center inline-block px-6 py-2.5 bg-green-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-green-700 hover:shadow-lg focus:bg-green-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-green-800 active:shadow-lg transition duration-150 ease-in-out"
                 >
                 <span><i class="fa-solid fa-list"></i> VIEW ALL</span>
@@ -65,8 +65,9 @@
                 <tr class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase border-b bg-gray-50">
                     <th class="px-4 py-3 text-center">ID</th>
                     <th class="px-4 py-3 text-center">Code</th>
+                    <th class="px-4 py-3 text-center">Branch</th>
                     <th class="px-4 py-3">Name</th>
-                    {{-- <th class="px-4 py-3">Linked Products</th> --}}
+                    <th class="px-4 py-3">Linked Products</th>
                     <th class="px-4 py-3">Stock</th>
                     <th class="px-4 py-3">Modified by</th>
                     <th class="px-4 py-3">Last updated</th>
@@ -76,22 +77,25 @@
                 <tbody class="bg-white divide-y">
                     @forelse ($inventory_items as $item)
                         <tr class="text-gray-700">
-                            <td class="px-4 py-3 text-sm text-center">
+                            <td class="px-4 py-3 text-center">
                                 {{ $item->id }}
                             </td>
                             <td class="px-4 py-3 text-sm text-center">
                                 {{ $item->inventory_code }}
                             </td>
+                            <td class="px-4 py-3 text-sm text-center">
+                                {{ $item->branch->name }}
+                            </td>
                             <td class="px-4 py-3 text-sm">
                                 {{ $item->name }}
                             </td>
-                            {{-- <td class="px-4 py-3 text-sm">
+                            <td class="px-4 py-3 text-sm">
                                 <ul>
-                                    <li>menu: <span class="font-bold">{{ count($item->products  ?? []) }}</span></li>
-                                    <li>add-on: <span class="font-bold">{{ count($item->addons  ?? []) }}</span></li>
+                                    <li>menu: <span class="font-bold">{{ count($item->products ?? []) }}</span></li>
+                                    <li>add-on: <span class="font-bold">{{ count($item->addons ?? []) }}</span></li>
                                 </ul>
 
-                            </td> --}}
+                            </td>
                             <td class="px-4 py-3 text-sm">
                                 <ul>
                                     <li>current stock:
@@ -163,7 +167,7 @@
                         </tr>
                     @empty
                         <tr class="text-gray-700">
-                            <td colspan="7" class="px-4 py-3 text-sm text-center">
+                            <td colspan="8" class="px-4 py-3 text-sm text-center">
                                 No records found.
                             </td>
                         </tr>
@@ -177,11 +181,11 @@
             </div>
         @endif
     </div>
-    @include('menu.modals.transfer_inventory')
-    @include('menu.modals.update_inventory')
-    @include('menu.modals.search_inventory')
-    @include('menu.modals.add_inventory')
-    @include('menu.modals.delete_inventory')
+    @include('menu.branches.modals.transfer')
+    @include('menu.branches.modals.update')
+    @include('menu.branches.modals.search')
+    @include('menu.branches.modals.add')
+    @include('menu.branches.modals.delete')
 
 
 </x-app-layout>

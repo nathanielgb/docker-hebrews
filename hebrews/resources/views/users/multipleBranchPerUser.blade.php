@@ -76,7 +76,7 @@
                             </td>
                             <td class="px-4 py-3 text-sm text-center">
                                 @if ($user->branch)
-                                    {{ $user->branch->name }}
+                                    <p>{{ implode(", ",$user->branch_names) }}</p>
                                 @endif
                             </td>
                             <td class="px-4 py-3 text-sm">
@@ -98,7 +98,7 @@
                                                     type="button"
                                                     data-bs-toggle="modal"
                                                     data-bs-target="#resetUserModal"
-                                                    data-userbranch="{{ $user->branch_id }}"
+                                                    data-userbranches="{{ json_encode($user->branch) }}"
                                                     @click="$store.data.update={{ json_encode([
                                                         'id' => $user->id,
                                                         'name' => $user->name,
@@ -148,13 +148,10 @@
         <script src="https://cdn.jsdelivr.net/npm/tom-select/dist/js/tom-select.complete.min.js"></script>
         <script type="text/javascript">
             new TomSelect('#select-branch', {
-                create: true,
-                sortField: {
-                    field: "text",
-                    direction: "asc"
-                }
+                plugins: ['remove_button'],
             });
             var updateControl = new TomSelect('#select-update-user-branch', {
+                plugins: ['remove_button'],
                 valueField: 'id',
                 labelField: 'name',
                 searchField: 'name',
@@ -163,18 +160,22 @@
 
             $(".btn-update-user").click(function() {
                 updateControl.clear();
-                var userbranch = $(this).data("userbranch");
+                var userbranches = $(this).data("userbranches");
                 var branches = @json($branches);
+                var selectedbranch = {}
 
                 branches.forEach(branch => {
                     updateControl.addOption({
                         id: branch.id,
                         name: branch.name
                     });
-                    console.log(userbranch)
-                    console.log(branch.id)
-                    if (userbranch == branch.id) {
-                        updateControl.addItem(branch.id);
+
+                    if (userbranches) {
+                        userbranches.forEach(ubranch => {
+                            if (ubranch == branch.id) {
+                                updateControl.addItem(branch.id);
+                            }
+                        });
                     }
                 });
             });

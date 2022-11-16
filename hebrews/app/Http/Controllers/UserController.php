@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Validation\Rules;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rule;
 
 class UserController extends Controller
 {
@@ -71,20 +72,32 @@ class UserController extends Controller
     {
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'branch' => ['required'],
             'username' => ['required', 'string', 'max:255', 'unique:users'],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
             'type' => ['required'],
         ]);
 
-        // Check if branch exist
-        if (Branch::whereIn('id', $request->branch)->count() <= 0) {
-            return redirect()->back()->with('error', 'Failed to add user. Branch does not exist please try again.');
+        // if (!auth()->user()->type == 'SUPERADMIN' && !auth()->user()->type == 'ADMIN') {
+        //     if (!$request->branch) {
+        //         return redirect()->back()->with('error', 'Failed to add user. Branch is required.');
+        //     }
+
+        //     // Check if branch exist
+        //     if (Branch::whereIn('id', $request->branch_id)->count() <= 0) {
+        //         return redirect()->back()->with('error', 'Failed to add user. Branch does not exist please try again.');
+        //     }
+        // }
+
+        if ($request->branch_id) {
+            // Check if branch exist
+            if (Branch::where('id', $request->branch_id)->count() <= 0) {
+                return redirect()->back()->with('error', 'Failed to add user. Branch does not exist please try again.');
+            }
         }
 
         $user = User::create([
             'name' => $request->name,
-            'branch' => $request->branch,
+            'branch_id' => $request->branch_id,
             'username' => $request->username,
             'type' => $request->type,
             'password' => Hash::make($request->password),
@@ -120,25 +133,24 @@ class UserController extends Controller
         if ($user) {
             $request->validate([
                 'type' => ['required'],
-                'branch' => ['required'],
                 'password' => ['nullable', 'confirmed', Rules\Password::defaults()],
             ]);
-
-            // Check if branch exist
-            if (Branch::whereIn('id', $request->branch)->count() <= 0) {
-                return redirect()->back()->with('error', 'Failed to update user. Branch does not exist please try again.');
+            if ($request->branch_id) {
+                // Check if branch exist
+                if (Branch::where('id', $request->branch_id)->count() <= 0) {
+                    return redirect()->back()->with('error', 'Failed to add user. Branch does not exist please try again.');
+                }
             }
-
             if ($request->password) {
                 $user->update([
                     'type' => $request->type,
-                    'branch' => $request->branch,
+                    'branch_id' => $request->branch_id,
                     'password' => Hash::make($request->password)
                 ]);
             } else {
                 $user->update([
                     'type' => $request->type,
-                    'branch' => $request->branch
+                    'branch_id' => $request->branch_id
                 ]);
             }
 
@@ -160,7 +172,12 @@ class UserController extends Controller
     public function addBranch(Request $request)
     {
         $request->validate([
-            'name' => ['required', 'string', 'max:255'],
+            'name' => [
+                'required',
+                'string',
+                'max:255',
+                Rule::unique('branches')->where('name', $request->input('name'))
+            ],
             'branch' => ['nullable', 'string', 'max:255'],
         ]);
 
@@ -177,7 +194,12 @@ class UserController extends Controller
 
         if ($branch) {
             $request->validate([
-                'name' => ['required', 'string', 'max:255'],
+                'name' => [
+                    'required',
+                    'string',
+                    'max:255',
+                    Rule::unique('branches', 'name')->ignore($branch->id, 'id'),
+                    ],
                 'branch' => ['nullable', 'string', 'max:255'],
             ]);
 

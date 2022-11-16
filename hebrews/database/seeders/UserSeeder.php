@@ -25,7 +25,7 @@ class UserSeeder extends Seeder
                 'name' => 'SUPERADMIN',
                 'email' => 'super@admin.com',
                 'username' => 'superadmin',
-                'branch' => 'BRANCH1',
+                'branch_id' => null,
                 'type' => 'SUPERADMIN',
                 'password' => Hash::make('admin123')
             ],
@@ -33,7 +33,7 @@ class UserSeeder extends Seeder
                 'name' => 'ADMIN',
                 'email' => 'admin@admin.com',
                 'username' => 'admin',
-                'branch' => 'BRANCH1',
+                'branch_id' => null,
                 'type' => 'ADMIN',
                 'password' => Hash::make('admin123')
             ],
@@ -41,7 +41,7 @@ class UserSeeder extends Seeder
                 'name' => 'MANAGER',
                 'email' => 'manager@admin.com',
                 'username' => 'manager',
-                'branch' => 'BRANCH1',
+                'branch_id' => '2',
                 'type' => 'MANAGER',
                 'password' => Hash::make('admin123')
             ],
@@ -49,7 +49,7 @@ class UserSeeder extends Seeder
                 'name' => 'KITCHEN',
                 'email' => 'kitchen@admin.com',
                 'username' => 'kitchen',
-                'branch' => 'BRANCH1',
+                'branch_id' => '2',
                 'type' => 'KITCHEN',
                 'password' => Hash::make('admin123')
             ],
@@ -57,7 +57,7 @@ class UserSeeder extends Seeder
                 'name' => 'WAITER',
                 'email' => 'waiter@admin.com',
                 'username' => 'waiter',
-                'branch' => 'BRANCH1',
+                'branch_id' => '2',
                 'type' => 'WAITER',
                 'password' => Hash::make('admin123')
             ],
@@ -65,7 +65,7 @@ class UserSeeder extends Seeder
                 'name' => 'DISPATCHER',
                 'email' => 'dispatcher@admin.com',
                 'username' => 'dispatcher',
-                'branch' => 'BRANCH1',
+                'branch_id' => '2',
                 'type' => 'DISPATCHER',
                 'password' => Hash::make('admin123')
             ],

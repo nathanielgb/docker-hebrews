@@ -17,14 +17,18 @@
                 data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="relative p-4 modal-body">
-            <form id="search-menu-form" action="{{ route('menu.view_inventory') }}" method="get" autocomplete="off">
+            <form id="search-menu-form" action="{{ route('branch.inventory.index') }}" method="get" autocomplete="off">
                 <label class="block mb-4 text-sm">
                     <span class="text-gray-700">Inventory Code</span>
-                    <input class="styled-input" name="inventory_code" type="text" placeholder="Enter code">
+                    <input class="styled-input" name="inventory_code" type="text" placeholder="Enter Code">
                 </label>
                 <label class="block mb-4 text-sm">
                     <span class="text-gray-700">Name</span>
                     <input class="styled-input" name="name" type="text" placeholder="Enter name">
+                </label>
+                <label class="block mb-4 text-sm">
+                    <span class="text-gray-700">Branch ID</span>
+                    <input class="styled-input" name="branch_id" type="number" placeholder="Enter Branch ID">
                 </label>
             </form>
         </div>
