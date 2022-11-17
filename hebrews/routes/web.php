@@ -158,13 +158,13 @@ Route::middleware('auth')->group(function () {
 
     // Take orders section
     Route::group(['middleware' => 'CheckAccessActions:take-orders-action'], function () {
-        Route::get('take-order', [\App\Http\Controllers\OrderController::class, 'showTakeOrder'])->name('order.show_take_order');
-        Route::get('add-cart', [\App\Http\Controllers\OrderController::class, 'showAddCart'])->name('order.show_add_cart');
-        Route::post('add-cart', [\App\Http\Controllers\OrderController::class, 'addCart'])->name('order.add_cart');
-        Route::get('view-cart', [\App\Http\Controllers\OrderController::class, 'viewCart'])->name('order.show_cart');
-        Route::post('update-cart', [\App\Http\Controllers\OrderController::class, 'updateCart'])->name('order.update_cart');
-        Route::post('delete-cart', [\App\Http\Controllers\OrderController::class, 'deleteCart'])->name('order.delete_cart');
-        Route::post('generate-order', [\App\Http\Controllers\OrderController::class, 'generateOrder'])->name('order.generate');
+        Route::get('take-order', [\App\Http\Controllers\CartController::class, 'showTakeOrder'])->name('order.show_take_order');
+        Route::get('add-cart', [\App\Http\Controllers\CartController::class, 'showAddCart'])->name('order.show_add_cart');
+        Route::post('add-cart', [\App\Http\Controllers\CartController::class, 'addCart'])->name('order.add_cart');
+        Route::get('view-cart', [\App\Http\Controllers\CartController::class, 'viewCart'])->name('order.show_cart');
+        Route::post('update-cart', [\App\Http\Controllers\CartController::class, 'updateCart'])->name('order.update_cart');
+        Route::post('delete-cart', [\App\Http\Controllers\CartController::class, 'deleteCart'])->name('order.delete_cart');
+        Route::post('generate-order', [\App\Http\Controllers\CartController::class, 'generateOrder'])->name('order.generate');
     });
 
     // View orders section

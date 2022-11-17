@@ -33,11 +33,22 @@
                                     >
                                         <option value="" selected disabled>Select Add-on</option>
                                         @foreach ($addons as $addon)
-                                            <option value="{{ $addon->id }}">{{ $addon->name }} ({{ $addon->inventory->stock }} left)</option>
+                                            <option value="{{ $addon['id'] }}">
+                                                @if (isset($addon['inventory']))
+                                                    {{ $addon['name'] }} ({{ $addon['inventory']['branch']['name'] }}) ({{ $addon['inventory']['stock'] }} left)
+                                                @else
+                                                    {{ $addon['name'] }}
+                                                @endif
+                                            </option>
                                         @endforeach
                                     </select>
                                 </td>
                                 <td class="px-4 py-3 text-sm text-center" style="max-width: 100px;">
+                                    <input
+                                        type="hidden"
+                                        wire:model="cartAddons.{{ $index }}.name"
+                                        name="cartAddon[{{ $index }}][name]"
+                                    >
                                     <input
                                     wire:model="cartAddons.{{ $index }}.qty"
                                     class="styled-input"

@@ -41,15 +41,15 @@
                 <table class="w-full whitespace-no-wrap">
                     <thead>
                     <tr class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase border-b bg-gray-50">
-                        <th class="px-4 py-4">Menu ID</th>
+                        <th class="px-4 py-4">Branch</th>
+                        <th class="px-4 py-4 text-center">Menu ID</th>
                         <th class="px-4 py-4">Name</th>
                         <th class="px-4 py-4 text-center">Status</th>
-                        <th class="px-4 py-4">Type</th>
-                        <th class="px-4 py-4">Units/Qty</th>
-                        <th class="px-4 py-3">Qty</th>
-                        <th class="px-4 py-4">Price</th>
-                        <th class="px-4 py-3">Total</th>
-                        <th class="px-4 py-3">Add-ons</th>
+                        <th class="px-4 py-4 text-center">Type</th>
+                        <th class="px-4 py-4 text-center">Units/Qty</th>
+                        <th class="px-4 py-3 text-center">Qty</th>
+                        <th class="px-4 py-4 text-center">Price</th>
+                        <th class="px-4 py-3 text-center">Total</th>
                         <th class="px-4 py-3 text-center">Action</th>
                     </tr>
                     </thead>
@@ -57,6 +57,9 @@
                         @forelse ($cart_items as $item)
                             <tr>
                                 <td class="px-4 py-4 text-sm">
+                                    {{ $item->inventory->branch->name }}
+                                </td>
+                                <td class="px-4 py-4 text-sm text-center">
                                     {{ $item->menu_id }}
                                 </td>
                                 <td class="px-4 py-4 text-sm">
@@ -69,23 +72,23 @@
                                         <span class="text-xs inline-block py-1 px-2.5 leading-none text-center whitespace-nowrap align-baseline font-bold bg-red-600 text-white rounded-full">Unavailable</span>
                                     @endif
                                 </td>
-                                <td class="px-4 py-4 text-sm">
+                                <td class="px-4 py-4 text-sm text-center">
                                     {{ $item->type }}
                                 </td>
-                                <td class="px-4 py-4 text-sm">
+                                <td class="px-4 py-4 text-sm text-center">
                                     {{ $item->units }} ({{ $item->inventory->unit }})
                                 </td>
-                                <td class="px-4 py-4 text-sm">
+                                <td class="px-4 py-4 text-sm text-center">
                                     {{ $item->qty }}
                                 </td>
 
-                                <td class="px-4 py-4 text-sm">
+                                <td class="px-4 py-4 text-sm text-center">
                                     {{ $item->price }}
                                 </td>
-                                <td class="px-4 py-4 text-sm">
+                                <td class="px-4 py-4 text-sm text-center">
                                     {{ $item->total }}
                                 </td>
-                                <td class="px-4 py-4 text-sm">
+                                {{-- <td class="px-4 py-4 text-sm">
                                     @if ($item->data)
                                         <ul>
                                             @foreach ($item->data as $addon)
@@ -93,7 +96,7 @@
                                             @endforeach
                                         </ul>
                                     @endif
-                                </td>
+                                </td> --}}
                                 <td class="px-4 py-4 text-sm f">
                                     <div class="flex items-center justify-center space-x-4 text-sm">
                                         <button

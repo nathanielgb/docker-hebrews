@@ -24,7 +24,7 @@ class StoreInventoryRequest extends FormRequest
     public function rules()
     {
         return [
-        'inventory_code' => 'required|max:255|alpha_num',
+        'inventory_code' => 'required|max:255|alpha_dash',
         'name' => 'required|max:255',
         'unit' => 'required',
         'stock' => 'required|numeric|between:0,999999'

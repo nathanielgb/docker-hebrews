@@ -9,13 +9,28 @@ use App\Models\MenuInventory;
 use Illuminate\Support\Facades\DB;
 use App\Http\Requests\StoreMenuRequest;
 use App\Http\Requests\UpdateMenuRequest;
+use App\Models\Branch;
+use App\Models\BranchMenuInventory;
 
 class MenuController extends Controller
 {
     public function index(Request $request)
     {
-        $menu = Menu::with('category');
-        $inventory_items = MenuInventory::all()->toArray();
+        if (auth()->user()->branch_id) {
+            $menu = Menu::whereHas('inventory', function ($q) {
+                // Check branch of current user
+                if (auth()->user()->branch_id) {
+                    $q->where('branch_id', auth()->user()->branch_id);
+                }
+            });
+
+            $inventory_items = BranchMenuInventory::where('branch_id', auth()->user()->branch_id)->get();
+            $branches = Branch::where('id', auth()->user()->branch_id)->get();
+        } else {
+            $menu = Menu::with('category');
+            $inventory_items = BranchMenuInventory::all();
+            $branches = Branch::all();
+        }
 
         if ($request->except(['page'])) {
             $menu=$menu->where(function ($query) use ($request) {
@@ -32,13 +47,14 @@ class MenuController extends Controller
         $categories = MenuCategory::orderBy('name')->get();
         return view('menu.index', compact(
             'menu',
-            'inventory_items',
             'categories',
+            'inventory_items',
+            'branches'
         ));
     }
     public function store(StoreMenuRequest $request)
     {
-        $inventory = MenuInventory::where('id', $request->inventory)->first();
+        $inventory = BranchMenuInventory::where('id', $request->inventory)->first();
 
         if ($inventory) {
             // Check the minimum unit required
@@ -94,6 +110,7 @@ class MenuController extends Controller
         $menu = Menu::where('id', $request->menu_id)->first();
 
         if ($menu) {
+
             if (!$menu->inventory) {
                 return back()->with('error', "Failed to update Item $request->menu. Inventory does not exist.");
             }

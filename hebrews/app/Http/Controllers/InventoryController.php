@@ -195,13 +195,11 @@ class InventoryController extends Controller
     {
         if (auth()->user()->branch_id) {
             $inventory_items = BranchMenuInventory::where('branch_id', auth()->user()->branch_id);
-            $branches = Branch::where('id', auth()->user()->branch_id)->where('id', '!=', 1)->get();
+            $branches = Branch::where('id', auth()->user()->branch_id)->get();
         } else {
             $inventory_items = new BranchMenuInventory;
-            $branches = Branch::where('id', '!=', 1)->get();
+            $branches = Branch::all();
         }
-
-        $transfer_branches = Branch::where('id', '!=', 1)->get();
 
         if ($request->except(['page'])) {
             $inventory_items=$inventory_items->where(function ($query) use ($request) {
@@ -221,12 +219,11 @@ class InventoryController extends Controller
 
         return view('menu.branches.inventory', compact(
             'inventory_items',
-            'branches',
-            'transfer_branches'
+            'branches'
         ));
     }
 
-    public function addBranchInventory(Request $request)
+    public function addBranchInventory(StoreInventoryRequest $request)
     {
         // Check if branch exist
         $branch = Branch::where('id', $request->branch_id)->first();

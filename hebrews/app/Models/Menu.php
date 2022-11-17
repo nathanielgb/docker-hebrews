@@ -40,7 +40,7 @@ class Menu extends Model
      */
     public function inventory()
     {
-        return $this->belongsTo(BranchMenuInventory::class, 'id', 'inventory_id');
+        return $this->belongsTo(BranchMenuInventory::class, 'inventory_id', 'id');
     }
 
     /**

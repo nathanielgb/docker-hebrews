@@ -45,6 +45,6 @@ class Cart extends Model
      */
     public function inventory()
     {
-        return $this->hasOne(MenuInventory::class, 'id', 'inventory_id');
+        return $this->belongsTo(BranchMenuInventory::class, 'inventory_id', 'id');
     }
 }

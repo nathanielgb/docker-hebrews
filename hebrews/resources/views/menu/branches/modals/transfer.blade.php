@@ -66,7 +66,7 @@
                     <label class="block mb-4 text-sm">
                         <span class="text-gray-700">Branch to transfer</span>
                         <select class="styled-input" name="transfer_branch">
-                            @foreach ($transfer_branches as $branch)
+                            @foreach ($branches as $branch)
                                 <option value="{{ $branch['id'] }}">{{ $branch['name'] }}</option>
                             @endforeach
                             <option value="dispose">Dispose (Delete)</option>

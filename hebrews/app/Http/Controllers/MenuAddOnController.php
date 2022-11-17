@@ -2,29 +2,30 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Menu;
 use Illuminate\Http\Request;
-use App\Models\MenuInventory;
 use App\Models\MenuAddOn;
-use Illuminate\Support\Facades\DB;
-use App\Http\Requests\StoreMenuRequest;
-use App\Http\Requests\UpdateMenuRequest;
-use Illuminate\Database\Eloquent\Builder;
-use App\Http\Requests\StoreInventoryRequest;
-use Illuminate\Support\Facades\Redis;
+use App\Models\Branch;
+use App\Models\BranchMenuInventory;
 
 class MenuAddOnController extends Controller
 {
     public function index(Request $request)
     {
         $addons = MenuAddOn::orderBy('name');
-        $inventory_items = MenuInventory::all();
+
+        if (auth()->user()->branch_id) {
+            $inventory_items = BranchMenuInventory::where('branch_id', auth()->user()->branch_id)->get();;
+            $branches =  Branch::where('id', auth()->user()->branch_id)->get();
+        } else {
+            $inventory_items = BranchMenuInventory::all();
+            $branches = Branch::all();
+        }
 
         $addons = $addons->paginate(20);
 
-
         return view('menu.add_ons', compact(
             'addons',
+            'branches',
             'inventory_items'
         ));
     }
@@ -33,7 +34,7 @@ class MenuAddOnController extends Controller
     {
         $request->validate([
             'name' => 'required|max:255',
-            'inventory' => 'required|exists:menu_inventories,id',
+            'inventory' => 'required|exists:branch_menu_inventories,id',
         ]);
 
         $addons = MenuAddOn::create([

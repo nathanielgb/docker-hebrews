@@ -163,6 +163,8 @@
 
             $(".btn-update-user").click(function() {
                 updateControl.clear();
+                updateControl.clearOptions();
+
                 var userbranch = $(this).data("userbranch");
                 var branches = @json($branches);
 

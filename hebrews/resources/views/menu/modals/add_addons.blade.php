@@ -28,7 +28,32 @@
                         <span class="text-gray-700">Name</span>
                         <input class="styled-input" name="name" type="text" placeholder="Enter name">
                     </label>
+
                     <label class="block mb-4 text-sm">
+                        <span class="text-gray-700">Branch</span>
+                        <select id="addBranch" class="styled-input" name="branch">
+                            <option value="" selected disabled>Select a branch</option>
+                            @foreach ($branches as $branch)
+                                <option value="{{ $branch->id }}" data-inventories="{{ json_encode($branch->inventories) }}">{{ $branch->name }}</option>
+                            @endforeach
+                        </select>
+                        <p class="text-xs text-yellow-500">note: selecting a branch will show available inventory items for the selected branch</p>
+                    </label>
+
+                    <label class="block mb-4 text-sm">
+                        <span class="text-gray-700 dark:text-gray-400">Inventory</span>
+                        <select
+                            id="select-inventory"
+                            name="inventory"
+                            placeholder="Enter Inventory..."
+                            autocomplete="off"
+                            class="block w-full rounded-sm cursor-pointer focus:outline-none"
+                        >
+                            <option value="" selected disabled>Select inventory</option>
+                        </select>
+                    </label>
+
+                    {{-- <label class="block mb-4 text-sm">
                         <span class="text-gray-700">Inventory</span>
                         <select class="styled-input" name="inventory">
                             <option value="" selected disabled>Select inventory</option>
@@ -37,7 +62,7 @@
                             @endforeach
                         </select>
                         <p class="text-xs text-yellow-500">note: ordering this item will deduct the quantity to the stock of the selected inventory</p>
-                    </label>
+                    </label> --}}
                 </form>
             </div>
             <div

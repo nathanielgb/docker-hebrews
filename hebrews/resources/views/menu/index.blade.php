@@ -122,9 +122,14 @@
                                 <td class="px-4 py-3 text-sm">
                                     @if (isset($item->inventory))
                                         <ul>
-                                            <li>ID:
+                                            <li>Branch:
                                                 <span class="font-bold">
-                                                    {{ $item->inventory->id }}
+                                                    {{ $item->inventory->branch->name }}
+                                                </span>
+                                            </li>
+                                            <li>code:
+                                                <span class="font-bold">
+                                                    {{ $item->inventory->inventory_code }}
                                                 </span>
                                             </li>
                                             <li>name:
@@ -174,7 +179,7 @@
                                                 type="button"
                                                 data-bs-toggle="modal"
                                                 data-bs-target="#updateMenuModal"
-                                                data-inventory="{{ $item->inventory_id }}"
+                                                data-branch_id="{{ $item->inventory->branch_id }}"
                                                 @click="$store.menu.updateMenuData={{ json_encode($item) }}, $store.menu.setCategories({{ $categories }}) ,$store.menu.setSubCategories({{ json_encode( $item->category->sub) }})"
                                                 >
                                                 <span><i class="fa-solid fa-pen"></i> Update</span>
@@ -224,12 +229,12 @@
         <script src="https://cdn.jsdelivr.net/npm/tom-select/dist/js/tom-select.complete.min.js"></script>
         <script type="text/javascript">
 
-
-            new TomSelect("#select-inventory",{
-                allowEmptyOption: false,
-                create: false
+            var addControl = new TomSelect("#select-inventory",{
+                valueField: 'id',
+                labelField: 'name',
+                searchField: 'name',
+                options: [],
             });
-
 
             var updateControl = new TomSelect('#select-update-inventory', {
                 valueField: 'id',
@@ -239,9 +244,37 @@
             });
 
             $(".btn-update-menu").click(function() {
-                updateControl.clear();
-                var inventories = @json($inventory_items);
+                // Set branch
+                var branch_id = $(this).data("branch_id")
                 var inventory_id = $(this).data("inventory");
+
+                //  Trigger change for the correct branch to apply
+                $("#updateBranch").val(branch_id).trigger('change');
+            });
+
+            $("#addBranch").change(function() {
+                addControl.clear();
+                addControl.clearOptions();
+
+                var selectedItem = $(this).val();
+                var inventories = $('option:selected',this).data("inventories");
+
+                inventories.forEach(inventory => {
+                    addControl.addOption({
+                        id: inventory.id,
+                        name: inventory.name
+                    });
+                });
+            });
+
+            $("#updateBranch").change(function(e, data) {
+                updateControl.clear();
+                updateControl.clearOptions();
+
+                var inventory_id = Alpine.store('menu').updateMenuData.inventory_id
+
+                var selectedItem = $(this).val();
+                var inventories = $('option:selected',this).data("inventories");
 
                 inventories.forEach(inventory => {
                     updateControl.addOption({
@@ -249,7 +282,7 @@
                         name: inventory.name
                     });
 
-                    if (inventory.id == inventory_id) {
+                    if (inventory_id == inventory.id) {
                         updateControl.addItem(inventory.id);
                     }
                 });

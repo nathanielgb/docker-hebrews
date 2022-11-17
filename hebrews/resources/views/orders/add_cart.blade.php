@@ -67,10 +67,11 @@
                                         </td>
                                         <td class="px-4 py-3 text-sm">
                                             <ul>
-                                                <li>id: <span class="font-bold">{{ $item->inventory->id }}</span></li>
-                                                <li>name: <span class="font-bold">{{ $item->inventory->name }}</span></li>
-                                                <li>stock: <span class="font-bold">{{ $item->inventory->stock }}</span></li>
-                                                <li>unit: <span class="font-bold">{{ $item->inventory->unit }}</span></li>
+                                                <li>Branch: <span class="font-bold">{{ $item->inventory->branch->name }}</span></li>
+                                                <li>Name: <span class="font-bold">{{ $item->inventory->name }}</span></li>
+                                                <li>Code: <span class="font-bold">{{ $item->inventory->inventory_code }}</span></li>
+                                                <li>Stock: <span class="font-bold">{{ $item->inventory->stock }}</span></li>
+                                                <li>Unit: <span class="font-bold">{{ $item->inventory->unit }}</span></li>
                                             </ul>
                                         </td>
                                         <td class="px-4 py-3 text-center">

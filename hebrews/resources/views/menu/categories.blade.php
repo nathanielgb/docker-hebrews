@@ -184,6 +184,8 @@
 
             $(".btn-update-category").click(function() {
                 updateControl.clear();
+                updateControl.clearOptions();
+
                 var sub = $(this).data("sub");
                 sub.forEach(element => {
                     updateControl.addOption({

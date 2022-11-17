@@ -18,4 +18,13 @@ class Branch extends Model
         'name',
         'location'
     ];
+
+
+    /**
+     * Get the inventory items of branch.
+     */
+    public function inventories()
+    {
+        return $this->hasMany(BranchMenuInventory::class, 'branch_id', 'id');
+    }
 }

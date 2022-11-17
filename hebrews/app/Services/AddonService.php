@@ -25,11 +25,21 @@ class AddonService
                     unset($addOnData[$index]);
                     $addOnData = array_values($addOnData);
                 } else {
-                    $addon = MenuAddOn::where('id', $value['addon_id'])->first();
+                    // $addon = MenuAddOn::where('id', $value['addon_id'])->first();
+
+                    $addon = MenuAddOn::where('id', $value['addon_id'])->whereHas('inventory', function ($q) {
+                        // Check branch of current user
+                        if (auth()->user()->branch_id) {
+                            $q->where('branch_id', auth()->user()->branch_id);
+                        }
+                    })->first();
+
+                    $name = $value['name'] ?? '';
+
                     if (!$addon) {
                         return [
                             'status' => 'fail',
-                            'message' => 'An Add-on item you entered does not exist.'
+                            'message' => "Add-on (name: $name) is  invalid."
                         ];
                         break;
                     }
@@ -38,7 +48,7 @@ class AddonService
                     if ($value['qty'] <= 0) {
                         return [
                             'status' => 'fail',
-                            'message' => 'An Add-on item quantity is invalid.'
+                            'message' => "Add-on (name: $name) quantity is invalid."
                         ];
                         break;
                     }

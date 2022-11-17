@@ -26,6 +26,16 @@
                     @csrf
                     <div>
                         <label class="block mb-4 text-sm">
+                            <span class="text-gray-700">Branch</span>
+                            <select id="addBranch" class="styled-input" name="branch">
+                                <option value="" disabled>Select a branch</option>
+                                @foreach ($branches as $branch)
+                                    <option value="{{ $branch->id }}" @if(auth()->user()->branch_id == $branch->id) selected @endif>{{ $branch->name }}</option>
+                                @endforeach
+                            </select>
+                        </label>
+
+                        <label class="block mb-4 text-sm">
                             <span class="text-gray-700">Dine-in/Take-out</span>
                             <select class="styled-input" name="order_type">
                                 <option value="" selected disabled>Select a choice</option>

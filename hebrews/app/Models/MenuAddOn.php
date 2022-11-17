@@ -20,10 +20,10 @@ class MenuAddOn extends Model
     ];
 
     /**
-     * Get the inventory associated with the menu item.
+     * Get the inventory associated with the addon item.
      */
     public function inventory()
     {
-        return $this->hasOne(MenuInventory::class, 'id', 'inventory_id');
+        return $this->belongsTo(BranchMenuInventory::class, 'inventory_id', 'id');
     }
 }

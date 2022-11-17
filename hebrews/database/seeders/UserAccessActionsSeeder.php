@@ -176,6 +176,9 @@ class UserAccessActionsSeeder extends Seeder
                     'update-menu-action',
                     'delete-menu-action',
 
+                    'view-menu-addons-action',
+                    'manage-menu-addons-action',
+
                     // Inventory
                     'view-inventory-action',
                     'add-inventory-action',
@@ -211,6 +214,9 @@ class UserAccessActionsSeeder extends Seeder
                     'add-menu-action',
                     'update-menu-action',
 
+                    'view-menu-addons-action',
+                    'manage-menu-addons-action',
+
                     // Inventory
                     'view-inventory-action',
                     'add-inventory-action',
@@ -228,6 +234,9 @@ class UserAccessActionsSeeder extends Seeder
                     'view-menus-action',
                     'add-menu-action',
                     'update-menu-action',
+
+                    'view-menu-addons-action',
+                    'manage-menu-addons-action',
 
                     // Inventory
                     'view-inventory-action',
