@@ -54,6 +54,7 @@ class CartController extends Controller
         $item = Menu::where('id', $request->item_id)->first();
         $type = $request->type;
         $product_price = 0;
+
         if ($item) {
             $request->validate([
                 'type' => 'required',
@@ -67,30 +68,29 @@ class CartController extends Controller
             if ($quantity > $item_stock) {
                 return redirect()->route('order.show_add_cart')->with('error', "Item (name: {$item->name}) does not have enough stock.");
             }
-
             // Order product price according to type
             if ($type == 'wholesale') {
-                if ($item->wholesale_price == null && $item->wholesale_price == 0) {
+                if ($item->wholesale_price == null) {
                     return redirect()->route('order.show_add_cart')->with('error', "Item (name: {$item->name}) does not have a wholesale price.");
                 }
                 $product_price = $item->wholesale_price;
             } else if ($type == 'regular') {
-                if ($item->reg_price == null && $item->reg_price == 0) {
+                if ($item->reg_price == null) {
                     return redirect()->route('order.show_add_cart')->with('error', "Item (name: {$item->name}) does not have a regular price.");
                 }
                 $product_price = $item->reg_price;
             } else if ($type == 'retail') {
-                if ($item->retail_price == null && $item->retail_price == 0) {
+                if ($item->retail_price == null) {
                     return redirect()->route('order.show_add_cart')->with('error', "Item (name: {$item->name}) does not have a retail price.");
                 }
                 $product_price = $item->retail_price;
             } else if ($type == 'rebranding') {
-                if ($item->rebranding_price == null && $item->rebranding_price == 0) {
+                if ($item->rebranding_price == null) {
                     return redirect()->route('order.show_add_cart')->with('error', "Item (name: {$item->name}) does not have a rebranding price.");
                 }
                 $product_price = $item->rebranding_price;
             } else if ($type == 'distributor') {
-                if ($item->distributor_price == null && $item->distributor_price == 0) {
+                if ($item->distributor_price == null) {
                     return redirect()->route('order.show_add_cart')->with('error', "Item (name: {$item->name}) does not have a distributor price.");
                 }
                 $product_price = $item->distributor_price;
@@ -99,7 +99,7 @@ class CartController extends Controller
             }
 
             // Calculate total price
-            $total = $product_price * $request->qty;
+            // $total = $product_price * $request->qty;
 
             // Check if the item is already in the cart
             $current_cart = Cart::where('admin_id', auth()->user()->id)
@@ -111,9 +111,22 @@ class CartController extends Controller
             if ($current_cart) {
                 return back()->with('warning', 'Item (name: '. $item->name .') is already in the cart.');
             } else {
+
+                // Check if there are other products of different branch
+                $productOtherBranchFlag = Cart::where('admin_id', auth()->user()->id)
+                    ->whereHas('inventory', function ($q) use ($item) {
+                        // Check branch of current user
+                        $q->where('branch_id', '!=',$item->inventory->branch_id);
+
+                    })->count();
+
+                if($productOtherBranchFlag > 0) {
+                    return redirect()->route('order.show_add_cart')->with('error', "Cannot add item (name: $item->name), cart can only have items from a single branch. Choose a different item or remove items in the cart.");
+                }
+
                 // Validate Add-on
                 $AddonService = new AddonService;
-                $response = $AddonService->validateAddon($request->cartAddon);
+                $response = $AddonService->validateAddon($request->cartAddon, $item);
 
                 if (isset($response) && $response['status'] == 'fail') {
                     return back()->with('error', $response['message']);
@@ -124,12 +137,12 @@ class CartController extends Controller
                     'admin_id' => auth()->user()->id,
                     'menu_id' => $item->id,
                     'inventory_id' => $item->inventory->id,
-                    'name' => $item->name,
+                    // 'name' => $item->name,
                     'type' => $type,
-                    'units' => $item->units,
-                    'price' => $product_price,
+                    // 'units' => $item->units,
+                    // 'price' => $product_price,
                     'qty' => $request->qty,
-                    'total' => $total,
+                    // 'total' => $total,
                     'data' => $response['data'] ?? []
                 ]);
             }
@@ -140,9 +153,7 @@ class CartController extends Controller
 
     public function viewCart()
     {
-        // $cart_items = Cart::where('admin_id', auth()->user()->id)->get();
-
-        $cart_items = Cart::where('admin_id', auth()->user()->id)
+        $cart_items = Cart::with('menu')->where('admin_id', auth()->user()->id)
             ->whereHas('inventory', function ($q) {
                 // Check branch of current user
                 if (auth()->user()->branch_id) {
@@ -151,8 +162,10 @@ class CartController extends Controller
             })->get();
 
         $discounts = OrderDiscount::where('active', 1)->get();
-        $cart_subtotal = auth()->user()->cartItems->sum('total');
+
         $customers = Customer::all();
+
+        $cart_subtotal = 0;
 
         // Check and tag the item if it is not available
         foreach ($cart_items as $item) {
@@ -160,10 +173,26 @@ class CartController extends Controller
 
             // If the menu item does not exist tag available as false
             $menu_item = Menu::where('id', $item->menu_id)->first();
+            // Tag as unavailable if no menu found
             if (!$menu_item) {
                 $item['available'] = false;
+            } else {
+                $price = $menu_item->getPrice($item->type);
+
+                // Tag as unavailable if price of type is null
+                if (!isset($price)) {
+                    $item['available'] = false;
+                }
+
+                $cart_subtotal = $cart_subtotal + ($price * $item->qty);
+
+                // get product price base on type
+                $item['price'] = $price;
+                $item['total'] = number_format($price * $item->qty, 2, '.', '');
+
             }
         }
+
 
         // unavailble item checker
         $unavailable_items = Cart::where('admin_id', auth()->user()->id)->doesnthave('menu')->count();
@@ -204,7 +233,8 @@ class CartController extends Controller
         if ($citem) {
             // Check if the cart item belongs to admin
             if ($citem->admin_id != auth()->user()->id) {
-                return redirect()->route('order.show_cart')->with('error', 'Item does not exist. (1)');
+                $citem->delete();
+                return redirect()->route('order.show_cart')->with('error', 'Cart item is invalid, Item was removed.');
             }
 
             // Check if cart item is available base on branch
@@ -216,7 +246,7 @@ class CartController extends Controller
             })->first();
 
             if ($product_item) {
-                $cart_units= $citem->units;
+                $cart_units= $citem->menu->units;
                 $total_cart_units = $request->qty * $cart_units;
                 $cur_stock = $product_item->inventory->stock;
                 if ($cur_stock < $total_cart_units) {
@@ -225,7 +255,7 @@ class CartController extends Controller
 
                 // Validate Add-on
                 $AddonService = new AddonService;
-                $response = $AddonService->validateAddon($request->cartAddon);
+                $response = $AddonService->validateAddon($request->cartAddon, $product_item);
 
                 if (isset($response) && $response['status'] == 'fail') {
                     return back()->with('error', $response['message']);
@@ -233,11 +263,11 @@ class CartController extends Controller
 
                 $citem->update([
                     'qty' => $request->qty,
-                    'total' => floatval($citem->price*$request->qty),
                     'note' => $request->note,
                     'data' => $response['data'] ?? []
                 ]);
-                return back()->with('success', 'Item (name: '. $citem->name .') has been successfully updated.');
+
+                return back()->with('success', 'Item (name: '. $product_item->name .') has been successfully updated.');
             }
             return redirect()->route('order.show_cart')->with('error', 'Menu item does not exist or is not available.');
         }
@@ -286,29 +316,43 @@ class CartController extends Controller
             }
         }
 
+        $cart_subtotal = 0;
         // Check each item if there is enough stock
         foreach ($cart_items as $citem) {
             if (!isset($citem->menu->inventory)) {
-                return redirect()->route('order.show_cart')->with('error', "Failed to validate Cart Item (name: $citem->name ).");
+                return redirect()->route('order.show_cart')->with('error', "Failed to validate a cart item. Menu or inventory does not exist.");
             }
 
             // Check if the cart item is available according to branch
-            if (auth()->user()->branch_id != $citem->menu->inventory->branch_id) {
-                return redirect()->route('order.show_cart')->with('error', "Cart Item (name: $citem->name ) is not available.");
+            if ($request->branch != $citem->menu->inventory->branch_id) {
+                return redirect()->route('order.show_cart')->with('error', "Cart Item (name: {$citem->menu->name}) is not available for the branch.");
             }
 
             $orderService = new OrderService;
-            $checkStockResponse = $orderService->checkItemStock($citem->menu, $citem->units, $citem->qty);
+            $checkStockResponse = $orderService->checkItemStock($citem->menu, $citem->menu->units, $citem->qty);
 
             if (isset($checkStockResponse)) {
                 if ($checkStockResponse['status'] == 'fail') {
-                    return redirect()->route('order.show_cart')->with('error', "Cart Item (name: $citem->name ) does not have enough stock.");
+                    return redirect()->route('order.show_cart')->with('error', "Cart Item (name: {$citem->menu->name}) does not have enough stock.");
                 }
             }
 
+            $price = $citem->menu->getPrice($citem->type);
+
+            // Tag as unavailable if price of type is null
+            if (!isset($price)) {
+                return redirect()->route('order.show_cart')->with('error', "Cart Item (name: {$citem->menu->name}) does not have a valid price.");
+            }
+
+            $cart_subtotal = $cart_subtotal + ($price * $citem->qty);
+
+
+            $citem['price'] = $price;
+            $citem['total'] = number_format($price * $citem->qty, 2, '.', '');
+
             // Validate Add-on
             $AddonService = new AddonService;
-            $addOnResponse = $AddonService->validateAddon($citem->data);
+            $addOnResponse = $AddonService->validateAddon($citem->data, $citem->menu);
             if (isset($addOnResponse)) {
                 if ($addOnResponse['status'] == 'fail') {
                     return redirect()->route('order.show_cart')->with('error', $addOnResponse['message']);
@@ -317,7 +361,6 @@ class CartController extends Controller
         }
 
         // Calculate fees, discounts and total amount
-        $cart_subtotal = auth()->user()->cartItems->sum('total');
         $discount_amt = 0;
 
         if ($request->discount) {
@@ -369,6 +412,7 @@ class CartController extends Controller
             // Save order
             $order = new Order;
             $order->order_id = $orderId;
+            $order->branch_id = $request->branch;
             $order->customer_id =isset($customer->id) ? $customer->id : '';
             $order->customer_name = isset( $customer->name) ? $customer->name : '';
             $order->server_name = auth()->user()->name;
@@ -415,15 +459,16 @@ class CartController extends Controller
                     'menu_id' => $citem->menu_id,
                     'inventory_id' => $citem->inventory_id,
                     'inventory_name' => $citem->menu->inventory->name,
-                    'name' => $citem->name,
+                    'inventory_code' => $citem->menu->inventory->inventory_code,
+                    'name' => $citem->menu->name,
                     'from' => $citem->menu->category->from,
                     'price' => $citem->price,
                     'type' => $citem->type,
                     'unit_label' => $citem->menu->inventory->unit,
-                    'units' => $citem->units,
+                    'units' => $citem->menu->units,
                     'qty' => $citem->qty,
                     'data' => json_encode($citem->data),
-                    'total_amount' => round(floatval($citem->price*$citem->qty), 2),
+                    'total_amount' => $citem->total,
                     'status' => 'pending',
                     'note' => $citem->note,
                     'created_at' => Carbon::now(),
@@ -444,6 +489,7 @@ class CartController extends Controller
                             'addon_id' => $addon['addon_id'],
                             'inventory_id' => $addonModel->inventory_id,
                             'inventory_name' => $addonModel->inventory->name,
+                            'inventory_code' => $addonModel->inventory->inventory_code,
                             'name' => $addon['name'],
                             'qty' => $addon['qty'],
                             'created_at' => Carbon::now(),

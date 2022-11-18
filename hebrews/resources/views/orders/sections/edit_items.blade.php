@@ -35,7 +35,7 @@
             <table class="w-full whitespace-no-wrap">
                 <thead>
                 <tr class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase border-b bg-gray-50">
-                    <th class="px-4 py-3">ID</th>
+                    <th class="px-4 py-3">Id</th>
                     <th class="px-4 py-3">Name</th>
                     <th class="px-4 py-3 text-center">Type</th>
                     <th class="px-4 py-3 text-center">Status</th>
@@ -104,7 +104,7 @@
                                             class="btn-update-order flex items-center inline-block px-6 py-2.5 bg-green-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-green-700 hover:shadow-lg focus:bg-green-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-green-800 active:shadow-lg transition duration-150 ease-in-out"
                                             data-bs-toggle="modal"
                                             data-bs-target="#editItemModal"
-                                            data-order="{{ json_encode($item) }}"
+                                            data-orderitem="{{ json_encode($item) }}"
                                             @click="$store.item.update={{ json_encode([
                                                 'id' => $item->id,
                                                 'name' => $item->name,
@@ -145,8 +145,8 @@
     <x-slot name="scripts">
         <script>
             $('.btn-update-order').on("click", function() {
-                var order = JSON.stringify($(this).data('order'));
-                Livewire.emit('setItem', order);
+                var orderItem = JSON.stringify($(this).data('orderitem'));
+                Livewire.emit('setItem', orderItem);
 
             });
         </script>

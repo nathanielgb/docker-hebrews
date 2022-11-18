@@ -94,7 +94,6 @@
                                     <li>menu: <span class="font-bold">{{ count($item->products ?? []) }}</span></li>
                                     <li>add-on: <span class="font-bold">{{ count($item->addons ?? []) }}</span></li>
                                 </ul>
-
                             </td>
                             <td class="px-4 py-3 text-sm">
                                 <ul>

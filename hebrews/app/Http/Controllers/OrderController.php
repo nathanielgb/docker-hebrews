@@ -18,8 +18,10 @@ use Illuminate\Support\Facades\Hash;
 use App\Http\Requests\PayOrderRequest;
 use App\Models\AddonOrderItem;
 use App\Models\BankTransaction;
+use App\Models\Branch;
 use App\Models\Customer;
 use App\Models\ErrorLog;
+use App\Models\InventoryLog;
 use App\Models\MenuAddOn;
 use App\Services\AddonService;
 use App\Services\OrderService;
@@ -47,13 +49,21 @@ class OrderController extends Controller
 
     public function showOrders(Request $request)
     {
-        $orders = Order::where('cancelled', '!=', 1);
+        if (auth()->user()->branch_id) {
+            $orders = Order::where('branch_id', auth()->user()->branch_id)->where('cancelled', '!=', 1);
+
+        } else {
+            $orders = Order::where('cancelled', '!=', 1);
+        }
 
         if ($request->except(['page'])) {
 
             $orders = Order::where(function ($query) use ($request) {
                 if ($request->order_id) {
                     $query->where('order_id', 'LIKE', "%$request->order_id%");
+                }
+                if ($request->branch_id) {
+                    $query->where('branch_id', $request->branch_id);
                 }
                 if ($request->cust_name) {
                     $query->where('customer_name', 'LIKE', "%$request->cust_name%");
@@ -94,7 +104,11 @@ class OrderController extends Controller
 
     public function showSummary(Request $request)
     {
-        $order = Order::where('order_id', $request->order_id)->with('items')->first();
+        if (auth()->user()->branch_id) {
+            $order = Order::where('branch_id', auth()->user()->branch_id)->where('order_id', $request->order_id)->with('items')->first();
+        } else {
+            $order = Order::where('order_id', $request->order_id)->with('items')->first();
+        }
 
         if ($order) {
             $accounts = BankAccount::all();
@@ -110,7 +124,11 @@ class OrderController extends Controller
 
     public function printSummary(Request $request)
     {
-        $order = Order::where('order_id', $request->order_id)->with('items')->first();
+        if (auth()->user()->branch_id) {
+            $order = Order::where('branch_id', auth()->user()->branch_id)->where('order_id', $request->order_id)->with('items')->first();
+        } else {
+            $order = Order::where('order_id', $request->order_id)->with('items')->first();
+        }
 
         if ($order) {
             return view('orders.sections.summary_print',compact('order'));
@@ -119,10 +137,23 @@ class OrderController extends Controller
     }
     public function showAddOrderItem(Request $request)
     {
-        $order = Order::where('order_id', $request->order_id)->first();
-        $menus = Menu::all();
+        if (auth()->user()->branch_id) {
+            $order = Order::where('branch_id', auth()->user()->branch_id)->where('order_id', $request->order_id)->first();
+        } else {
+            $order = Order::where('order_id', $request->order_id)->first();
+        }
+
+        $menus = Menu::whereHas('inventory', function ($q) use ($order) {
+            // Check branch of current user
+            if (auth()->user()->branch_id) {
+                $q->where('branch_id', $order->branch_id);
+            }
+        });
 
         if ($order) {
+            if ($order->confirmed) {
+                return redirect()->back()->with('error', 'Cannot add item for confirmed orders.');
+            }
             if ($order->paid) {
                 return redirect()->back()->with('error', 'Cannot add item for paid orders.');
             }
@@ -134,7 +165,12 @@ class OrderController extends Controller
 
     public function addOrderItem(Request $request, $order_id,  OrderService $orderService)
     {
-        $order = Order::where('order_id', $order_id)->first();
+        if (auth()->user()->branch_id) {
+            $order = Order::where('branch_id', auth()->user()->branch_id)->where('order_id', $order_id)->first();
+        } else {
+            $order = Order::where('order_id', $order_id)->first();
+        }
+
         if ($order) {
             $request->validate([
                 'menuitem' => 'required|exists:menus,id',
@@ -159,10 +195,16 @@ class OrderController extends Controller
 
     public function showEditOrderItems (Request $request)
     {
+        if (auth()->user()->branch_id) {
+            $order = Order::where('branch_id', auth()->user()->branch_id)->where('order_id', $request->order_id)->first();
+        } else {
+            $order = Order::where('order_id', $request->order_id)->first();
+        }
+
         $order_id = $request->order_id;
         $order_items = OrderItem::where('order_id', $order_id)->get();
 
-        return view('orders.sections.edit_items', compact('order_items', 'order_id'));
+        return view('orders.sections.edit_items', compact('order', 'order_items', 'order_id'));
     }
 
     public function updateOrderItems (Request $request, OrderService $orderService)
@@ -174,7 +216,12 @@ class OrderController extends Controller
         $item = OrderItem::where('id', $request->item_id)->first();
 
         if ($item) {
-            $order = Order::where('order_id', $item->order_id)->first();
+            if (auth()->user()->branch_id) {
+                $order = Order::where('branch_id', auth()->user()->branch_id)->where('order_id', $request->order_id)->first();
+            } else {
+                $order = Order::where('order_id', $item->order_id)->first();
+            }
+
             if ($order) {
                 if ($order->confirmed) {
                     return redirect()->back()->with('error', 'Order is confirmed, cannot change order.');
@@ -200,7 +247,12 @@ class OrderController extends Controller
         $order_item = OrderItem::where('id', $request->id)->first();
 
         if ($order_item) {
-            $order = Order::where('order_id', $order_item->order_id)->first();
+            if (auth()->user()->branch_id) {
+                $order = Order::where('branch_id', auth()->user()->branch_id)->where('order_id', $order_item->order_id)->first();
+            } else {
+                $order = Order::where('order_id', $order_item->order_id)->first();
+            }
+
             if ($order) {
                 if ($order->confirmed) {
                     return redirect()->back()->with('error', 'Order is confirmed, cannot change order.');
@@ -307,7 +359,12 @@ class OrderController extends Controller
     // Edit Fees, Discounts, Initial Deposit and others
     public function edit (Request $request, $id, OrderService $orderService)
     {
-        $order = Order::where('order_id', $id)->first();
+        if (auth()->user()->branch_id) {
+            $order = Order::where('branch_id', auth()->user()->branch_id)->where('order_id', $id)->first();
+        } else {
+            $order = Order::where('order_id', $id)->first();
+        }
+
         if ($order) {
             $request->validate([
                 'order_type' => 'required|string',
@@ -365,7 +422,12 @@ class OrderController extends Controller
 
     public function confirm (Request $request, $id, OrderService $orderService)
     {
-        $order = Order::where('order_id', $id)->first();
+        if (auth()->user()->branch_id) {
+            $order = Order::where('branch_id', auth()->user()->branch_id)->where('order_id', $id)->first();
+        } else {
+            $order = Order::where('order_id', $id)->first();
+        }
+
         if ($order) {
             $acccount = BankAccount::where('id', $request->account)->first();
 
@@ -397,6 +459,25 @@ class OrderController extends Controller
                             if ($deduct_addon['status'] == 'fail') {
                                 return redirect()->back()->with('error', "Add-on Item $addon->name does not have enough stock.");
                             }
+
+                            InventoryLog::create([
+                                'title' => 'Order Confirmation',
+                                'data' => [
+                                    'section' => "addon-order-item",
+                                    'type' => "deduct",
+                                    'order_id' => $orderAddonItem->order_id,
+                                    'addon_order_item_id' =>$orderAddonItem->id,
+                                    'addon_name' => $orderAddonItem->name,
+                                    'addon_id' => $orderAddonItem->addon_id,
+                                    'inventory_id' => $orderAddonItem->inventory_id,
+                                    'inventory_code' => $orderAddonItem->inventory_code,
+                                    'units' => $orderAddonItem->units,
+                                    'order_qty' => $orderAddonItem->qty,
+                                    'stock_deducted' => $deduct_addon['deducted_stock'],
+                                    'stock_before_deduction' => $deduct_addon['previous_stock'],
+                                    'stock_after_deduction' => $deduct_addon['stock']
+                                ]
+                            ]);
                         }
                     }
 
@@ -405,6 +486,25 @@ class OrderController extends Controller
                     } else {
                         $ord_item->status = 'ordered';
                     }
+
+                    InventoryLog::create([
+                        'title' => 'Order Confirmation',
+                        'data' => [
+                            'section' => "order-item",
+                            'type' => "deduct",
+                            'order_id' => $ord_item->order_id,
+                            'order_item_id' =>$ord_item->id,
+                            'order_item_name' => $ord_item->name,
+                            'inventory_id' => $ord_item->inventory_id,
+                            'inventory_code' => $ord_item->inventory_code,
+                            'units' => $ord_item->units,
+                            'order_qty' => $ord_item->qty,
+                            'stock_deducted' => $deduct_inventory['deducted_stock'],
+                            'stock_before_deduction' => $deduct_inventory['previous_stock'],
+                            'stock_after_deduction' => $deduct_inventory['stock']
+                        ]
+                    ]);
+
                     $ord_item->save();
                 }
 

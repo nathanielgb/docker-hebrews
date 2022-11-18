@@ -48,7 +48,6 @@ class UpdateCartAddons extends Component
             }
         }
 
-        // Remove addons that are not in the branch
         $this->cartAddons = $available_addons;
     }
 

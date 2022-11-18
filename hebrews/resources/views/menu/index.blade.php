@@ -122,19 +122,19 @@
                                 <td class="px-4 py-3 text-sm">
                                     @if (isset($item->inventory))
                                         <ul>
-                                            <li>Branch:
+                                            <li>branch:
                                                 <span class="font-bold">
                                                     {{ $item->inventory->branch->name }}
-                                                </span>
-                                            </li>
-                                            <li>code:
-                                                <span class="font-bold">
-                                                    {{ $item->inventory->inventory_code }}
                                                 </span>
                                             </li>
                                             <li>name:
                                                 <span class="font-bold">
                                                     {{ $item->inventory->name }}
+                                                </span>
+                                            </li>
+                                            <li>code:
+                                                <span class="font-bold">
+                                                    {{ $item->inventory->inventory_code }}
                                                 </span>
                                             </li>
                                             <li>stock:
@@ -155,12 +155,19 @@
                                     @endif
                                 </td>
                                 <td class="px-4 py-3 text-sm">
+                                    @php
+                                        $reg_price = isset($item->reg_price) ? number_format($item->reg_price, 2) : 'N/A';
+                                        $retail_price = isset($item->retail_price) ? number_format($item->retail_price, 2) : 'N/A';
+                                        $wholesale_price = isset($item->wholesale_price) ? number_format($item->wholesale_price, 2) : 'N/A';
+                                        $distributor_price = isset($item->distributor_price) ? number_format($item->distributor_price, 2) : 'N/A';
+                                        $rebranding_price = isset($item->rebranding_price) ? number_format($item->rebranding_price, 2) : 'N/A';
+                                    @endphp
                                     <ul>
-                                        <li>regular: <span class="font-bold">{{ number_format($item->reg_price ?? 0, 2) }}</span></li>
-                                        <li>retail: <span class="font-bold">{{ number_format($item->retail_price ?? 0, 2) }}</span></li>
-                                        <li>wholesale: <span class="font-bold">{{ number_format($item->wholesale_price ?? 0, 2) }}</span></li>
-                                        <li>distributor: <span class="font-bold">{{ number_format($item->distributor_price ?? 0, 2) }}</span></li>
-                                        <li>rebranding: <span class="font-bold">{{ number_format($item->rebranding_price ?? 0, 2) }}</span></li>
+                                        <li>regular: <span class="font-bold">{{ $reg_price }}</span></li>
+                                        <li>retail: <span class="font-bold">{{ $retail_price }}</span></li>
+                                        <li>wholesale: <span class="font-bold">{{ $wholesale_price }}</span></li>
+                                        <li>distributor: <span class="font-bold">{{ $distributor_price }}</span></li>
+                                        <li>rebranding: <span class="font-bold">{{ $rebranding_price}}</span></li>
                                     </ul>
                                 </td>
                                 <td class="px-4 py-3 text-sm">

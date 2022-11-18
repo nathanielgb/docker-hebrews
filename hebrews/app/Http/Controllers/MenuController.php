@@ -131,7 +131,6 @@ class MenuController extends Controller
             if ($menu->inventory->unit != 'pcs' && $request->unit < 0.01) {
                 return back()->with('error', "The unit must be at least 0.01.");
             }
-
             $menu->update([
                 'name' => $request->menu,
                 'units' => $request->unit,

@@ -18,11 +18,7 @@ class Cart extends Model
         'admin_id',
         'menu_id',
         'inventory_id',
-        'name',
         'type',
-        'units',
-        'price',
-        'total',
         'qty',
         'note',
         'data'

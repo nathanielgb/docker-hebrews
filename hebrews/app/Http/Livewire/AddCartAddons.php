@@ -36,6 +36,7 @@ class AddCartAddons extends Component
     {
         $this->cartAddons[] = [
             'addon_id' => '',
+            'name' => '',
             'qty' => 1
         ];
     }

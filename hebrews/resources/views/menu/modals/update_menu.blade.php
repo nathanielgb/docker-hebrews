@@ -26,6 +26,16 @@
                     @csrf
                     <input type="hidden" name="menu_id" :value="$store.menu.updateMenuData?.id">
                     <label class="block mb-4 text-sm">
+                        <span class="text-gray-700">Branch</span>
+                        <select id="updateBranch" class="styled-input" name="branch" disabled>
+                            <option value="" selected disabled>Select a branch</option>
+                            @foreach ($branches as $branch)
+                                <option value="{{ $branch->id }}" data-inventories="{{ json_encode($branch->inventories) }}">{{ $branch->name }}</option>
+                            @endforeach
+                        </select>
+                    </label>
+
+                    <label class="block mb-4 text-sm">
                         <span class="text-gray-700">Name</span>
                         <input class="styled-input" name="menu" type="text" placeholder="Cheeseburger" :value="$store.menu.updateMenuData?.name">
                     </label>
@@ -46,17 +56,6 @@
                                 <option x-text="subCat" :value="subCat" :selected="$store.menu.updateMenuData?.sub_category === subCat"></option>
                             </template>
                         </select>
-                    </label>
-
-                    <label class="block mb-4 text-sm">
-                        <span class="text-gray-700">Branch</span>
-                        <select id="updateBranch" class="styled-input" name="branch">
-                            <option value="" selected disabled>Select a branch</option>
-                            @foreach ($branches as $branch)
-                                <option value="{{ $branch->id }}" data-inventories="{{ json_encode($branch->inventories) }}">{{ $branch->name }}</option>
-                            @endforeach
-                        </select>
-                        <p class="text-xs text-yellow-500">note: selecting a branch will show available inventory items for the selected branch</p>
                     </label>
 
                     {{-- <label class="block mb-4 text-sm">

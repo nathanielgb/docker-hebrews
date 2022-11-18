@@ -6,7 +6,7 @@
             <select wire:model="menuid" id="item-select" class="styled-input" name="menuitem" required>
                 <option value="" selected>Select menu item</option>
                 @foreach ($menus as $item)
-                    <option value="{{ $item->id }}" data-item="{{ json_encode($item) }}">{{ $item->name }}</option>
+                    <option value="{{ $item->id }}" data-item="{{ json_encode($item) }}">{{ $item->name }} ({{ $item->name }})</option>
                 @endforeach
             </select>
         </label>

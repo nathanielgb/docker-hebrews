@@ -22,7 +22,7 @@
                 </button>
             </div>
             <div class="relative p-4 modal-body">
-                <livewire:update-order-item>
+                <livewire:update-order-item :order="$order">
             </div>
             <div
                 class="flex flex-wrap items-center justify-end flex-shrink-0 p-4 border-t border-gray-200 modal-footer rounded-b-md"

@@ -45,17 +45,12 @@
                                 </td>
                                 <td class="px-4 py-3 text-sm text-center" style="max-width: 100px;">
                                     <input
-                                        type="hidden"
-                                        wire:model="cartAddons.{{ $index }}.name"
-                                        name="cartAddon[{{ $index }}][name]"
-                                    >
-                                    <input
-                                    wire:model="cartAddons.{{ $index }}.qty"
-                                    class="styled-input"
-                                    name="cartAddon[{{ $index }}][qty]"
-                                    type="number"
-                                    min="1"
-                                    placeholder="1">
+                                        wire:model="cartAddons.{{ $index }}.qty"
+                                        class="styled-input"
+                                        name="cartAddon[{{ $index }}][qty]"
+                                        type="number"
+                                        min="1"
+                                        placeholder="1">
                                 </td>
                                 <td class="px-4 py-3 text-sm text-center">
                                     <button

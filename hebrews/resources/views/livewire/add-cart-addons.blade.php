@@ -55,6 +55,7 @@
                     </tr>
                     </thead>
                     <tbody class="bg-white">
+                        {{-- {{ dd($cartAddons) }} --}}
                         @foreach ($cartAddons as $index => $cartAddon)
                             <tr class="text-gray-700">
                                 <td class="px-4 py-3 text-sm">
@@ -70,11 +71,6 @@
                                     </select>
                                 </td>
                                 <td class="px-4 py-3 text-sm text-center" style="max-width: 100px;">
-                                    <input
-                                        type="hidden"
-                                        wire:model="cartAddons.{{ $index }}.name"
-                                        name="cartAddon[{{ $index }}][name]"
-                                    >
                                     <input
                                     wire:model="cartAddons.{{ $index }}.qty"
                                     class="styled-input"

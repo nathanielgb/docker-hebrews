@@ -14,7 +14,7 @@ class AddonService
      * @param Array $addons attached add-ons to the cart item
      * @return array
      */
-    public function validateAddon($addons)
+    public function validateAddon($addons, $productitem)
     {
         // Check if there is add ons
         if ($addons) {
@@ -25,21 +25,21 @@ class AddonService
                     unset($addOnData[$index]);
                     $addOnData = array_values($addOnData);
                 } else {
-                    // $addon = MenuAddOn::where('id', $value['addon_id'])->first();
-
-                    $addon = MenuAddOn::where('id', $value['addon_id'])->whereHas('inventory', function ($q) {
-                        // Check branch of current user
-                        if (auth()->user()->branch_id) {
-                            $q->where('branch_id', auth()->user()->branch_id);
-                        }
-                    })->first();
-
-                    $name = $value['name'] ?? '';
+                    $addon = MenuAddOn::where('id', $value['addon_id'])->first();
 
                     if (!$addon) {
                         return [
                             'status' => 'fail',
-                            'message' => "Add-on (name: $name) is  invalid."
+                            'message' => "An Add-on item in $productitem->name does not exist."
+                        ];
+                        break;
+                    }
+
+                    // Check if the menu addon is for the correct branch
+                    if ($addon->inventory->branch_id != $productitem->inventory->branch_id) {
+                        return [
+                            'status' => 'fail',
+                            'message' => "Add-on (name: $addon->name) is not compatible with the item."
                         ];
                         break;
                     }
@@ -48,7 +48,7 @@ class AddonService
                     if ($value['qty'] <= 0) {
                         return [
                             'status' => 'fail',
-                            'message' => "Add-on (name: $name) quantity is invalid."
+                            'message' => "Add-on (name: $addon->name) quantity is invalid."
                         ];
                         break;
                     }

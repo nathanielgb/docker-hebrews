@@ -23,6 +23,10 @@
                     <input class="styled-input" name="order_id" type="text" placeholder="Enter order number">
                 </label>
                 <label class="block mb-4 text-sm">
+                    <span class="text-gray-700 dark:text-gray-400">Branch Id</span>
+                    <input class="styled-input" name="branch_id" type="text" placeholder="Enter branch id">
+                </label>
+                <label class="block mb-4 text-sm">
                     <span class="text-gray-700 dark:text-gray-400">Customer Name</span>
                     <input class="styled-input" name="cust_name" type="text" placeholder="Enter name">
                 </label>

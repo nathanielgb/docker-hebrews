@@ -33,7 +33,7 @@ class MenuAddOnController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name' => 'required|max:255',
+            'name' => 'required|max:255|alpha_dash',
             'inventory' => 'required|exists:branch_menu_inventories,id',
         ]);
 

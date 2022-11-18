@@ -2,6 +2,7 @@
 namespace App\Services;
 
 use App\Models\AddonOrderItem;
+use App\Models\BranchMenuInventory;
 use App\Models\ErrorLog;
 use App\Models\Menu;
 use App\Models\MenuAddOn;
@@ -38,6 +39,11 @@ class OrderService
             throw new \Exception('Item does not exist.');
         }
 
+        // Check if proper branch
+        if($item->inventory->branch_id != $order->branch_id) {
+            throw new \Exception('Item is not available for the branch of order.');
+        }
+
         // Check if item is already ordered
         $ord_item = OrderItem::where('order_id', $order->order_id)
             ->where('menu_id', $item->id)
@@ -71,7 +77,7 @@ class OrderService
 
         // Validate Add-on
         $AddonService = new AddonService;
-        $response = $AddonService->validateAddon($addons);
+        $response = $AddonService->validateAddon($addons, $item);
 
         if (isset($response) && $response['status'] == 'fail') {
             throw new \Exception($response['message']);
@@ -105,6 +111,7 @@ class OrderService
             $ord_item->menu_id = $item->id;
             $ord_item->inventory_id = $item->inventory_id;
             $ord_item->inventory_name = $item->inventory->name;
+            $ord_item->inventory_code = $item->inventory->inventory_code;
             $ord_item->name = $item->name;
             $ord_item->from = $item->category->from;
             $ord_item->price = $product_price;
@@ -141,7 +148,6 @@ class OrderService
 
                 DB::table('addon_order_items')->insert($addon_item);
             }
-
 
             // Re-calculate total order price
             $new_subtotal = $this->getOrderSubtotal($order->order_id);
@@ -192,7 +198,7 @@ class OrderService
             throw new \Exception('Item quantity cannot be less than or equal to 0.');
         }
 
-        $inventory = MenuInventory::where('id', $item->inventory_id)->first();
+        $inventory = BranchMenuInventory::where('id', $item->inventory_id)->first();
 
         if (!$inventory) {
             throw new \Exception('Error updating quantity. Inventory item does not exist.');
@@ -207,7 +213,7 @@ class OrderService
 
         // Validate Add-on
         $AddonService = new AddonService;
-        $response = $AddonService->validateAddon($addons);
+        $response = $AddonService->validateAddon($addons, $item->menu);
 
         if (isset($response) && $response['status'] == 'fail') {
             throw new \Exception($response['message']);
@@ -468,6 +474,7 @@ class OrderService
 
         return [
             'status' => 'success',
+            'deducted_stock' => $needed_stock,
             'stock' => $item->stock,
             'previous_stock' => $item->previous_stock
         ];
@@ -503,39 +510,33 @@ class OrderService
             $product_price = $item->reg_price;
         } else if ($type == 'retail') {
             if ($item->retail_price == null && $item->retail_price == 0) {
-                if ($item->reg_price == null && $item->reg_price == 0) {
-                    return [
-                        'status' => 'fail',
-                        'message' => "Item (name: {$item->name}) does not have a retail price."
-                    ];
-                }
+                return [
+                    'status' => 'fail',
+                    'message' => "Item (name: {$item->name}) does not have a retail price."
+                ];
             }
             $product_price = $item->retail_price;
         } else if ($type == 'rebranding') {
             if ($item->rebranding_price == null && $item->rebranding_price == 0) {
-                if ($item->reg_price == null && $item->reg_price == 0) {
-                    return [
-                        'status' => 'fail',
-                        'message' => "Item (name: {$item->name}) does not have a rebranding price."
-                    ];
-                }
+                return [
+                    'status' => 'fail',
+                    'message' => "Item (name: {$item->name}) does not have a rebranding price."
+                ];
             }
             $product_price = $item->rebranding_price;
         } else if ($type == 'distributor') {
             if ($item->distributor_price == null && $item->distributor_price == 0) {
-                if ($item->reg_price == null && $item->reg_price == 0) {
-                    return [
-                        'status' => 'fail',
-                        'message' => "Item (name: {$item->name}) does not have a distributor price."
-                    ];
-                }
+                return [
+                    'status' => 'fail',
+                    'message' => "Item (name: {$item->name}) does not have a distributor price."
+                ];
             }
             $product_price = $item->distributor_price;
         } else {
             if ($item->reg_price == null && $item->reg_price == 0) {
                 return [
                     'status' => 'fail',
-                    'message' => "Error encountered please inform Administrator."
+                    'message' => "Item (name: {$item->name}) does not have a regular price."
                 ];
             }
         }

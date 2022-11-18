@@ -41,12 +41,11 @@
                 <table class="w-full whitespace-no-wrap">
                     <thead>
                     <tr class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase border-b bg-gray-50">
-                        <th class="px-4 py-4">Branch</th>
-                        <th class="px-4 py-4 text-center">Menu ID</th>
+                        <th class="px-4 py-4 text-center">Menu Id</th>
                         <th class="px-4 py-4">Name</th>
+                        <th class="px-4 py-4">Inventory</th>
                         <th class="px-4 py-4 text-center">Status</th>
                         <th class="px-4 py-4 text-center">Type</th>
-                        <th class="px-4 py-4 text-center">Units/Qty</th>
                         <th class="px-4 py-3 text-center">Qty</th>
                         <th class="px-4 py-4 text-center">Price</th>
                         <th class="px-4 py-3 text-center">Total</th>
@@ -56,14 +55,22 @@
                     <tbody class="bg-white divide-y">
                         @forelse ($cart_items as $item)
                             <tr>
-                                <td class="px-4 py-4 text-sm">
-                                    {{ $item->inventory->branch->name }}
-                                </td>
                                 <td class="px-4 py-4 text-sm text-center">
                                     {{ $item->menu_id }}
                                 </td>
                                 <td class="px-4 py-4 text-sm">
-                                    {{ $item->name }}
+                                    {{ $item->menu->name ?? 'N/A' }}
+                                </td>
+                                <td class="px-4 py-4 text-sm">
+                                    @if (isset($item->inventory))
+                                        <ul>
+                                            <li>Branch: <span class="font-bold">{{ $item->inventory->branch->name }}</span></li>
+                                            <li>Name: <span class="font-bold">{{ $item->inventory->name }}</span></li>
+                                            <li>Code: <span class="font-bold">{{ $item->inventory->inventory_code }}</span></li>
+                                            <li>Stock: <span class="font-bold">{{ $item->inventory->stock }}</span></li>
+                                            <li>Unit: <span class="font-bold">{{ $item->inventory->unit }}</span></li>
+                                        </ul>
+                                    @endif
                                 </td>
                                 <td class="px-4 py-4 text-sm text-center">
                                     @if ($item->available)
@@ -74,9 +81,6 @@
                                 </td>
                                 <td class="px-4 py-4 text-sm text-center">
                                     {{ $item->type }}
-                                </td>
-                                <td class="px-4 py-4 text-sm text-center">
-                                    {{ $item->units }} ({{ $item->inventory->unit }})
                                 </td>
                                 <td class="px-4 py-4 text-sm text-center">
                                     {{ $item->qty }}
@@ -99,16 +103,18 @@
                                 </td> --}}
                                 <td class="px-4 py-4 text-sm f">
                                     <div class="flex items-center justify-center space-x-4 text-sm">
-                                        <button
-                                            class="btn-update-cart flex items-center inline-block px-6 py-2.5 bg-green-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-green-700 hover:shadow-lg focus:bg-green-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-green-800 active:shadow-lg transition duration-150 ease-in-out"
-                                            type="button"
-                                            data-cart="{{ json_encode($item) }}"
-                                            data-bs-toggle="modal"
-                                            data-bs-target="#updateCartModal"
-                                            @click="$store.cart.updateData={{ json_encode($item) }}"
-                                            >
-                                            <span><i class="fa-solid fa-pen"></i> Update</span>
-                                        </button>
+                                        @if ($item->available)
+                                            <button
+                                                class="btn-update-cart flex items-center inline-block px-6 py-2.5 bg-green-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-green-700 hover:shadow-lg focus:bg-green-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-green-800 active:shadow-lg transition duration-150 ease-in-out"
+                                                type="button"
+                                                data-cart="{{ json_encode($item) }}"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#updateCartModal"
+                                                @click="$store.cart.updateData={{ json_encode($item) }}"
+                                                >
+                                                <span><i class="fa-solid fa-pen"></i> Update</span>
+                                            </button>
+                                        @endif
                                         <button
                                             type="button"
                                             class="inline-block px-6 py-2.5 bg-red-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-red-700 hover:shadow-lg focus:bg-red-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-red-800 active:shadow-lg transition duration-150 ease-in-out"
