@@ -176,6 +176,7 @@ Route::middleware('auth')->group(function () {
         Route::get('order-list', [\App\Http\Controllers\OrderController::class, 'showOrders'])->name('order.list');
 
         Route::get('order/summary/print', [\App\Http\Controllers\OrderController::class, 'printSummary'])->name('order.summary.print');
+        Route::get('show-order-items/{order_id}', [\App\Http\Controllers\OrderController::class, 'showOrderItems'])->name('order.show_items');
 
         Route::group(['middleware' => 'CheckAccessActions:manage-orders-action'], function () {
             Route::post('delete-order-item', [\App\Http\Controllers\OrderController::class, 'deleteOrderItem'])->name('order.delete_item');
@@ -189,7 +190,6 @@ Route::middleware('auth')->group(function () {
         Route::group(['middleware' => 'CheckAccessActions:manage-order-item-action'], function () {
             Route::get('edit-order-items/{order_id}', [\App\Http\Controllers\OrderController::class, 'showEditOrderItems'])->name('order.edit_items');
             Route::post('edit-order-item', [\App\Http\Controllers\OrderController::class, 'updateOrderItems'])->name('order.update_item');
-
         });
     });
 

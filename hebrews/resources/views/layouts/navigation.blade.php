@@ -62,23 +62,52 @@
                 </li>
             @endif
 
-            @if(auth()->user()->can('access', 'view-menus-action'))
+            @if(auth()->user()->can('access', 'view-menus-action') || auth()->user()->can('access', 'view-menu-addons-action'))
                 <li class="relative px-6 py-3">
-                    <x-nav-link href="{{ route('menu.index') }}" :active="request()->routeIs('menu.index')">
+                    <x-nav-dropdown-link
+                        data-bs-target="#collapseMenu"
+                        aria-controls="collapseMenu"
+                        :active="request()->routeIs('menu.index') || request()->routeIs('menu.addon.index')">
                         <x-slot name="icon">
                             <i class="fa-solid fa-book-open"></i>
                         </x-slot>
                         {{ __('Menu') }}
-                    </x-nav-link>
+                    </x-nav-dropdown-link>
+                    <ul
+                        class="p-2 mt-2 space-y-2 overflow-hidden text-sm font-medium text-gray-500 rounded-md shadow-inner collapse bg-gray-50 dark:text-gray-400 dark:bg-gray-900"
+                        id="collapseMenu"
+                    >
+                        @if(auth()->user()->can('access', 'view-menus-action'))
+                            <li
+                                @if (request()->routeIs('menu.index'))
+                                    class="px-2 py-1 text-green-700"
+                                @else
+                                    class="px-2 py-1"
+                                @endif >
+                                <a class="w-full" href="{{ route('menu.index') }}">Menu</a>
+                            </li>
+                        @endif
+                        @if (auth()->user()->can('access', 'view-menu-addons-action'))
+                            <li
+                                @if (request()->routeIs('menu.addon.index'))
+                                    class="px-2 py-1 text-green-700"
+                                @else
+                                    class="px-2 py-1"
+                                @endif >
+                                <a class="w-full" href="{{ route('menu.addon.index') }}">
+                                    Add-ons
+                                </a>
+                            </li>
+                        @endif
+                    </ul>
                 </li>
             @endif
-
             @if(auth()->user()->can('access', 'view-inventory-action') || auth()->user()->can('access', 'view-branch-inventory-action'))
                 <li class="relative px-6 py-3">
                     <x-nav-dropdown-link
                         data-bs-target="#collapseInventory"
                         aria-controls="collapseInventory"
-                        :active="request()->routeIs('menu.view_inventory')">
+                        :active="request()->routeIs('menu.view_inventory') || request()->routeIs('branch.inventory.index')">
                         <x-slot name="icon">
                             <i class="fa-solid fa-warehouse"></i>
                         </x-slot>
@@ -111,17 +140,6 @@
                             </li>
                         @endif
                     </ul>
-                </li>
-            @endif
-
-            @if(auth()->user()->can('access', 'view-menu-addons-action'))
-                <li class="relative px-6 py-3">
-                    <x-nav-link href="{{ route('menu.addon.index') }}" :active="request()->routeIs('menu.addon.index')">
-                        <x-slot name="icon">
-                            <i class="fa-solid fa-link"></i>
-                        </x-slot>
-                        {{ __('Add-ons') }}
-                    </x-nav-link>
                 </li>
             @endif
 
@@ -168,21 +186,38 @@
 
             @if(auth()->user()->can('access', 'generate-order-report-action'))
                 <li class="relative px-6 py-3">
-                    <x-nav-link href="{{ route('expense.report.show') }}" :active="request()->routeIs('expense.report.show')">
-                        <x-slot name="icon">
-                            <i class="fa-solid fa-money-bill"></i>
-                        </x-slot>
-                        {{ __('Expense Report') }}
-                    </x-nav-link>
-                </li>
-
-                <li class="relative px-6 py-3">
-                    <x-nav-link href="{{ route('orders.report.show') }}" :active="request()->routeIs('orders.report.show')">
+                    <x-nav-dropdown-link
+                        data-bs-target="#collapsReport"
+                        aria-controls="collapsReport"
+                        :active="request()->routeIs('expense.report.show') || request()->routeIs('orders.report.show')">
                         <x-slot name="icon">
                             <i class="fa-solid fa-file-invoice"></i>
                         </x-slot>
-                        {{ __('Order Report') }}
-                    </x-nav-link>
+                        {{ __('Report') }}
+                    </x-nav-dropdown-link>
+                    <ul
+                        class="p-2 mt-2 space-y-2 overflow-hidden text-sm font-medium text-gray-500 rounded-md shadow-inner collapse bg-gray-50 dark:text-gray-400 dark:bg-gray-900"
+                        id="collapsReport"
+                    >
+                        <li
+                            @if (request()->routeIs('expense.report.show'))
+                                class="px-2 py-1 text-green-700"
+                            @else
+                                class="px-2 py-1"
+                            @endif >
+                            <a class="w-full" href="{{ route('expense.report.show') }}">Expense Report</a>
+                        </li>
+                        <li
+                            @if (request()->routeIs('orders.report.show'))
+                                class="px-2 py-1 text-green-700"
+                            @else
+                                class="px-2 py-1"
+                            @endif >
+                            <a class="w-full" href="{{ route('orders.report.show') }}">
+                                Order Report
+                            </a>
+                        </li>
+                    </ul>
                 </li>
             @endif
 

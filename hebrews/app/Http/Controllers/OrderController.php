@@ -193,6 +193,20 @@ class OrderController extends Controller
         return redirect()->route('order.list')->with('error', 'Order does not exist.');
     }
 
+    public function showOrderItems (Request $request)
+    {
+        if (auth()->user()->branch_id) {
+            $order = Order::where('branch_id', auth()->user()->branch_id)->where('order_id', $request->order_id)->first();
+        } else {
+            $order = Order::where('order_id', $request->order_id)->first();
+        }
+
+        $order_id = $request->order_id;
+        $order_items = OrderItem::where('order_id', $order_id)->get();
+
+        return view('orders.sections.show_order_items', compact('order', 'order_items', 'order_id'));
+    }
+
     public function showEditOrderItems (Request $request)
     {
         if (auth()->user()->branch_id) {

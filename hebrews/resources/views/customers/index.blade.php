@@ -38,7 +38,7 @@
                 <tr class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase border-b bg-gray-50">
                     <th class="px-4 py-3">ID</th>
                     <th class="px-4 py-3">Account Name</th>
-                    <th class="px-4 py-3 text-center">Contact Number</th>
+                    <th class="px-4 py-3">Contact Number</th>
                     <th class="px-4 py-3">Address</th>
                     <th class="px-4 py-3">Last updated</th>
                     <th class="px-4 py-3 text-center">Action</th>
@@ -56,7 +56,7 @@
                             <td class="px-4 py-3 text-sm">
                                 {{ $item->contact_number }}
                             </td>
-                            <td class="px-4 py-3 text-sm text-center">
+                            <td class="px-4 py-3 text-sm">
                                 {{ $item->address }}
                             </td>
                             <td class="px-4 py-3 text-sm">

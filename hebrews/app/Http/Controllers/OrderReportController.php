@@ -46,6 +46,9 @@ class OrderReportController extends Controller
                     $query->where('cancelled', 1);
                 }
             }
+            if ($request->branch_id !== null) {
+                $query->where('branch_id', $request->branch_id);
+            }
             if ($request->servername !== null) {
                 $query->where('server_name', 'LIKE', '%' . $request->servername . '%');
             }
@@ -60,18 +63,20 @@ class OrderReportController extends Controller
         $order_count = $orders->count() ?? 0;
         $date_range = $request->date;
         $status = $request->status;
+        $branch_id = $request->branch_id;
 
         $order_numbers = $orders->pluck('order_id');
-        $customers = $orders->pluck('customer_name');
+        // $customers = $orders->pluck('customer_name');
+        $customers = $request->customer_name;
 
         // Use this to be able to use group by, for some reason does not work without this line
         DB::statement("SET SQL_MODE=''");
 
-        $order_items = DB::table('order_items')->select(DB::raw('order_id, menu_id, inventory_id, name, inventory_name, SUM(qty) AS total_qty, SUM(qty*units) AS stock_used, SUM(total_amount) AS total_amount'))
+        $order_items = DB::table('order_items')->select(DB::raw('order_id, menu_id, inventory_id, name, inventory_name, inventory_code, SUM(qty) AS total_qty, SUM(qty*units) AS stock_used, SUM(total_amount) AS total_amount'))
             ->whereIn('order_id', $order_numbers)
             ->groupBy('menu_id')->get();
 
-        $addon_order_items = DB::table('addon_order_items')->select(DB::raw('order_id, addon_id, name, inventory_name, SUM(qty) AS total_qty, SUM(qty*units) AS stock_used, SUM(total_amount) AS total_amount'))
+        $addon_order_items = DB::table('addon_order_items')->select(DB::raw('order_id, addon_id, name, inventory_name, inventory_code, SUM(qty) AS total_qty, SUM(qty*units) AS stock_used, SUM(total_amount) AS total_amount'))
             ->whereIn('order_id', $order_numbers)
             ->groupBy('addon_id')->get();
 
@@ -102,7 +107,8 @@ class OrderReportController extends Controller
         'order_numbers',
         'order_items',
         'addon_order_items',
-        'customers'
+        'customers',
+        'branch_id'
         ));
     }
 

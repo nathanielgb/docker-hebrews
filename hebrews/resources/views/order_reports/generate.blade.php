@@ -34,6 +34,10 @@
                     </select>
                 </label>
                 <label class="block mb-4 text-sm">
+                    <span class="text-gray-700 dark:text-gray-400">Branch</span>
+                    <input class="styled-input" name="branch_id" type="text" placeholder="Enter Branch ID">
+                </label>
+                <label class="block mb-4 text-sm">
                     <span class="text-gray-700">Server name</span>
                     <select class="styled-input" name="servername">
                         <option value="" selected disabled>Select a user</option>
