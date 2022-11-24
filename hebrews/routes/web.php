@@ -135,6 +135,7 @@ Route::middleware('auth')->group(function () {
 
         Route::group(['middleware' => 'CheckAccessActions:manage-menu-addons-action'], function () {
             Route::post('menu/add-ons', [\App\Http\Controllers\MenuAddOnController::class, 'store'])->name('menu.addon.store');
+            Route::delete('menu/add-ons', [\App\Http\Controllers\MenuAddOnController::class, 'destroy'])->name('menu.addon.destroy');
         });
     });
 
@@ -161,7 +162,7 @@ Route::middleware('auth')->group(function () {
 
     // Take orders section
     Route::group(['middleware' => 'CheckAccessActions:take-orders-action'], function () {
-        Route::get('take-order', [\App\Http\Controllers\CartController::class, 'showTakeOrder'])->name('order.show_take_order');
+        // Route::get('take-order', [\App\Http\Controllers\CartController::class, 'showTakeOrder'])->name('order.show_take_order');
         Route::get('add-cart', [\App\Http\Controllers\CartController::class, 'showAddCart'])->name('order.show_add_cart');
         Route::post('add-cart', [\App\Http\Controllers\CartController::class, 'addCart'])->name('order.add_cart');
         Route::get('view-cart', [\App\Http\Controllers\CartController::class, 'viewCart'])->name('order.show_cart');

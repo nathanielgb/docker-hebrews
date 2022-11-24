@@ -110,7 +110,6 @@ class MenuController extends Controller
         $menu = Menu::where('id', $request->menu_id)->first();
 
         if ($menu) {
-
             if (!$menu->inventory) {
                 return back()->with('error', "Failed to update Item $request->menu. Inventory does not exist.");
             }

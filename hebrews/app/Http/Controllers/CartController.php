@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Models\Branch;
@@ -345,7 +344,6 @@ class CartController extends Controller
             }
 
             $cart_subtotal = $cart_subtotal + ($price * $citem->qty);
-
 
             $citem['price'] = $price;
             $citem['total'] = number_format($price * $citem->qty, 2, '.', '');

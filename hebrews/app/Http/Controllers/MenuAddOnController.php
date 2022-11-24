@@ -11,7 +11,12 @@ class MenuAddOnController extends Controller
 {
     public function index(Request $request)
     {
-        $addons = MenuAddOn::orderBy('name');
+        $addons = MenuAddOn::whereHas('inventory', function ($q) {
+            // Check branch of current user
+            if (auth()->user()->branch_id) {
+                $q->where('branch_id', auth()->user()->branch_id);
+            }
+        });
 
         if (auth()->user()->branch_id) {
             $inventory_items = BranchMenuInventory::where('branch_id', auth()->user()->branch_id)->get();;
@@ -21,7 +26,7 @@ class MenuAddOnController extends Controller
             $branches = Branch::all();
         }
 
-        $addons = $addons->paginate(20);
+        $addons = $addons->orderBy('name')->paginate(20);
 
         return view('menu.add_ons', compact(
             'addons',
@@ -42,6 +47,20 @@ class MenuAddOnController extends Controller
             'inventory_id' => $request->inventory
         ]);
 
-        return back()->with('success', 'Menu Add-on added successfully.');
+        return back()->with('success', 'Menu add-on added successfully.');
+    }
+
+    //
+    public function destroy (Request $request)
+    {
+        $addon = MenuAddOn::where('id', $request->id)->first();
+
+        if ($addon) {
+            $addon->delete();
+
+            return back()->with('success', 'Menu add-on has been successfully removed.');
+        }
+
+        return redirect()->back()->with('error', 'Menu add-on does not exist.');
     }
 }

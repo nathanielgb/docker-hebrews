@@ -4,48 +4,38 @@ namespace App\Http\Controllers;
 
 use App\Models\BankAccount;
 use Carbon\Carbon;
-use App\Models\Cart;
 use App\Models\Menu;
 use App\Models\Order;
 use App\Models\MenuCategory;
-use App\Models\MenuInventory;
-use App\Models\OrderDiscount;
 use App\Models\OrderItem;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
 use App\Http\Requests\PayOrderRequest;
 use App\Models\AddonOrderItem;
 use App\Models\BankTransaction;
-use App\Models\Branch;
-use App\Models\Customer;
 use App\Models\ErrorLog;
 use App\Models\InventoryLog;
-use App\Models\MenuAddOn;
-use App\Services\AddonService;
 use App\Services\OrderService;
-use Illuminate\Support\Facades\Auth;
 
 class OrderController extends Controller
 {
-    public function showTakeOrder()
-    {
+    // public function showTakeOrder()
+    // {
+    //     $categories = MenuCategory::with(['menus' => function ($query) {
+    //         $query->whereHas('inventory', function ($q) {
+    //             $q->where('stock', '>', 0);
+    //         });
+    //     }])->whereHas('menus', function ($query) {
+    //         $query->whereHas('inventory', function ($q) {
+    //             $q->where('stock', '>', 0);
+    //         });
+    //     });
 
-        $categories = MenuCategory::with(['menus' => function ($query) {
-            $query->whereHas('inventory', function ($q) {
-                $q->where('stock', '>', 0);
-            });
-        }])->whereHas('menus', function ($query) {
-            $query->whereHas('inventory', function ($q) {
-                $q->where('stock', '>', 0);
-            });
-        });
+    //     $categories = $categories->orderBy('name', 'ASC')->get()->toJson();
 
-        $categories = $categories->orderBy('name', 'ASC')->get()->toJson();
-
-        return view('orders.take_order', compact('categories'));
-    }
+    //     return view('orders.take_order', compact('categories'));
+    // }
 
     public function showOrders(Request $request)
     {

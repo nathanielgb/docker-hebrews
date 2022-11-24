@@ -18,6 +18,19 @@
 
     @include('components.alert-message')
 
+    <div class="inline-flex w-full mt-2 mb-4 overflow-hidden bg-white rounded-lg shadow-md">
+        <div class="flex items-center justify-center w-12 bg-yellow-400">
+            <i class="text-lg text-white fa-solid fa-circle-exclamation"></i>
+        </div>
+
+        <div class="px-4 py-2 -mx-3">
+            <div class="mx-3">
+                <span class="font-semibold text-yellow-400">Warning</span>
+                <p class="text-sm text-gray-600">Items in warehouse will <b>NOT APPEAR</b> in Menu. Transfer items to desired Branch Inventory to be able to add menu items.</p>
+            </div>
+        </div>
+    </div>
+
     <div class="flex justify-between my-3">
         <div>
             {{-- <a

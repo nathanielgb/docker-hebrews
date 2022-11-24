@@ -16,11 +16,13 @@ class InventoryController extends Controller
 
         if ($request->except(['page'])) {
             $inventory_items=$inventory_items->where(function ($query) use ($request) {
-                if ($request->inventory_id !== null) {
-                    $query->where('id', $request->inventory_id);
+                if ($request->inventory_code !== null) {
+                    $inventory_code = strtolower($request->inventory_code);
+                    $query->whereRaw('inventory_code LIKE ?', ["%$inventory_code%"]);
                 }
                 if ($request->name !== null) {
-                    $query->where('name', 'LIKE', '%' . $request->name . '%');
+                    $name = strtolower($request->name);
+                    $query->whereRaw('name LIKE ?', ["%$name%"]);
                 }
             });
         }
@@ -125,7 +127,7 @@ class InventoryController extends Controller
                 }
 
                 // Check if transfer stock is greater than current stock
-                if ($inventory_item->stock < $request->transfer_stock) {
+                if ($request->transfer_stock > $inventory_item->stock) {
                     return redirect()->back()->with('error', 'Failed to tranfer inventory item. Invalid transfer stock.');
                 }
 
@@ -204,11 +206,14 @@ class InventoryController extends Controller
         if ($request->except(['page'])) {
             $inventory_items=$inventory_items->where(function ($query) use ($request) {
                 if ($request->inventory_code !== null) {
-                    $query->where('inventory_code', 'LIKE', '%' . $request->inventory_code . '%');
+                    $inventory_code = strtolower($request->inventory_code);
+                    $query->whereRaw('inventory_code LIKE ?', ["%$inventory_code%"]);
                 }
                 if ($request->name !== null) {
-                    $query->where('name', 'LIKE', '%' . $request->name . '%');
+                    $name = strtolower($request->name);
+                    $query->whereRaw('name LIKE ?', ["%$name%"]);
                 }
+
                 if ($request->branch_id !== null) {
                     $query->where('branch_id', $request->branch_id);
                 }

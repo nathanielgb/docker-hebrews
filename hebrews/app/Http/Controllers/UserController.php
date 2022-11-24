@@ -35,7 +35,6 @@ class UserController extends Controller
             $admin_types = AccessAction::orderBy('name')->get();
         } else if ($auth_user->type == 'ADMIN') {
             $admin_types = AccessAction::where('name', '!=', 'SUPERADMIN')
-                ->where('name', '!=', 'ADMIN')
                 ->orderBy('name')->get();
         } else if ($auth_user->type == 'MANAGER') {
             $admin_types = AccessAction::where('name', '!=', 'SUPERADMIN')
