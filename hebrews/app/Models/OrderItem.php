@@ -26,6 +26,7 @@ class OrderItem extends Model
         'menu_id',
         'inventory_id',
         'inventory_name',
+        'inventory_code',
         'name',
         'from',
         'price',

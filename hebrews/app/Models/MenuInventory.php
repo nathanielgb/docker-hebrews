@@ -14,26 +14,28 @@ class MenuInventory extends Model
      * @var array<int, string>
      */
     protected $fillable = [
+        'inventory_code',
         'name',
         'unit',
         'stock',
         'previous_stock',
         'modified_by',
+        'branch_id',
     ];
 
-    /**
-     * Get the products associated with the inventory item.
-     */
-    public function products()
-    {
-        return $this->hasMany(Menu::class, 'inventory_id', 'id');
-    }
+    // /**
+    //  * Get the products associated with the inventory item.
+    //  */
+    // public function products()
+    // {
+    //     return $this->hasMany(Menu::class, 'inventory_id', 'id');
+    // }
 
-    /**
-     * Get the products associated with the inventory item.
-     */
-    public function addons()
-    {
-        return $this->hasMany(MenuAddOn::class, 'inventory_id', 'id');
-    }
+    // /**
+    //  * Get the products associated with the inventory item.
+    //  */
+    // public function addons()
+    // {
+    //     return $this->hasMany(MenuAddOn::class, 'inventory_id', 'id');
+    // }
 }

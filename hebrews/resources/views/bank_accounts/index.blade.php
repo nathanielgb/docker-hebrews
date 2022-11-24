@@ -39,7 +39,7 @@
                     <th class="px-4 py-3">ID</th>
                     <th class="px-4 py-3">Bank</th>
                     <th class="px-4 py-3">Account Name</th>
-                    <th class="px-4 py-3 text-center">Account Number</th>
+                    <th class="px-4 py-3">Account Number</th>
                     <th class="px-4 py-3">Running Balance</th>
                     <th class="px-4 py-3">Last updated</th>
                     <th class="px-4 py-3 text-center">Action</th>
@@ -57,7 +57,7 @@
                             <td class="px-4 py-3 text-sm">
                                 {{ $item->account_name }}
                             </td>
-                            <td class="px-4 py-3 text-sm text-center">
+                            <td class="px-4 py-3 text-sm">
                                 {{ $item->account_number }}
                             </td>
                             <td class="px-4 py-3 text-sm">

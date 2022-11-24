@@ -25,25 +25,27 @@
                 <form id="add-inventory-form" action="{{ route('menu.add_inventory') }}" method="post" autocomplete="off">
                     @csrf
                     <label class="block mb-4 text-sm">
+                        <span class="text-gray-700">Inventory Code</span>
+                        <input class="styled-input" name="inventory_code" type="text" placeholder="Enter code">
+                        <p class="text-xs text-yellow-500">note: unique identifier for the inventory item.</p>
+                    </label>
+                    <label class="block mb-4 text-sm">
                         <span class="text-gray-700">Name</span>
-                        <input class="block w-full mt-1 text-sm focus:border-purple-400 focus:outline-none focus:shadow-outline-purple form-input" name="name" type="text" placeholder="Enter name">
+                        <input class="styled-input" name="name" type="text" placeholder="Enter name">
                     </label>
                     <label class="block mb-4 text-sm">
                         <span class="text-gray-700">Unit</span>
-                        <select class="block w-full mt-1 text-sm form-select focus:border-purple-400 focus:outline-none focus:shadow-outline-purple" name="unit">
+                        <select class="styled-input" name="unit">
                             <option value="" selected disabled>Select a unit</option>
-                            {{-- <option value="Kg">Kilogram (Kg)</option>
-                            <option value="g">gram (g)</option>
-                            <option value="L">Liter (L)</option>
-                            <option value="mL">Mililiter (mL)</option> --}}
-                            <option value="Kg" :selected="updateInventoryUnit === 'Kg'">Kilogram (Kg)</option>
+                            <option value="Kg">Kilogram (Kg)</option>
                             <option value="g">gram (g)</option>
                             <option value="pcs">Pieces (pcs)</option>
+                            <option value="boxes">Boxes</option>
                         </select>
                     </label>
                     <label class="block mb-4 text-sm">
                         <span class="text-gray-700">Stock</span>
-                        <input class="block w-full mt-1 text-sm focus:border-purple-400 focus:outline-none focus:shadow-outline-purple form-input" name="stock" type="number" step="0.01" placeholder="1">
+                        <input class="styled-input" name="stock" type="number" step="0.01" placeholder="1">
                     </label>
                 </form>
             </div>

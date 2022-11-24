@@ -26,8 +26,18 @@
                     @csrf
                     <div>
                         <label class="block mb-4 text-sm">
+                            <span class="text-gray-700">Branch</span>
+                            <select id="addBranch" class="styled-input" name="branch">
+                                <option value="" disabled>Select a branch</option>
+                                @foreach ($branches as $branch)
+                                    <option value="{{ $branch->id }}" @if(auth()->user()->branch_id == $branch->id) selected @endif>{{ $branch->name }}</option>
+                                @endforeach
+                            </select>
+                        </label>
+
+                        <label class="block mb-4 text-sm">
                             <span class="text-gray-700">Dine-in/Take-out</span>
-                            <select class="block w-full mt-1 text-sm form-select focus:border-green-400 focus:outline-none focus:shadow-outline-green" name="order_type">
+                            <select class="styled-input" name="order_type">
                                 <option value="" selected disabled>Select a choice</option>
                                 <option value="dinein">Dine-in</option>
                                 <option value="takeout">Takeout</option>
@@ -59,7 +69,7 @@
                         </label>
                         <label class="block mb-4 text-sm">
                             <span class="text-gray-700">Delivery method</span>
-                            <select class="block w-full mt-1 text-sm form-select focus:border-green-400 focus:outline-none focus:shadow-outline-green" name="delivery_method">
+                            <select class="styled-input" name="delivery_method">
                                 <option value="" selected>Select a courier</option>
                                 <option value="grab">Grab</option>
                                 <option value="lalamove">Lalamove</option>
@@ -70,7 +80,7 @@
 
                         <label class="block mb-4 text-sm">
                             <span class="text-gray-700">Customer</span>
-                            <select class="block w-full mt-1 text-sm form-select focus:border-green-400 focus:outline-none focus:shadow-outline-green" name="customer">
+                            <select class="styled-input" name="customer">
                                 <option value="" selected disabled>Select an account</option>
                                 <option value="" >none</option>
                                 @foreach ($customers as $customer)
@@ -80,11 +90,11 @@
                         </label>
                         <label class="block mb-4 text-sm">
                             <span class="text-gray-700">Fees</span>
-                            <input id="fees-input" class="block w-full mt-1 text-sm focus:border-green-400 focus:outline-none focus:shadow-outline-green form-input" name="fees" step=".01" type="number" min="0"  value="0" placeholder="Enter fees">
+                            <input id="fees-input" class="styled-input" name="fees" step=".01" type="number" min="0"  value="0" placeholder="Enter fees">
                         </label>
                         <label class="block mb-4 text-sm">
                             <span class="text-gray-700">Discount</span>
-                            <select id="order-discounts" class="block w-full mt-1 text-sm form-select focus:border-green-400 focus:outline-none focus:shadow-outline-green" name="discount">
+                            <select id="order-discounts" class="styled-input" name="discount">
                                 <option value="" selected disabled>Select a discount</option>
                                 <option value="" >none</option>
                                 <option value="custom" data-discount="custom">Custom</option>
@@ -95,14 +105,14 @@
                         </label>
                         <label class="block mb-4 text-sm custom-discount">
                             <span class="text-gray-700">Discount (Custom)</span>
-                            <input id="custom-discount-input" class="block w-full mt-1 text-sm focus:border-green-400 focus:outline-none focus:shadow-outline-green form-input" name="custom_discount" step=".01" type="number" min="0" value="0"  placeholder="Enter custom discount">
+                            <input id="custom-discount-input" class="styled-input" name="custom_discount" step=".01" type="number" min="0" value="0"  placeholder="Enter custom discount">
                         </label>
                         {{-- <label class="block mb-4 text-sm">
                             <span class="text-gray-700">Initial Deposit</span>
-                            <input class="block w-full mt-1 text-sm focus:border-green-400 focus:outline-none focus:shadow-outline-green form-input" name="deposit" step=".01" type="number" min="0"  value="0" placeholder="Enter deposit">
+                            <input class="styled-input" name="deposit" step=".01" type="number" min="0"  value="0" placeholder="Enter deposit">
                         </label> --}}
                     </div>
-                    <hr>
+                    <hr class="text-gray-300">
                     <div class="my-5">
                         <div class="flex flex-col justify-center px-6 py-5 text-base text-gray-500 bg-gray-100 rounded-lg">
                             <div class="mb-3">

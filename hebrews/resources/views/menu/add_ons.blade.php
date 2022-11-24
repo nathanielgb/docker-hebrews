@@ -4,11 +4,18 @@
         <script src="{{ asset('js/focus-trap.js') }}"></script>
         <script>
             document.addEventListener('alpine:init', () => {
-                Alpine.store('account', {
-                    data: []
+                Alpine.store('data', {
+                    delete: []
                 })
             })
         </script>
+    </x-slot>
+
+    <x-slot name="styles">
+        <link
+            href="https://cdn.jsdelivr.net/npm/tom-select/dist/css/tom-select.css"
+            rel="stylesheet"
+        />
     </x-slot>
 
     <x-slot name="header">
@@ -51,11 +58,13 @@
                             <td class="px-4 py-3 text-sm">
                                 {{ $item->name }}
                             </td>
+
                             <td class="px-4 py-3 text-sm">
                                 @if ($item->inventory)
                                     <ul>
-                                        <li>ID: <span class="font-bold">{{ $item->inventory->id }}</span></li>
+                                        <li>branch: <span class="font-bold">{{ $item->inventory->branch->name }}</span></li>
                                         <li>name: <span class="font-bold">{{ $item->inventory->name }}</span></li>
+                                        <li>code: <span class="font-bold">{{ $item->inventory->inventory_code }}</span></li>
                                         <li>stock: <span class="font-bold">{{ $item->inventory->stock }}</span></li>
                                         <li>unit: <span class="font-bold">{{ $item->inventory->unit }}</span></li>
                                     </ul>
@@ -76,10 +85,10 @@
                                             type="button"
                                             class="inline-block px-6 py-2.5 bg-red-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-red-700 hover:shadow-lg focus:bg-red-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-red-800 active:shadow-lg transition duration-150 ease-in-out"
                                             data-bs-toggle="modal"
-                                            data-bs-target="#deleteAccountModal"
-                                            @click="$store.account.data={{ json_encode([
+                                            data-bs-target="#deleteModal"
+                                            @click="$store.data.delete={{ json_encode([
                                                 'id' => $item->id,
-                                                'name' => $item->account_name,
+                                                'name' => $item->name,
                                             ]) }}"
                                             >
                                             <i class="fa-solid fa-trash"></i> Delete
@@ -105,5 +114,35 @@
         @endif
     </div>
     @include('menu.modals.add_addons')
-    @include('bank_accounts.modals.delete_account')
+    @include('menu.modals.delete_addons')
+
+    <x-slot name="scripts">
+        <script src="https://cdn.jsdelivr.net/npm/tom-select/dist/js/tom-select.complete.min.js"></script>
+        <script type="text/javascript">
+
+            var addControl = new TomSelect("#select-inventory",{
+                valueField: 'id',
+                labelField: 'name',
+                searchField: 'name',
+                options: [],
+            });
+
+
+            $("#addBranch").change(function() {
+                addControl.clear();
+                addControl.clearOptions();
+
+                var selectedItem = $(this).val();
+                var inventories = $('option:selected',this).data("inventories");
+
+                inventories.forEach(inventory => {
+                    addControl.addOption({
+                        id: inventory.id,
+                        name: inventory.name
+                    });
+                });
+            });
+
+        </script>
+    </x-slot>
 </x-app-layout>

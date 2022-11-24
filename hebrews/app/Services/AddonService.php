@@ -14,7 +14,7 @@ class AddonService
      * @param Array $addons attached add-ons to the cart item
      * @return array
      */
-    public function validateAddon($addons)
+    public function validateAddon($addons, $productitem)
     {
         // Check if there is add ons
         if ($addons) {
@@ -26,10 +26,20 @@ class AddonService
                     $addOnData = array_values($addOnData);
                 } else {
                     $addon = MenuAddOn::where('id', $value['addon_id'])->first();
+
                     if (!$addon) {
                         return [
                             'status' => 'fail',
-                            'message' => 'An Add-on item you entered does not exist.'
+                            'message' => "An Add-on item in $productitem->name does not exist."
+                        ];
+                        break;
+                    }
+
+                    // Check if the menu addon is for the correct branch
+                    if ($addon->inventory->branch_id != $productitem->inventory->branch_id) {
+                        return [
+                            'status' => 'fail',
+                            'message' => "Add-on (name: $addon->name) is not compatible with the item."
                         ];
                         break;
                     }
@@ -38,7 +48,7 @@ class AddonService
                     if ($value['qty'] <= 0) {
                         return [
                             'status' => 'fail',
-                            'message' => 'An Add-on item quantity is invalid.'
+                            'message' => "Add-on (name: $addon->name) quantity is invalid."
                         ];
                         break;
                     }

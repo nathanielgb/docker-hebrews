@@ -26,6 +26,9 @@ require __DIR__.'/auth.php';
 Route::middleware('auth')->group(function () {
     Route::view('about', 'about')->name('about');
 
+
+
+    Route::get('log-inventory', [\App\Http\Controllers\LogController::class, 'index']);
     Route::get('profile', [\App\Http\Controllers\ProfileController::class, 'show'])->name('profile.show');
     Route::put('profile', [\App\Http\Controllers\ProfileController::class, 'update'])->name('profile.update');
 
@@ -39,9 +42,13 @@ Route::middleware('auth')->group(function () {
             // Route::get('update-user', [\App\Http\Controllers\UserController::class, 'viewUpdate'])->name('users.view_update');
             // Route::post('update-user', [\App\Http\Controllers\UserController::class, 'update'])->name('users.update');
             Route::post('delete-user', [\App\Http\Controllers\UserController::class, 'delete'])->name('users.delete');
-            Route::post('reset-user', [\App\Http\Controllers\UserController::class, 'reset'])->name('users.reset');
-
-
+            Route::post('update-user', [\App\Http\Controllers\UserController::class, 'update'])->name('users.update');
+            Route::group(['middleware' => 'CheckAccessActions:manage-branches-action'], function () {
+                Route::get('user-branches', [\App\Http\Controllers\UserController::class, 'viewBranches'])->name('users.view_branches');
+                Route::post('user-branches', [\App\Http\Controllers\UserController::class, 'addBranch'])->name('users.branch.add');
+                Route::post('update-branches', [\App\Http\Controllers\UserController::class, 'updateBranch'])->name('users.branch.update');
+                Route::post('delete-branches', [\App\Http\Controllers\UserController::class, 'deleteBranch'])->name('users.branch.delete');
+            });
         });
     });
 
@@ -73,18 +80,53 @@ Route::middleware('auth')->group(function () {
     Route::group(['middleware' => 'CheckAccessActions:view-menus-action'], function () {
         Route::get('menu', [\App\Http\Controllers\MenuController::class, 'index'])->name('menu.index');
 
-        Route::group(['middleware' => 'CheckAccessActions:manage-menu-action'], function () {
+        Route::group(['middleware' => 'CheckAccessActions:add-menu-action'], function () {
             Route::post('add-menu', [\App\Http\Controllers\MenuController::class, 'store'])->name('menu.store');
-            // Route::get('update-menu', [\App\Http\Controllers\MenuController::class, 'viewUpdate'])->name('menu.show_update');
-            Route::post('update-menu', [\App\Http\Controllers\MenuController::class, 'update'])->name('menu.update');
-            Route::post('delete-menu', [\App\Http\Controllers\MenuController::class, 'delete'])->name('menu.delete');
         });
 
-        Route::group(['middleware' => 'CheckAccessActions:view-inventory-action'], function () {
-            Route::get('inventory', [\App\Http\Controllers\MenuController::class, 'viewInventory'])->name('menu.view_inventory');
-            Route::post('add-inventory', [\App\Http\Controllers\MenuController::class, 'addInventory'])->name('menu.add_inventory');
-            Route::post('update-inventory', [\App\Http\Controllers\MenuController::class, 'updateInventory'])->name('menu.update_inventory');
-            Route::post('delete-inventory', [\App\Http\Controllers\MenuController::class, 'deleteInventory'])->name('menu.delete_inventory');
+
+        Route::group(['middleware' => 'CheckAccessActions:update-menu-action'], function () {
+            Route::post('update-menu', [\App\Http\Controllers\MenuController::class, 'update'])->name('menu.update');
+        });
+
+        Route::group(['middleware' => 'CheckAccessActions:delete-menu-action'], function () {
+            Route::post('delete-menu', [\App\Http\Controllers\MenuController::class, 'delete'])->name('menu.delete');
+        });
+    });
+
+    // Inventory
+    Route::group(['middleware' => 'CheckAccessActions:view-inventory-action'], function () {
+        Route::get('inventory', [\App\Http\Controllers\InventoryController::class, 'index'])->name('menu.view_inventory');
+
+        Route::group(['middleware' => 'CheckAccessActions:add-inventory-action'], function () {
+            Route::post('add-inventory', [\App\Http\Controllers\InventoryController::class, 'addInventory'])->name('menu.add_inventory');
+        });
+
+        Route::group(['middleware' => 'CheckAccessActions:transfer-inventory-action'], function () {
+            Route::post('transfer-inventory', [\App\Http\Controllers\InventoryController::class, 'transferInventory'])->name('menu.transfer_inventory');
+        });
+
+        Route::group(['middleware' => 'CheckAccessActions:manage-inventory-action'], function () {
+            Route::post('update-inventory', [\App\Http\Controllers\InventoryController::class, 'updateInventory'])->name('menu.update_inventory');
+            Route::post('delete-inventory', [\App\Http\Controllers\InventoryController::class, 'deleteInventory'])->name('menu.delete_inventory');
+        });
+    });
+
+    // Branch Inventory
+    Route::group(['middleware' => 'CheckAccessActions:view-branch-inventory-action'], function () {
+        Route::get('branch-inventory', [\App\Http\Controllers\InventoryController::class, 'viewBranchInventory'])->name('branch.inventory.index');
+
+        Route::group(['middleware' => 'CheckAccessActions:add-branch-inventory-action'], function () {
+            Route::post('branch-inventory/add', [\App\Http\Controllers\InventoryController::class, 'addBranchInventory'])->name('branch.inventory.add');
+        });
+
+        Route::group(['middleware' => 'CheckAccessActions:transfer-branch-inventory-action'], function () {
+            Route::post('branch-inventory/transfer', [\App\Http\Controllers\InventoryController::class, 'transferBranchInventory'])->name('branch.inventory.transfer');
+        });
+
+        Route::group(['middleware' => 'CheckAccessActions:manage-branch-inventory-action'], function () {
+            Route::post('branch-inventory/update', [\App\Http\Controllers\InventoryController::class, 'updateBranchInventory'])->name('branch.inventory.update');
+            Route::post('branch-inventory/delete', [\App\Http\Controllers\InventoryController::class, 'deleteBranchInventory'])->name('branch.inventory.delete');
         });
     });
 
@@ -93,6 +135,7 @@ Route::middleware('auth')->group(function () {
 
         Route::group(['middleware' => 'CheckAccessActions:manage-menu-addons-action'], function () {
             Route::post('menu/add-ons', [\App\Http\Controllers\MenuAddOnController::class, 'store'])->name('menu.addon.store');
+            Route::delete('menu/add-ons', [\App\Http\Controllers\MenuAddOnController::class, 'destroy'])->name('menu.addon.destroy');
         });
     });
 
@@ -119,13 +162,13 @@ Route::middleware('auth')->group(function () {
 
     // Take orders section
     Route::group(['middleware' => 'CheckAccessActions:take-orders-action'], function () {
-        Route::get('take-order', [\App\Http\Controllers\OrderController::class, 'showTakeOrder'])->name('order.show_take_order');
-        Route::get('add-cart', [\App\Http\Controllers\OrderController::class, 'showAddCart'])->name('order.show_add_cart');
-        Route::post('add-cart', [\App\Http\Controllers\OrderController::class, 'addCart'])->name('order.add_cart');
-        Route::get('view-cart', [\App\Http\Controllers\OrderController::class, 'viewCart'])->name('order.show_cart');
-        Route::post('update-cart', [\App\Http\Controllers\OrderController::class, 'updateCart'])->name('order.update_cart');
-        Route::post('delete-cart', [\App\Http\Controllers\OrderController::class, 'deleteCart'])->name('order.delete_cart');
-        Route::post('generate-order', [\App\Http\Controllers\OrderController::class, 'generateOrder'])->name('order.generate');
+        // Route::get('take-order', [\App\Http\Controllers\CartController::class, 'showTakeOrder'])->name('order.show_take_order');
+        Route::get('add-cart', [\App\Http\Controllers\CartController::class, 'showAddCart'])->name('order.show_add_cart');
+        Route::post('add-cart', [\App\Http\Controllers\CartController::class, 'addCart'])->name('order.add_cart');
+        Route::get('view-cart', [\App\Http\Controllers\CartController::class, 'viewCart'])->name('order.show_cart');
+        Route::post('update-cart', [\App\Http\Controllers\CartController::class, 'updateCart'])->name('order.update_cart');
+        Route::post('delete-cart', [\App\Http\Controllers\CartController::class, 'deleteCart'])->name('order.delete_cart');
+        Route::post('generate-order', [\App\Http\Controllers\CartController::class, 'generateOrder'])->name('order.generate');
     });
 
     // View orders section
@@ -134,6 +177,7 @@ Route::middleware('auth')->group(function () {
         Route::get('order-list', [\App\Http\Controllers\OrderController::class, 'showOrders'])->name('order.list');
 
         Route::get('order/summary/print', [\App\Http\Controllers\OrderController::class, 'printSummary'])->name('order.summary.print');
+        Route::get('show-order-items/{order_id}', [\App\Http\Controllers\OrderController::class, 'showOrderItems'])->name('order.show_items');
 
         Route::group(['middleware' => 'CheckAccessActions:manage-orders-action'], function () {
             Route::post('delete-order-item', [\App\Http\Controllers\OrderController::class, 'deleteOrderItem'])->name('order.delete_item');
@@ -147,7 +191,6 @@ Route::middleware('auth')->group(function () {
         Route::group(['middleware' => 'CheckAccessActions:manage-order-item-action'], function () {
             Route::get('edit-order-items/{order_id}', [\App\Http\Controllers\OrderController::class, 'showEditOrderItems'])->name('order.edit_items');
             Route::post('edit-order-item', [\App\Http\Controllers\OrderController::class, 'updateOrderItems'])->name('order.update_item');
-
         });
     });
 

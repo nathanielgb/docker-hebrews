@@ -26,18 +26,43 @@
                     @csrf
                     <label class="block mb-4 text-sm">
                         <span class="text-gray-700">Name</span>
-                        <input class="block w-full mt-1 text-sm focus:border-purple-400 focus:outline-none focus:shadow-outline-purple form-input" name="name" type="text" placeholder="Enter name">
+                        <input class="styled-input" name="name" type="text" placeholder="Enter name">
                     </label>
+
                     <label class="block mb-4 text-sm">
+                        <span class="text-gray-700">Branch</span>
+                        <select id="addBranch" class="styled-input" name="branch">
+                            <option value="" selected disabled>Select a branch</option>
+                            @foreach ($branches as $branch)
+                                <option value="{{ $branch->id }}" data-inventories="{{ json_encode($branch->inventories) }}">{{ $branch->name }}</option>
+                            @endforeach
+                        </select>
+                        <p class="text-xs text-yellow-500">note: selecting a branch will show available inventory items for the selected branch</p>
+                    </label>
+
+                    <label class="block mb-4 text-sm">
+                        <span class="text-gray-700 dark:text-gray-400">Inventory</span>
+                        <select
+                            id="select-inventory"
+                            name="inventory"
+                            placeholder="Enter Inventory..."
+                            autocomplete="off"
+                            class="block w-full rounded-sm cursor-pointer focus:outline-none"
+                        >
+                            <option value="" selected disabled>Select inventory</option>
+                        </select>
+                    </label>
+
+                    {{-- <label class="block mb-4 text-sm">
                         <span class="text-gray-700">Inventory</span>
-                        <select class="block w-full mt-1 text-sm form-select focus:border-purple-400 focus:outline-none focus:shadow-outline-purple" name="inventory">
+                        <select class="styled-input" name="inventory">
                             <option value="" selected disabled>Select inventory</option>
                             @foreach ($inventory_items as $i_item)
                                 <option value="{{ $i_item->id }}" >{{ $i_item->name }}</option>
                             @endforeach
                         </select>
                         <p class="text-xs text-yellow-500">note: ordering this item will deduct the quantity to the stock of the selected inventory</p>
-                    </label>
+                    </label> --}}
                 </form>
             </div>
             <div

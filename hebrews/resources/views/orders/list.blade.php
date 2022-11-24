@@ -56,7 +56,8 @@
             <table class="w-full whitespace-no-wrap">
                 <thead>
                 <tr class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase border-b bg-gray-50">
-                    <th class="px-4 py-3">Order ID</th>
+                    <th class="px-4 py-3">Order Id</th>
+                    <th class="px-4 py-3">Branch Id</th>
                     <th class="px-4 py-3">Customer Name</th>
                     <th class="px-4 py-3 text-center">Status</th>
                     <th class="px-4 py-3 text-center">Type</th>
@@ -70,6 +71,9 @@
                         <tr class="text-gray-700">
                             <td class="px-4 py-3 text-sm">
                                 {{ $order->order_id }}
+                            </td>
+                            <td class="px-4 py-3 text-sm">
+                                {{ $order->branch_id }}
                             </td>
                             <td class="px-4 py-3 text-sm">
                                 {{ $order->customer_name }}
@@ -235,7 +239,7 @@
                         </tr>
                     @empty
                         <tr class="text-gray-700">
-                            <td colspan="11" class="px-4 py-3 text-sm text-center">
+                            <td colspan="8" class="px-4 py-3 text-sm text-center">
                                 No records found.
                             </td>
                         </tr>

@@ -22,6 +22,7 @@ class AddonOrderItem extends Model
         'addon_id',
         'inventory_id',
         'inventory_name',
+        'inventory_code',
         'name',
         'from',
         'price',

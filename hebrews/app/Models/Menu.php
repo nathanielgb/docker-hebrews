@@ -40,7 +40,7 @@ class Menu extends Model
      */
     public function inventory()
     {
-        return $this->hasOne(MenuInventory::class, 'id', 'inventory_id');
+        return $this->belongsTo(BranchMenuInventory::class, 'inventory_id', 'id');
     }
 
     /**
@@ -48,8 +48,35 @@ class Menu extends Model
      */
     public function orderItems()
     {
-        return $this->hasMany(OrderItem::class, 'id', 'inventory_id');
+        return $this->hasMany(OrderItem::class, 'id', 'order_item_id');
     }
 
+    /**
+     * Get the cart items associated with the menu item.
+     */
+    public function cartItems()
+    {
+        return $this->hasMany(cartItems::class, 'id', 'menu_id');
+    }
 
+    public function getPrice($type)
+    {
+        if ($type == 'regular') {
+            return $this->reg_price;
+        }
+        if ($type == 'wholesale') {
+            return $this->wholesale_price;
+        }
+        if ($type == 'rebranding') {
+            return $this->rebranding_price;
+        }
+        if ($type == 'retail') {
+            return $this->retail_price;
+        }
+        if ($type == 'distributor') {
+            return $this->distributor_price;
+        }
+
+        return null;
+    }
 }

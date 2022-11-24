@@ -2,29 +2,35 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Menu;
 use Illuminate\Http\Request;
-use App\Models\MenuInventory;
 use App\Models\MenuAddOn;
-use Illuminate\Support\Facades\DB;
-use App\Http\Requests\StoreMenuRequest;
-use App\Http\Requests\UpdateMenuRequest;
-use Illuminate\Database\Eloquent\Builder;
-use App\Http\Requests\StoreInventoryRequest;
-use Illuminate\Support\Facades\Redis;
+use App\Models\Branch;
+use App\Models\BranchMenuInventory;
 
 class MenuAddOnController extends Controller
 {
     public function index(Request $request)
     {
-        $addons = MenuAddOn::orderBy('name');
-        $inventory_items = MenuInventory::all();
+        $addons = MenuAddOn::whereHas('inventory', function ($q) {
+            // Check branch of current user
+            if (auth()->user()->branch_id) {
+                $q->where('branch_id', auth()->user()->branch_id);
+            }
+        });
 
-        $addons = $addons->paginate(20);
+        if (auth()->user()->branch_id) {
+            $inventory_items = BranchMenuInventory::where('branch_id', auth()->user()->branch_id)->get();;
+            $branches =  Branch::where('id', auth()->user()->branch_id)->get();
+        } else {
+            $inventory_items = BranchMenuInventory::all();
+            $branches = Branch::all();
+        }
 
+        $addons = $addons->orderBy('name')->paginate(20);
 
         return view('menu.add_ons', compact(
             'addons',
+            'branches',
             'inventory_items'
         ));
     }
@@ -32,8 +38,8 @@ class MenuAddOnController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name' => 'required|max:255',
-            'inventory' => 'required|exists:menu_inventories,id',
+            'name' => 'required|max:255|alpha_dash',
+            'inventory' => 'required|exists:branch_menu_inventories,id',
         ]);
 
         $addons = MenuAddOn::create([
@@ -41,6 +47,20 @@ class MenuAddOnController extends Controller
             'inventory_id' => $request->inventory
         ]);
 
-        return back()->with('success', 'Menu Add-on added successfully.');
+        return back()->with('success', 'Menu add-on added successfully.');
+    }
+
+    //
+    public function destroy (Request $request)
+    {
+        $addon = MenuAddOn::where('id', $request->id)->first();
+
+        if ($addon) {
+            $addon->delete();
+
+            return back()->with('success', 'Menu add-on has been successfully removed.');
+        }
+
+        return redirect()->back()->with('error', 'Menu add-on does not exist.');
     }
 }

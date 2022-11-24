@@ -8,7 +8,7 @@
     <div class="container grid px-6 mx-auto mb-5 space-y-2 md:px-28">
         <div class="flex justify-between">
             <div>
-                <h2 class="my-3 text-2xl font-semibold text-gray-700">Pay Order</h2>
+                <h2 class="my-3 text-2xl font-semibold text-gray-700">Report</h2>
             </div>
             <div class="flex items-end">
                 <a
@@ -30,6 +30,14 @@
                             </td>
                             <td class="w-1/2 p-4 font-semibold text-left text-gray-900 border border-gray-300">
                                 {{ $date_range }}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="w-1/2 p-4 font-semibold text-left text-gray-900 border border-gray-300">
+                                Branch ID
+                            </td>
+                            <td class="w-1/2 p-4 font-semibold text-left text-gray-900 border border-gray-300">
+                                {{ $branch_id }}
                             </td>
                         </tr>
                         <tr>
@@ -159,6 +167,7 @@
                                             <td class="px-6 py-4 text-sm text-gray-900 border-r whitespace-nowrap">
                                                 <ul>
                                                     <li>Name: {{ $item->inventory_name }}</li>
+                                                    <li>Code: {{ $item->inventory_code }}</li>
                                                     <li>Used: {{ $item->stock_used }}</li>
                                                 </ul>
                                             </td>
@@ -177,6 +186,7 @@
                                             <td class="px-6 py-4 text-sm text-gray-900 border-r whitespace-nowrap">
                                                 <ul>
                                                     <li>Name: {{ $addon->inventory_name }}</li>
+                                                    <li>Code: {{ $item->inventory_code }}</li>
                                                     <li>Used: {{ $addon->stock_used }}</li>
                                                 </ul>
                                             </td>

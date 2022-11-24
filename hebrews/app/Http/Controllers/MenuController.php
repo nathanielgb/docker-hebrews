@@ -9,14 +9,28 @@ use App\Models\MenuInventory;
 use Illuminate\Support\Facades\DB;
 use App\Http\Requests\StoreMenuRequest;
 use App\Http\Requests\UpdateMenuRequest;
-use App\Http\Requests\StoreInventoryRequest;
+use App\Models\Branch;
+use App\Models\BranchMenuInventory;
 
 class MenuController extends Controller
 {
     public function index(Request $request)
     {
-        $menu = Menu::with('category');
-        $inventory_items = MenuInventory::all();
+        if (auth()->user()->branch_id) {
+            $menu = Menu::whereHas('inventory', function ($q) {
+                // Check branch of current user
+                if (auth()->user()->branch_id) {
+                    $q->where('branch_id', auth()->user()->branch_id);
+                }
+            });
+
+            $inventory_items = BranchMenuInventory::where('branch_id', auth()->user()->branch_id)->get();
+            $branches = Branch::where('id', auth()->user()->branch_id)->get();
+        } else {
+            $menu = Menu::with('category');
+            $inventory_items = BranchMenuInventory::all();
+            $branches = Branch::all();
+        }
 
         if ($request->except(['page'])) {
             $menu=$menu->where(function ($query) use ($request) {
@@ -33,16 +47,21 @@ class MenuController extends Controller
         $categories = MenuCategory::orderBy('name')->get();
         return view('menu.index', compact(
             'menu',
-            'inventory_items',
             'categories',
+            'inventory_items',
+            'branches'
         ));
     }
     public function store(StoreMenuRequest $request)
     {
-        $inventory = MenuInventory::where('id', $request->inventory)->first();
+        $inventory = BranchMenuInventory::where('id', $request->inventory)->first();
 
-        if (true) {
+        if ($inventory) {
             // Check the minimum unit required
+            if($inventory->unit == 'boxes' && $request->unit < 1) {
+                return back()->with('error', "The box must be at least 1.");
+            }
+
             if($inventory->unit == 'pcs' && $request->unit < 1) {
                 return back()->with('error', "The unit must be at least 1.");
             }
@@ -100,6 +119,10 @@ class MenuController extends Controller
             }
 
             // Check the minimum unit required
+            if($menu->inventory->unit == 'boxes' && $request->unit < 1) {
+                return back()->with('error', "The box must be at least 1.");
+            }
+
             if($menu->inventory->unit == 'pcs' && $request->unit < 1) {
                 return back()->with('error', "The unit must be at least 1.");
             }
@@ -107,7 +130,6 @@ class MenuController extends Controller
             if ($menu->inventory->unit != 'pcs' && $request->unit < 0.01) {
                 return back()->with('error', "The unit must be at least 0.01.");
             }
-
             $menu->update([
                 'name' => $request->menu,
                 'units' => $request->unit,
@@ -210,92 +232,5 @@ class MenuController extends Controller
         }
 
         return back()->with('error', 'Category does not exist or has been already removed.');
-    }
-
-    public function viewInventory(Request $request)
-    {
-        $inventory_items = new MenuInventory();
-
-        if ($request->except(['page'])) {
-            $inventory_items=$inventory_items->where(function ($query) use ($request) {
-                if ($request->inventory_id !== null) {
-                    $query->where('id', $request->inventory_id);
-                }
-                if ($request->name !== null) {
-                    $query->where('name', 'LIKE', '%' . $request->name . '%');
-                }
-            });
-        }
-
-        $inventory_items = $inventory_items->orderBy('name')->paginate(20);
-        return view('menu.inventory', compact(
-            'inventory_items',
-        ));
-    }
-
-
-    public function addInventory(StoreInventoryRequest $request)
-    {
-        if (fmod($request->stock, 1) != 0.0 && $request->unit == 'pcs') {
-            return redirect()->route('menu.view_inventory')->with('error', "Item $request->name cannot have a decimal stock.");
-        }
-
-        MenuInventory::create([
-            'name' => $request->name,
-            'unit' => $request->unit,
-            'stock' => $request->stock,
-            'previous_stock' => 0,
-            'modified_by' => auth()->user()->name,
-        ]);
-
-        return back()->with('success', "Item $request->name has been successfully added.");
-    }
-
-    public function updateInventory(Request $request)
-    {
-        $inventory_item = MenuInventory::where('id', $request->inventory_id)->first();
-
-        if ($inventory_item) {
-            $request->validate([
-                'increment_qty' => 'nullable|numeric',
-            ]);
-
-            if (fmod($request->increment_qty, 1) != 0.0 && $inventory_item->unit == 'pcs') {
-                return redirect()->route('menu.view_inventory')->with('error', "Item $inventory_item->name cannot have a decimal stock.");
-            }
-
-            $increment_qty = $request->increment_qty ?? 0;
-            $current_stock = $inventory_item->stock;
-            $updated_stock = $current_stock + $increment_qty;
-
-            $inventory_item->update([
-                'stock' => $updated_stock,
-                'previous_stock' => $current_stock,
-                'modified_by' => auth()->user()->name
-            ]);
-
-            return redirect()->route('menu.view_inventory')->with('success', "Item $inventory_item->name has been updated successfully.");
-        }
-        return redirect()->route('menu.view_inventory')->with('error', 'Item does not exist.');
-    }
-
-    public function deleteInventory(Request $request)
-    {
-        $inventory_item = MenuInventory::where('id', $request->id)->first();
-        if ($inventory_item) {
-            // Prevent deletion if there is still linked products
-            if (count($inventory_item->products) >= 1) {
-                return redirect()->route('menu.view_inventory')->with('error', 'You cannot delete an inventory item that has a product linked to it.');
-            }
-
-            if (count($inventory_item->addons) >= 1) {
-                return redirect()->route('menu.view_inventory')->with('error', 'You cannot delete an inventory item that has a add-on product linked to it.');
-            }
-
-
-            MenuInventory::where('id', $request->id)->delete();
-            return redirect()->route('menu.view_inventory')->with('success', 'Item has been removed successfully.');
-        }
-        return redirect()->route('menu.view_inventory')->with('error', 'Item does not exist.');
     }
 }

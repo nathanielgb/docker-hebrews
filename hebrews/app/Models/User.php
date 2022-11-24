@@ -19,6 +19,7 @@ class User extends Authenticatable
      */
     protected $fillable = [
         'name',
+        'branch_id',
         'username',
         'email',
         'password',
@@ -51,4 +52,28 @@ class User extends Authenticatable
     {
         return $this->hasMany(Cart::class, 'admin_id', 'id');
     }
+
+    /**
+     * Get the branch related to admin user.
+     */
+    public function branch()
+    {
+        return $this->belongsTo(Branch::class, 'branch_id', 'id');
+    }
+
+    // /**
+    //  * Set the user's name.
+    //  *
+    //  * @param  string  $value
+    //  * @return void
+    //  */
+    // public function getBranchNamesAttribute()
+    // {
+    //     if ($this->branch) {
+    //         $labels = Branch::whereIn('id', $this->branch)->pluck('name')->toArray();
+
+    //         return $labels;
+    //     }
+    // }
+
 }

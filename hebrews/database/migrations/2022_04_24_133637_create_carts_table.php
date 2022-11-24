@@ -19,12 +19,8 @@ class CreateCartsTable extends Migration
             $table->string('menu_id');
             $table->string('inventory_id')->nullable();
             $table->json('data');
-            $table->string('name');
             $table->string('type');
-            $table->integer('units');
-            $table->decimal('price', 8, 2);
             $table->string('qty');
-            $table->decimal('total', 8, 2);
             $table->text('note')->nullable();
             $table->timestamps();
         });

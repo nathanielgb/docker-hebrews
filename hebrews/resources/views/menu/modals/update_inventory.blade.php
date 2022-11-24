@@ -26,14 +26,22 @@
                     @csrf
                     <input type="hidden" name="inventory_id" :value="$store.inventory.updateInventoryData?.id">
                     <label class="block mb-4 text-sm">
-                        <span class="text-gray-700">Quantity</span>
-                        <div class="flex space-x-2 align-center">
-                            <input class="block w-1/5 mt-1 text-sm bg-gray-100 border focus:border-purple-400 focus:outline-none focus:shadow-outline-purple form-input" disabled readonly :value="$store.inventory.updateInventoryData?.stock">
-                            <div class="grid place-items-center">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-plus"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                            </div>
-                            <input class="block w-full mt-1 text-sm focus:border-purple-400 focus:outline-none focus:shadow-outline-purple form-input" name="increment_qty" type="number" step="0.01" placeholder="Enter quantity to add/subtract">
-                        </div>
+                        <span class="text-gray-700 dark:text-gray-400">Current Stock</span>
+                        <input
+                            type="text"
+                            class="styled-input--readonly"
+                            :value="$store.inventory.updateInventoryData?.stock"
+                            aria-label="menu item name"
+                            readonly/>
+                    </label>
+                    <label class="block mb-4 text-sm">
+                        <span class="text-gray-700 dark:text-gray-400">New Stock</span>
+                        <input
+                            type="text"
+                            class="styled-input"
+                            placeholder="Enter new stock quantity"
+                            name="new_stock"
+                            />
                     </label>
                 </form>
             </div>

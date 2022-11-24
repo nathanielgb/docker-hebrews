@@ -27,11 +27,11 @@
                     <input type="hidden" name="discount_id" :value="$store.discount.updateData.id">
                     <label class="block mb-4 text-sm">
                         <span class="text-gray-700">Name</span>
-                        <input class="block w-full mt-1 text-sm focus:border-purple-400 focus:outline-none focus:shadow-outline-purple form-input" name="name" type="text" placeholder="Enter name" :value="$store.discount.updateData.name">
+                        <input class="styled-input" name="name" type="text" placeholder="Enter name" :value="$store.discount.updateData.name">
                     </label>
                     <label class="block mb-4 text-sm">
                         <span class="text-gray-700">Type</span>
-                        <select class="block w-full mt-1 text-sm form-select focus:border-purple-400 focus:outline-none focus:shadow-outline-purple" name="type">
+                        <select class="styled-input" name="type">
                             <option value="" selected disabled>Select a type</option>
                             <option value="flat" :selected="$store.discount.updateData?.type === 'flat'">flat</option>
                             <option value="percentage" :selected="$store.discount.updateData?.type === 'percentage'">percentage</option>
@@ -40,11 +40,11 @@
                     </label>
                     <label class="block mb-4 text-sm">
                         <span class="text-gray-700">Amount</span>
-                        <input class="block w-full mt-1 text-sm focus:border-purple-400 focus:outline-none focus:shadow-outline-purple form-input" name="amount" type="number" min="0" step="0.01" placeholder="Enter amount" :value="$store.discount.updateData.amount">
+                        <input class="styled-input" name="amount" type="number" min="0" step="0.01" placeholder="Enter amount" :value="$store.discount.updateData.amount">
                     </label>
                     <div class="form-check">
-                        <input name="active" class="form-check-input appearance-none h-4 w-4 border border-gray-300 rounded-sm bg-white checked:bg-blue-600 checked:border-blue-600 focus:outline-none transition duration-200 mt-1 align-top bg-no-repeat bg-center bg-contain float-left mr-2 cursor-pointer" type="checkbox" id="flexCheckChecked" :checked="$store.discount.updateData.active">
-                        <label class="form-check-label inline-block text-gray-800" for="flexCheckChecked">
+                        <input name="active" class="float-left w-4 h-4 mt-1 mr-2 align-top transition duration-200 bg-white bg-center bg-no-repeat bg-contain border border-gray-300 rounded-sm appearance-none cursor-pointer form-check-input checked:bg-blue-600 checked:border-blue-600 focus:outline-none" type="checkbox" id="flexCheckChecked" :checked="$store.discount.updateData.active">
+                        <label class="inline-block text-gray-800 form-check-label" for="flexCheckChecked">
                             Is Active
                         </label>
                     </div>

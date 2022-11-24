@@ -25,8 +25,19 @@ class AddOrderItem extends Component
 
     public function mount ()
     {
-        $this->menus = Menu::all();
-        $this->addons = MenuAddOn::all();
+        $branch_id = $this->order->branch_id;
+
+        $this->menus = Menu::whereHas('inventory', function ($q) use ($branch_id) {
+            // Check branch of order
+            $q->where('branch_id', $branch_id);
+        })->get();
+
+        $this->addons = MenuAddOn::whereHas('inventory', function ($q) use ($branch_id) {
+            // Check branch of order
+            $q->where('branch_id', $branch_id);
+
+        })->get();
+
     }
 
     public function addAddon ()

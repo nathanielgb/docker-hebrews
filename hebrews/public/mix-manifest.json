@@ -1,8 +1,8 @@
 {
-    "/js/app.js": "/js/app.js",
-    "/css/app.css": "/css/app.css",
-    "/css/style.css": "/css/style.css",
-    "/js/daterangepicker.js": "/js/daterangepicker.js",
-    "/js/moment.js": "/js/moment.js",
-    "/css/daterangepicker.css": "/css/daterangepicker.css"
+    "/js/app.js": "/js/app.js?id=9172ccac0b614bac817a",
+    "/css/app.css": "/css/app.css?id=06701596e9cdbd58d816",
+    "/css/style.css": "/css/style.css?id=6d063a05fe56915f1d7e",
+    "/js/daterangepicker.js": "/js/daterangepicker.js?id=dc92665b4f9d16f76ed7",
+    "/js/moment.js": "/js/moment.js?id=20f4b1efbfa6f331b60d",
+    "/css/daterangepicker.css": "/css/daterangepicker.css?id=55e1d560821b4a4b141b"
 }

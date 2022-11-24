@@ -8,20 +8,27 @@ use App\Models\MenuAddOn;
 class UpdateOrderItem extends Component
 {
     public $order;
+    public $orderItem;
     public $orderItemAddons = [];
     public $addons;
     protected $listeners = ['setItem'];
 
-    public function setItem($order)
+    public function setItem($orderItem)
     {
-        $this->order = $order;
-        $order = json_decode($order);
-        $this->orderItemAddons = $order->data;
+        $this->orderItem = $orderItem;
+        $orderItem = json_decode($orderItem);
+        $this->orderItemAddons = $orderItem->data;
     }
 
     public function mount ()
     {
-        $this->addons = MenuAddOn::all();
+        $branch_id = $this->order->branch_id;
+
+        $this->addons = MenuAddOn::with('inventory')->whereHas('inventory', function ($q) use ($branch_id) {
+            // Check branch of order
+            $q->where('branch_id', $branch_id);
+        })->get();
+
         $this->orderItemAddons =[];
     }
 

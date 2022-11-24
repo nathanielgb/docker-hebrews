@@ -21,7 +21,14 @@ class AddCartAddons extends Component
 
     public function mount ()
     {
-        $this->addons = MenuAddOn::all();
+        $addons = MenuAddOn::whereHas('inventory', function ($q) {
+            // Check branch of current user
+            if (auth()->user()->branch_id) {
+                $q->where('branch_id', auth()->user()->branch_id);
+            }
+        })->get();
+
+        $this->addons = $addons;
         $this->cartAddons =[];
     }
 
@@ -29,6 +36,7 @@ class AddCartAddons extends Component
     {
         $this->cartAddons[] = [
             'addon_id' => '',
+            'name' => '',
             'qty' => 1
         ];
     }

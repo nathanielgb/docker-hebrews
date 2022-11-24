@@ -26,12 +26,12 @@
                     @csrf
                     <label class="block mb-4 text-sm">
                         <span class="text-gray-700">Name</span>
-                        <input class="block w-full mt-1 text-sm focus:outline-none focus:shadow-outline-gray form-input" name="name" type="text" placeholder="Enter Category">
+                        <input class="styled-input" name="name" type="text" placeholder="Enter Category">
                     </label>
 
                     <label class="block mb-4 text-sm">
                         <span class="text-gray-700">From</span>
-                        <select class="block w-full mt-1 text-sm form-select focus:outline-none focus:shadow-outline-gray" name="from">
+                        <select class="styled-input" name="from">
                             <option value="kitchen" >Kitchen</option>
                             <option value="storage" >Storage</option>
                         </select>

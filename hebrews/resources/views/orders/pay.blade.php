@@ -18,13 +18,13 @@
                 @csrf
                 <label class="block mb-4 text-sm">
                     <span class="text-gray-700 dark:text-gray-400">Credit to Bank Account</span>
-                    <select class="block w-full mt-1 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 form-select focus:border-green-400 focus:outline-none focus:shadow-outline-green dark:focus:shadow-outline-gray" name="account" required>
+                    <select class="styled-input" name="account" required>
                         <option value="{{ $account->id }}">{{ $account->bank }} - {{ $account->account_name }} @if ($account->account_number) ({{ $account->account_number }}) @endif</option>
                     </select>
                 </label>
                 <label class="block mb-4 text-sm">
                     <span class="text-gray-700">Cash Input</span>
-                    <input id="given-input" name="input_amt" min="0.01" step=".01" class="block w-full mt-1 text-sm focus:border-green-400 focus:outline-none focus:shadow-outline-green form-input" type="number" placeholder="Enter Amount received">
+                    <input id="given-input" name="input_amt" min="0.01" step=".01" class="styled-input" type="number" placeholder="Enter Amount received">
                 </label>
 
                 <div class="flex flex-col justify-center px-6 py-5 mb-6 text-base text-gray-500 bg-gray-100 rounded-lg">

@@ -19,12 +19,12 @@
         <div class="relative p-4 modal-body">
             <form id="search-menu-form" action="{{ route('menu.view_inventory') }}" method="get" autocomplete="off">
                 <label class="block mb-4 text-sm">
-                    <span class="text-gray-700">Inventory ID</span>
-                    <input class="block w-full mt-1 text-sm focus:border-purple-400 focus:outline-none focus:shadow-outline-purple form-input" name="inventory_id" type="number" placeholder="Enter Inventory ID">
+                    <span class="text-gray-700">Inventory Code</span>
+                    <input class="styled-input" name="inventory_code" type="text" placeholder="Enter code">
                 </label>
                 <label class="block mb-4 text-sm">
                     <span class="text-gray-700">Name</span>
-                    <input class="block w-full mt-1 text-sm focus:border-purple-400 focus:outline-none focus:shadow-outline-purple form-input" name="name" type="text" placeholder="Enter name">
+                    <input class="styled-input" name="name" type="text" placeholder="Enter name">
                 </label>
             </form>
         </div>

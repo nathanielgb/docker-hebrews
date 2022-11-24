@@ -3,16 +3,16 @@
         @csrf
         <label class="block mb-4 text-sm">
             <span class="text-gray-700 dark:text-gray-400">Menu Item</span>
-            <select wire:model="menuid" id="item-select" class="block w-full mt-1 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 form-select focus:border-green-400 focus:outline-none focus:shadow-outline-green dark:focus:shadow-outline-gray" name="menuitem" required>
+            <select wire:model="menuid" id="item-select" class="styled-input" name="menuitem" required>
                 <option value="" selected>Select menu item</option>
                 @foreach ($menus as $item)
-                    <option value="{{ $item->id }}" data-item="{{ json_encode($item) }}">{{ $item->name }}</option>
+                    <option value="{{ $item->id }}" data-item="{{ json_encode($item) }}">{{ $item->name }} ({{ $item->name }})</option>
                 @endforeach
             </select>
         </label>
         <label class="block mb-4 text-sm">
             <span class="text-gray-700">Product Type</span>
-            <select class="block w-full mt-1 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 form-select focus:border-green-400 focus:outline-none focus:shadow-outline-green dark:focus:shadow-outline-gray" name="type" required>
+            <select class="styled-input" name="type" required>
                 <option value="" selected disabled>Select type</option>
                 @if (isset($menuitem->reg_price))
                     <option value="regular">Regular</option>
@@ -33,7 +33,7 @@
         </label>
         <label class="block mb-4 text-sm">
             <span class="text-gray-700">Quantity</span>
-            <input class="block w-full mt-1 text-sm focus:border-green-400 focus:outline-none focus:shadow-outline-green form-input" name="quantity" type="number" placeholder="Enter Quantity" min="1" required>
+            <input class="styled-input" name="quantity" type="number" placeholder="Enter Quantity" min="1" required>
         </label>
 
         <div class="w-full mb-8 overflow-hidden border rounded-lg shadow-xs">
@@ -53,7 +53,7 @@
                                     <select
                                         wire:model="orderItemAddons.{{ $index }}.addon_id"
                                         name="orderItemAddon[{{ $index }}][addon_id]"
-                                        class="block w-full text-sm form-select focus:border-purple-400 focus:outline-none focus:shadow-outline-purple"
+                                        class="styled-input"
                                     >
                                         <option value="" selected disabled>Select Add-on</option>
                                         @foreach ($addons as $addon)
@@ -64,7 +64,7 @@
                                 <td class="px-4 py-3 text-sm text-center" style="max-width: 100px;">
                                     <input
                                         wire:model="orderItemAddons.{{ $index }}.qty"
-                                        class="block w-full text-sm focus:border-purple-400 focus:outline-none focus:shadow-outline-purple form-input"
+                                        class="styled-input"
                                         name="orderItemAddon[{{ $index }}][qty]"
                                         type="number"
                                         min="1"

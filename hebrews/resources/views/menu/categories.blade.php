@@ -4,12 +4,11 @@
         <script src="{{ asset('js/focus-trap.js') }}"></script>
         <script>
             document.addEventListener('alpine:init', () => {
-                Alpine.store('category', {
-                    deleteData: [],
-                    updateData: [],
+                Alpine.store('data', {
+                    delete: [],
+                    update: [],
                 })
             })
-
         </script>
 
     </x-slot>
@@ -45,9 +44,7 @@
 
     <div class="inline-flex w-full mt-2 mb-4 overflow-hidden bg-white rounded-lg shadow-md">
         <div class="flex items-center justify-center w-12 bg-yellow-400">
-            <svg class="w-6 h-6 text-white fill-current" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
-                <path d="M20 3.33331C10.8 3.33331 3.33337 10.8 3.33337 20C3.33337 29.2 10.8 36.6666 20 36.6666C29.2 36.6666 36.6667 29.2 36.6667 20C36.6667 10.8 29.2 3.33331 20 3.33331ZM21.6667 28.3333H18.3334V25H21.6667V28.3333ZM21.6667 21.6666H18.3334V11.6666H21.6667V21.6666Z"></path>
-            </svg>
+            <i class="text-lg text-white fa-solid fa-circle-exclamation"></i>
         </div>
 
         <div class="px-4 py-2 -mx-3">
@@ -121,8 +118,8 @@
                                             type="button"
                                             data-sub="{{ json_encode($category->sub) }}"
                                             data-bs-toggle="modal"
-                                            data-bs-target="#updateCategoryModal"
-                                            @click="$store.category.updateData={{ json_encode([
+                                            data-bs-target="#updateModal"
+                                            @click="$store.data.update={{ json_encode([
                                                 'id' => $category->id,
                                                 'name' => $category->name,
                                                 'from' => $category->from
@@ -130,13 +127,15 @@
                                             <span><i class="fa-solid fa-pen"></i> Update</span>
                                         </button>
                                         <button
-                                            @if (count($category->menus) > 0) disabled @endif
                                             type="button"
                                             class="inline-block px-6 py-2.5 bg-red-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-red-700 hover:shadow-lg focus:bg-red-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-red-800 active:shadow-lg transition duration-150 ease-in-out"
                                             aria-label="Delete"
                                             data-bs-toggle="modal"
-                                            data-bs-target="#deleteMenuModal"
-                                            >
+                                            data-bs-target="#deleteModal"
+                                            @click="$store.data.delete={{ json_encode([
+                                                'id' => $category->id,
+                                                'name' => $category->name,
+                                            ]) }}">
                                             <i class="fa-solid fa-trash"></i> Delete
                                         </button>
                                     </div>
@@ -185,6 +184,8 @@
 
             $(".btn-update-category").click(function() {
                 updateControl.clear();
+                updateControl.clearOptions();
+
                 var sub = $(this).data("sub");
                 sub.forEach(element => {
                     updateControl.addOption({

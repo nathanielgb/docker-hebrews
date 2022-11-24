@@ -8,7 +8,7 @@
         <label class="block mb-4 text-sm">
             <span class="text-gray-700">Quantity</span>
             <div class="flex space-x-2 align-center">
-                <input class="block w-full mt-1 text-sm focus:border-purple-400 focus:outline-none focus:shadow-outline-purple form-input" name="qty" type="number" placeholder="Enter quantity" value="{{ $cart->qty ?? null }}">
+                <input class="styled-input" name="qty" type="number" placeholder="Enter quantity" value="{{ $cart->qty ?? null }}">
             </div>
         </label>
 
@@ -29,22 +29,28 @@
                                     <select
                                         wire:model="cartAddons.{{ $index }}.addon_id"
                                         name="cartAddon[{{ $index }}][addon_id]"
-                                        class="block w-full text-sm form-select focus:border-purple-400 focus:outline-none focus:shadow-outline-purple"
+                                        class="styled-input"
                                     >
                                         <option value="" selected disabled>Select Add-on</option>
                                         @foreach ($addons as $addon)
-                                            <option value="{{ $addon->id }}">{{ $addon->name }} ({{ $addon->inventory->stock }} left)</option>
+                                            <option value="{{ $addon['id'] }}">
+                                                @if (isset($addon['inventory']))
+                                                    {{ $addon['name'] }} ({{ $addon['inventory']['branch']['name'] }}) ({{ $addon['inventory']['stock'] }} left)
+                                                @else
+                                                    {{ $addon['name'] }}
+                                                @endif
+                                            </option>
                                         @endforeach
                                     </select>
                                 </td>
                                 <td class="px-4 py-3 text-sm text-center" style="max-width: 100px;">
                                     <input
-                                    wire:model="cartAddons.{{ $index }}.qty"
-                                    class="block w-full text-sm focus:border-purple-400 focus:outline-none focus:shadow-outline-purple form-input"
-                                    name="cartAddon[{{ $index }}][qty]"
-                                    type="number"
-                                    min="1"
-                                    placeholder="1">
+                                        wire:model="cartAddons.{{ $index }}.qty"
+                                        class="styled-input"
+                                        name="cartAddon[{{ $index }}][qty]"
+                                        type="number"
+                                        min="1"
+                                        placeholder="1">
                                 </td>
                                 <td class="px-4 py-3 text-sm text-center">
                                     <button
@@ -77,7 +83,7 @@
             <span class="text-gray-700 dark:text-gray-400">Note</span>
             <textarea
                 name="note"
-                class="block w-full mt-1 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 form-textarea focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:focus:shadow-outline-gray"
+                class="styled-textarea"
                 rows="3"
                 placeholder="Enter some additional note (optional)."
             >{{ $cart->note ?? '' }}</textarea>

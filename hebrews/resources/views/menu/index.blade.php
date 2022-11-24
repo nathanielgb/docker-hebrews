@@ -28,6 +28,13 @@
         </script>
     </x-slot>
 
+    <x-slot name="styles">
+        <link
+            href="https://cdn.jsdelivr.net/npm/tom-select/dist/css/tom-select.css"
+            rel="stylesheet"
+        />
+    </x-slot>
+
     <x-slot name="header">
         {{ __('Menu') }}
     </x-slot>
@@ -46,14 +53,14 @@
 
                 @endif
 
-                @if(auth()->user()->can('access', 'view-inventory-action'))
-                <a
-                    href="{{ route('menu.view_inventory') }}"
-                    class="flex items-center inline-block px-6 py-2.5 bg-green-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-green-700 hover:shadow-lg focus:bg-green-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-green-800 active:shadow-lg transition duration-150 ease-in-out"
-                    >
-                    <span>INVENTORY</span>
-                </a>
-                @endif
+                {{-- @if(auth()->user()->can('access', 'view-inventory-action'))
+                    <a
+                        href="{{ route('menu.view_inventory') }}"
+                        class="flex items-center inline-block px-6 py-2.5 bg-green-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-green-700 hover:shadow-lg focus:bg-green-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-green-800 active:shadow-lg transition duration-150 ease-in-out"
+                        >
+                        <span>INVENTORY</span>
+                    </a>
+                @endif --}}
 
             </div>
 
@@ -72,7 +79,7 @@
                     >
                     <i class="fa-solid fa-magnifying-glass"></i> SEARCH
                 </button>
-                @if(auth()->user()->can('access', 'manage-menu-action'))
+                @if(auth()->user()->can('access', 'add-menu-action'))
                     <button
                         type="button"
                         class="inline-block px-6 py-2.5 bg-green-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-green-700 hover:shadow-lg focus:bg-green-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-green-800 active:shadow-lg transition duration-150 ease-in-out"
@@ -115,9 +122,9 @@
                                 <td class="px-4 py-3 text-sm">
                                     @if (isset($item->inventory))
                                         <ul>
-                                            <li>ID:
+                                            <li>branch:
                                                 <span class="font-bold">
-                                                    {{ $item->inventory->id }}
+                                                    {{ $item->inventory->branch->name }}
                                                 </span>
                                             </li>
                                             <li>name:
@@ -125,9 +132,14 @@
                                                     {{ $item->inventory->name }}
                                                 </span>
                                             </li>
+                                            <li>code:
+                                                <span class="font-bold">
+                                                    {{ $item->inventory->inventory_code }}
+                                                </span>
+                                            </li>
                                             <li>stock:
                                                 <span class="font-bold">
-                                                    @if ($item->inventory->unit == 'pcs')
+                                                    @if ($item->inventory->unit == 'pcs' || $item->inventory->unit == 'boxes')
                                                         {{ intval($item->inventory->stock) }}
                                                     @else
                                                         {{ $item->inventory->stock }}
@@ -143,12 +155,19 @@
                                     @endif
                                 </td>
                                 <td class="px-4 py-3 text-sm">
+                                    @php
+                                        $reg_price = isset($item->reg_price) ? number_format($item->reg_price, 2) : 'N/A';
+                                        $retail_price = isset($item->retail_price) ? number_format($item->retail_price, 2) : 'N/A';
+                                        $wholesale_price = isset($item->wholesale_price) ? number_format($item->wholesale_price, 2) : 'N/A';
+                                        $distributor_price = isset($item->distributor_price) ? number_format($item->distributor_price, 2) : 'N/A';
+                                        $rebranding_price = isset($item->rebranding_price) ? number_format($item->rebranding_price, 2) : 'N/A';
+                                    @endphp
                                     <ul>
-                                        <li>regular: <span class="font-bold">{{ number_format($item->reg_price ?? 0, 2) }}</span></li>
-                                        <li>retail: <span class="font-bold">{{ number_format($item->retail_price ?? 0, 2) }}</span></li>
-                                        <li>wholesale: <span class="font-bold">{{ number_format($item->wholesale_price ?? 0, 2) }}</span></li>
-                                        <li>distributor: <span class="font-bold">{{ number_format($item->distributor_price ?? 0, 2) }}</span></li>
-                                        <li>rebranding: <span class="font-bold">{{ number_format($item->rebranding_price ?? 0, 2) }}</span></li>
+                                        <li>regular: <span class="font-bold">{{ $reg_price }}</span></li>
+                                        <li>retail: <span class="font-bold">{{ $retail_price }}</span></li>
+                                        <li>wholesale: <span class="font-bold">{{ $wholesale_price }}</span></li>
+                                        <li>distributor: <span class="font-bold">{{ $distributor_price }}</span></li>
+                                        <li>rebranding: <span class="font-bold">{{ $rebranding_price}}</span></li>
                                     </ul>
                                 </td>
                                 <td class="px-4 py-3 text-sm">
@@ -160,17 +179,20 @@
                                     </span>
                                 </td>
                                 <td class="px-4 py-3 text-center">
-                                    @if(auth()->user()->can('access', 'manage-menu-action'))
-                                        <div class="flex items-center space-x-4 text-sm">
+                                    <div class="flex items-center justify-center space-x-4 text-sm">
+                                        @if(auth()->user()->can('access', 'update-menu-action'))
                                             <button
-                                                class="flex items-center inline-block px-6 py-2.5 bg-green-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-green-700 hover:shadow-lg focus:bg-green-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-green-800 active:shadow-lg transition duration-150 ease-in-out"
-                                                @click="$store.menu.updateMenuData={{ json_encode($item) }}, $store.menu.setCategories({{ $categories }}) ,$store.menu.setSubCategories({{ json_encode( $item->category->sub) }})"
+                                                class="flex btn-update-menu items-center inline-block px-6 py-2.5 bg-green-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-green-700 hover:shadow-lg focus:bg-green-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-green-800 active:shadow-lg transition duration-150 ease-in-out"
                                                 type="button"
                                                 data-bs-toggle="modal"
                                                 data-bs-target="#updateMenuModal"
+                                                data-branch_id="{{ $item->inventory->branch_id }}"
+                                                @click="$store.menu.updateMenuData={{ json_encode($item) }}, $store.menu.setCategories({{ $categories }}) ,$store.menu.setSubCategories({{ json_encode( $item->category->sub) }})"
                                                 >
                                                 <span><i class="fa-solid fa-pen"></i> Update</span>
                                             </button>
+                                        @endif
+                                        @if(auth()->user()->can('access', 'delete-menu-action'))
                                             <button
                                                 @click="$store.menu.deleteMenuData={{ json_encode([
                                                     'id' => $item->id,
@@ -184,8 +206,8 @@
                                                 >
                                                 <i class="fa-solid fa-trash"></i> Delete
                                             </button>
-                                        </div>
-                                    @endif
+                                        @endif
+                                    </div>
                                 </td>
                             </tr>
                         @empty
@@ -211,7 +233,67 @@
     </div>
 
     <x-slot name="scripts">
+        <script src="https://cdn.jsdelivr.net/npm/tom-select/dist/js/tom-select.complete.min.js"></script>
         <script type="text/javascript">
+
+            var addControl = new TomSelect("#select-inventory",{
+                valueField: 'id',
+                labelField: 'name',
+                searchField: 'name',
+                options: [],
+            });
+
+            var updateControl = new TomSelect('#select-update-inventory', {
+                valueField: 'id',
+                labelField: 'name',
+                searchField: 'name',
+                options: [],
+            });
+
+            $(".btn-update-menu").click(function() {
+                // Set branch
+                var branch_id = $(this).data("branch_id")
+                var inventory_id = $(this).data("inventory");
+
+                //  Trigger change for the correct branch to apply
+                $("#updateBranch").val(branch_id).trigger('change');
+            });
+
+            $("#addBranch").change(function() {
+                addControl.clear();
+                addControl.clearOptions();
+
+                var selectedItem = $(this).val();
+                var inventories = $('option:selected',this).data("inventories");
+
+                inventories.forEach(inventory => {
+                    addControl.addOption({
+                        id: inventory.id,
+                        name: inventory.name
+                    });
+                });
+            });
+
+            $("#updateBranch").change(function(e, data) {
+                updateControl.clear();
+                updateControl.clearOptions();
+
+                var inventory_id = Alpine.store('menu').updateMenuData.inventory_id
+
+                var selectedItem = $(this).val();
+                var inventories = $('option:selected',this).data("inventories");
+
+                inventories.forEach(inventory => {
+                    updateControl.addOption({
+                        id: inventory.id,
+                        name: inventory.name
+                    });
+
+                    if (inventory_id == inventory.id) {
+                        updateControl.addItem(inventory.id);
+                    }
+                });
+            });
 
             $("#addCategory").change(function() {
                 var selectedItem = $(this).val();
