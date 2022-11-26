@@ -67,5 +67,9 @@ networks:
     db_net:
         name: db_net
 
-
+# ssh into droplet
+# ssh root@159.223.39.44
+# login to non-root user
+# su - ngbambico
+# rebuild docker containers
 # sudo docker compose -f docker-compose.prod.yml up -d --build
