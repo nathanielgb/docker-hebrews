@@ -67,9 +67,10 @@
                         <span class="text-gray-700">Branch to transfer</span>
                         <select class="styled-input" name="transfer_branch">
                             @foreach ($branches as $branch)
-                                @if ($branch['id'] != 1)
+                                {{-- @if ($branch['id'] != 1)
                                     <option value="{{ $branch['id'] }}">{{ $branch['name'] }}</option>
-                                @endif
+                                @endif --}}
+                                <option value="{{ $branch['id'] }}">{{ $branch['name'] }}</option>
                             @endforeach
                             <option value="dispose">Dispose (Delete)</option>
                         </select>
