@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Branch;
 use Illuminate\Http\Request;
 use App\Models\MenuInventory;
-use App\Http\Requests\StoreInventoryRequest;
-use App\Models\Branch;
+use App\Imports\InventoryImport;
 use App\Models\BranchMenuInventory;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Http\Requests\StoreInventoryRequest;
 
 class InventoryController extends Controller
 {
@@ -415,5 +417,19 @@ class InventoryController extends Controller
             return redirect()->back()->with('success', "$request->transfer_stock $inventory_item->name items has been transfered to $branch_name  successfully.");
         }
         return redirect()->back()->with('error', 'Item does not exist.');
+    }
+
+    public function viewImportInventory ()
+    {
+        return view('menu.inventory.import');
+    }
+
+    public function importInventory (Request $request)
+    {
+
+        $file = $request->file('file');
+
+        Excel::import(new InventoryImport, $file);
+        dd('good');
     }
 }

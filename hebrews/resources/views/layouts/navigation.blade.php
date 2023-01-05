@@ -139,6 +139,18 @@
                                 </a>
                             </li>
                         @endif
+                        @if (auth()->user()->can('access', 'import-inventory-action'))
+                            <li
+                                @if (request()->routeIs('branch.inventory.import.show'))
+                                    class="px-2 py-1 text-green-700"
+                                @else
+                                    class="px-2 py-1"
+                                @endif >
+                                <a class="w-full" href="{{ route('branch.inventory.import.show') }}">
+                                    Import
+                                </a>
+                            </li>
+                        @endif
                     </ul>
                 </li>
             @endif
