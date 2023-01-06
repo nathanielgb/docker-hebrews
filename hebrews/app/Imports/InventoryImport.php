@@ -29,6 +29,7 @@ class InventoryImport implements ToCollection, WithHeadingRow, SkipsEmptyRows
         $status = '';
         $records = [];
         $rowNum = 1;
+        $validate = [];
 
         foreach ($rows as $row) {
             $row['row_number'] = ++$rowNum;
@@ -37,7 +38,9 @@ class InventoryImport implements ToCollection, WithHeadingRow, SkipsEmptyRows
             // make code lowercase
             $row['inventory_code'] = strtolower(str_replace(' ', '',  $row['inventory_code']));
 
-            switch ($row['action']) {
+            $action = strtoupper($row['action']);
+
+            switch ($action) {
                 case 'A':
                     if ($row['branch_id'] == 1) {
                         $exist = MenuInventory::where('inventory_code', $row['inventory_code'])->exists();
@@ -80,6 +83,7 @@ class InventoryImport implements ToCollection, WithHeadingRow, SkipsEmptyRows
                         }
                     } else {
                         $exist = BranchMenuInventory::where('branch_id', $row['branch_id'])->where('inventory_code', $row['inventory_code'])->exists();
+
                         if (!$exist) {
                             $record = [
                                 'row_number' => $rowNum,
@@ -89,14 +93,15 @@ class InventoryImport implements ToCollection, WithHeadingRow, SkipsEmptyRows
                                 'unit' => $row['unit'],
                                 'stock' => $row['stock'],
                                 'action' => 'Add',
+                                'errors' => []
                             ];
 
                             $validate = $this->validateAddRow($row);
-                            dd($validate);
                             if (!empty($validate['errors'])) {
                                 $record['status'] = 'failed';
-                                $record['errors'] = $validate['errors'];
-
+                                foreach($validate['errors'] as $column => $error) {
+                                    $record['errors'][$column] = $error;
+                                }
                             } else {
                                 $record['status'] = 'success';
 
@@ -116,13 +121,62 @@ class InventoryImport implements ToCollection, WithHeadingRow, SkipsEmptyRows
                     }
                     break;
                 case 'U':
+                    $record = [
+                        'row_number' => $rowNum,
+                        'branch_id' => $row['branch_id'],
+                        'inventory_code' => $row['inventory_code'],
+                        'name' => $row['name'],
+                        'unit' => $row['unit'],
+                        'stock' => $row['stock'],
+                        'action' => 'Update',
+                        'errors' => []
+                    ];
                     if ($row['branch_id'] == 1) {
                         $item = MenuInventory::where('inventory_code', $row['inventory_code'])->first();
 
+                        if (!$item) {
+                            $record['status'] = 'failed';
+                            $record['errors']['others'][] = 'Item does not exist.';
+                        } else {
+                            $validate = $this->validateUpdateRow($row);
+
+                            if (!empty($validate['errors'])) {
+                                $record['status'] = 'failed';
+                                foreach($validate['errors'] as $column => $error) {
+                                    $record['errors'][$column] = $error;
+                                }
+                            } else {
+                                $record['status'] = 'success';
+
+                                $item->previous_stock = $item->stock;
+                                $item->stock = $row['stock'];
+                                $item->save();
+                            }
+                        }
                     } else {
+                        $item = MenuInventory::where('branch_id', $row['branch_id'])->where('inventory_code', $row['inventory_code'])->first();
+                        if (!$item) {
+                            $record['status'] = 'failed';
+                            $record['errors']['others'][] = 'Item does not exist.';
+                        } else {
+                            $validate = $this->validateUpdateRow($row);
 
+                            if (!empty($validate['errors'])) {
+                                $record['status'] = 'failed';
+                                foreach($validate['errors'] as $column => $error) {
+                                    $record['errors'][$column] = $error;
+                                }
+                            } else {
+                                $record['status'] = 'success';
 
+                                $item->previous_stock = $item->stock;
+                                $item->stock = $row['stock'];
+                                $item->save();
+                            }
+                        }
                     }
+
+                    $records[] = $record;
                     break;
                 default:
                     break;
@@ -149,7 +203,29 @@ class InventoryImport implements ToCollection, WithHeadingRow, SkipsEmptyRows
             'inventory_code' => 'required|max:255|alpha_dash',
             'name' => 'required|max:255',
             'unit' => ['required', Rule::in(['Kg', 'g', 'pcs', 'boxes'])],
-            'stock' => 'required|numeric|between:0,999999'
+            'stock' => 'required|numeric|between:0,9999999'
+        ]);
+
+        $errors = $validator->errors()->messages();
+
+        return [
+            'errors' => $errors
+        ];
+
+    }
+    /**
+    * validate columns of the record and return status/error if any
+    *
+    * @param array $data
+    *
+    * @return array
+    */
+    private function validateUpdateRow($data)
+    {
+        $data = $data->toArray();
+
+        $validator = Validator::make($data, [
+            'stock' => 'required|numeric|between:0,9999999'
         ]);
         return [
             'errors' => $validator->errors()->messages()

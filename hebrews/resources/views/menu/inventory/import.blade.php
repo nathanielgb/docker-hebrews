@@ -28,6 +28,7 @@
                 <span class="font-semibold" style="color: #06b6d4;">Note</span>
                 <ol class="list-decimal list-inside">
                     <li clas="text-sm text-gray-600">Adding items from the imported csv/xlxs file that is already in the database will we skipped/ignored.</li>
+                    <li clas="text-sm text-gray-600">Name, unit, and inventory code <b>WILL NOT</b> changed when updating. You can only change number of stock when updating.</li>
                 </ol>
             </div>
         </div>
@@ -65,74 +66,131 @@
 
                 <div class="block p-6 rounded-lg shadow-lg bg-white overflow-hidden">
                     @if(session()->has('records'))
-                    <div class="w-full mb-8 overflow-hidden border rounded-lg shadow-xs">
-                        <div class="w-full overflow-x-auto">
-                            <table class="w-full whitespace-no-wrap">
-                                <thead>
-                                <tr class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase border-b bg-gray-50">
-                                    <th class="px-4 py-3">Row Number</th>
-                                    <th class="px-4 py-3">Branch Id</th>
-                                    <th class="px-4 py-3">Inventory Code</th>
-                                    <th class="px-4 py-3">Name</th>
-                                    <th class="px-4 py-3">Unit</th>
-                                    <th class="px-4 py-3">Stock</th>
-                                    <th class="px-4 py-3 text-center">Action</th>
-                                    <th class="px-4 py-3 text-center">Status</th>
-                                    <th class="px-4 py-3 text-center">Errors</th>
-                                </tr>
-                                </thead>
-                                <tbody class="bg-white divide-y">
-                                    @forelse (session('records') as $record)
-                                        <tr class="text-gray-700">
-                                            <td class="px-4 py-3 text-sm text-s">
-                                                {{ $record['row_number'] }}
-                                            </td>
-                                            <td class="px-4 py-3 text-sm text-s">
-                                                {{ $record['branch_id'] }}
-                                            </td>
-                                            <td class="px-4 py-3 text-sm">
-                                                {{ $record['inventory_code'] }}
-                                            </td>
-                                            <td class="px-4 py-3 text-sm">
-                                                {{ $record['name'] }}
-                                            </td>
-                                            <td class="px-4 py-3 text-sm">
-                                                {{ $record['unit'] }}
-                                            </td>
-                                            <td class="px-4 py-3 text-sm">
-                                                {{ $record['stock'] }}
-                                            </td>
-                                            <td class="px-4 py-3 text-sm text-center">
-                                                {{ $record['action'] }}
-                                            </td>
-                                            <td class="px-4 py-3 text-sm text-center">
-                                                @if ($record['status'] == 'success')
-                                                    <span class="font-semibold text-green-600">Success</span>
-                                                @else
-                                                    <span class="font-semibold text-red-600">Failed</span>
-                                                @endif
-                                            </td>
-                                            <td class="px-4 py-3 text-sm">
-                                                <ol class="list-decimal list-inside">
-                                                    @foreach($record['errors'] ?? [] as $column => $errors)
-                                                        @foreach($errors as $error)
-                                                            <li class="text-red-600">{{ $error }}</li>
+                        <div class="w-full mb-8 overflow-hidden border rounded-lg shadow-xs">
+                            <div class="w-full overflow-x-auto">
+                                <table class="w-full whitespace-no-wrap">
+                                    <thead>
+                                    <tr class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase border-b bg-gray-50">
+                                        <th class="px-4 py-3">Row Number</th>
+                                        <th class="px-4 py-3">Branch Id</th>
+                                        <th class="px-4 py-3">Inventory Code</th>
+                                        <th class="px-4 py-3">Name</th>
+                                        <th class="px-4 py-3">Unit</th>
+                                        <th class="px-4 py-3">Stock</th>
+                                        <th class="px-4 py-3 text-center">Action</th>
+                                        <th class="px-4 py-3 text-center">Status</th>
+                                        <th class="px-4 py-3 text-center">Errors</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody class="bg-white divide-y">
+                                        @forelse (session('records') as $record)
+                                            <tr class="text-gray-700">
+                                                <td class="px-4 py-3 text-sm text-s">
+                                                    {{ $record['row_number'] }}
+                                                </td>
+                                                <td class="px-4 py-3 text-sm text-s">
+                                                    {{ $record['branch_id'] }}
+                                                </td>
+                                                <td class="px-4 py-3 text-sm">
+                                                    {{ $record['inventory_code'] }}
+                                                </td>
+                                                <td class="px-4 py-3 text-sm">
+                                                    {{ $record['name'] }}
+                                                </td>
+                                                <td class="px-4 py-3 text-sm">
+                                                    {{ $record['unit'] }}
+                                                </td>
+                                                <td class="px-4 py-3 text-sm">
+                                                    {{ $record['stock'] }}
+                                                </td>
+                                                <td class="px-4 py-3 text-sm text-center">
+                                                    {{ $record['action'] }}
+                                                </td>
+                                                <td class="px-4 py-3 text-sm text-center">
+                                                    @if ($record['status'] == 'success')
+                                                        <span class="font-semibold text-green-600">Success</span>
+                                                    @else
+                                                        <span class="font-semibold text-red-600">Failed</span>
+                                                    @endif
+                                                </td>
+                                                <td class="px-4 py-3 text-sm">
+                                                    <ol class="list-decimal list-inside">
+                                                        @foreach($record['errors'] ?? [] as $column => $errors)
+                                                            @foreach($errors as $error)
+                                                                <li class="text-red-600">{{ $error }}</li>
+                                                            @endforeach
                                                         @endforeach
-                                                    @endforeach
-                                                </ol>
-                                            </td>
-                                        </tr>
-                                    @empty
-                                        <tr class="text-gray-700">
-                                            <td colspan="9" class="px-4 py-3 text-sm text-center">
-                                                No records found.
-                                            </td>
-                                        </tr>
-                                    @endforelse
-                                </tbody>
-                            </table>
+                                                    </ol>
+                                                </td>
+                                            </tr>
+                                        @empty
+                                            <tr class="text-gray-700">
+                                                <td colspan="9" class="px-4 py-3 text-sm text-center">
+                                                    No records found.
+                                                </td>
+                                            </tr>
+                                        @endforelse
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
-                    </div>
+                    @else
+                        <div class="flex flex-col">
+                            <div class="overflow-x-auto sm:-mx-6 lg:-mx-8">
+                            <div class="py-2 inline-block min-w-full sm:px-6 lg:px-8">
+                                <div class="overflow-hidden">
+                                <table class="min-w-full border text-center">
+                                    <thead class="border-b">
+                                    <tr>
+                                        <th scope="col" class="text-sm font-semi-bold text-gray-900 px-6 py-4 border-r">
+                                        inventory_code
+                                        </th>
+                                        <th scope="col" class="text-sm font-semi-bold text-gray-900 px-6 py-4 border-r">
+                                        branch_id
+                                        </th>
+                                        <th scope="col" class="text-sm font-semi-bold text-gray-900 px-6 py-4 border-r">
+                                        name
+                                        </th>
+                                        <th scope="col" class="text-sm font-semi-bold text-gray-900 px-6 py-4 border-r">
+                                        unit
+                                        </th>
+                                        <th scope="col" class="text-sm font-semi-bold text-gray-900 px-6 py-4 border-r">
+                                        stock
+                                        </th>
+                                        <th scope="col" class="text-sm font-semi-bold text-gray-900 px-6 py-4">
+                                        action
+                                        </th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr class="border-b">
+                                        <td class="text-sm text-gray-900 font-normal px-6 py-4 whitespace-nowrap border-r">
+                                            the unique identifier for the inventory item
+                                        </td>
+                                        <td class="text-sm text-gray-900 font-normal px-6 py-4 whitespace-nowrap border-r">
+                                            inventory branch
+                                        </td>
+                                        <td class="text-sm text-gray-900 font-normal px-6 py-4 whitespace-nowrap border-r">
+                                            inventory name
+                                        </td>
+                                        <td class="text-sm text-gray-900 font-normal px-6 py-4 whitespace-nowrap border-r">
+                                            inventory unit (i.e. Kg, g, pcs., boxes)
+                                        </td>
+                                        <td class="text-sm text-gray-900 font-normal px-6 py-4 whitespace-nowrap border-r">
+                                            inventory running stock
+                                        </td>
+                                        <td class="text-sm text-gray-900 font-normal px-6 py-4 whitespace-nowrap border-r">
+                                            action to perform (i.e. Add or Update)
+                                        </td>
+                                    </tbody>
+                                </table>
+                                </div>
+                            </div>
+                            </div>
+                        </div>
+                        <div class="bg-blue-100 rounded-lg py-5 px-6 mb-4 text-base text-blue-700 mb-3" role="alert">
+                            A simple primary alert with <a href="#" class="font-bold text-blue-800">an example link</a>. Give it a click if you like.
+                        </div>
                     @endif
                 </div>
             </div>
