@@ -27,8 +27,10 @@
             <div class="mx-3">
                 <span class="font-semibold" style="color: #06b6d4;">Note</span>
                 <ol class="list-decimal list-inside">
-                    <li clas="text-sm text-gray-600">Adding items from the imported csv/xlxs file that is already in the database will we skipped/ignored.</li>
+                    <li clas="text-sm text-gray-600">Adding items from the imported csv/xlsx file that is already in the database will we skipped/ignored.</li>
                     <li clas="text-sm text-gray-600">Name, unit, and inventory code <b>WILL NOT</b> changed when updating. You can only change number of stock when updating.</li>
+                    <li clas="text-sm text-gray-600">Please follow the proper format of headings as seen in the import sample guide.</li>
+                    <li clas="text-sm text-gray-600">Items with <b>Failed</b> status will not be saved while status with <b>Success</b> will be saved.</li>
                 </ol>
             </div>
         </div>
@@ -40,7 +42,7 @@
                 <div class="block p-6 rounded-lg shadow-lg bg-white max-w-sm mr-5">
                     <h5 class="text-gray-900 text-xl leading-tight font-medium mb-2">Import</h5>
                     <p class="text-gray-700 text-base mb-4">
-                        Make sure to follow proper format of csv/xlxs before importing data.
+                        Make sure to follow proper format of csv/xlsx before importing data.
                     </p>
                     <form action="{{ route('branch.inventory.import.store') }}" method="post" enctype="multipart/form-data">
                         @csrf
@@ -164,23 +166,23 @@
                                     </thead>
                                     <tbody>
                                     <tr class="border-b">
-                                        <td class="text-sm text-gray-900 font-normal px-6 py-4 whitespace-nowrap border-r">
+                                        <td class="text-sm text-gray-900 font-normal px-6 py-4 whitespace-nowrap border-r break-all">
                                             the unique identifier for the inventory item
                                         </td>
-                                        <td class="text-sm text-gray-900 font-normal px-6 py-4 whitespace-nowrap border-r">
-                                            inventory branch
+                                        <td class="text-sm text-gray-900 font-normal px-6 py-4 whitespace-nowrap border-r break-all">
+                                            specify branch of the item
                                         </td>
-                                        <td class="text-sm text-gray-900 font-normal px-6 py-4 whitespace-nowrap border-r">
-                                            inventory name
+                                        <td class="text-sm text-gray-900 font-normal px-6 py-4 whitespace-nowrap border-r break-all">
+                                            specify name (for adding)
                                         </td>
-                                        <td class="text-sm text-gray-900 font-normal px-6 py-4 whitespace-nowrap border-r">
-                                            inventory unit (i.e. Kg, g, pcs., boxes)
+                                        <td class="text-sm text-gray-900 font-normal px-6 py-4 whitespace-nowrap border-r break-all">
+                                            specify unit (i.e. Kg, g, pcs., boxes) (for adding)
                                         </td>
-                                        <td class="text-sm text-gray-900 font-normal px-6 py-4 whitespace-nowrap border-r">
-                                            inventory running stock
+                                        <td class="text-sm text-gray-900 font-normal px-6 py-4 whitespace-nowrap border-r break-all">
+                                            specify running stock of the item
                                         </td>
-                                        <td class="text-sm text-gray-900 font-normal px-6 py-4 whitespace-nowrap border-r">
-                                            action to perform (i.e. Add or Update)
+                                        <td class="text-sm text-gray-900 font-normal px-6 py-4 whitespace-nowrap border-rbreak-all">
+                                            action to perform (i.e. A or U)
                                         </td>
                                     </tbody>
                                 </table>
@@ -188,8 +190,23 @@
                             </div>
                             </div>
                         </div>
-                        <div class="bg-blue-100 rounded-lg py-5 px-6 mb-4 text-base text-blue-700 mb-3" role="alert">
-                            A simple primary alert with <a href="#" class="font-bold text-blue-800">an example link</a>. Give it a click if you like.
+                        <div class="py-2 px-6 mb-4 text-base text-blue-700 mb-3" role="alert">
+                            <span class="font-bold text-blue-800">Inventory Code</span> - this field is <b><em>required</em></b> and may have lowercase alpha-numeric characters, as well as dashes and underscores.
+                        </div>
+                        <div class="py-2 px-6 mb-4 text-base text-blue-700 mb-3" role="alert">
+                            <span class="font-bold text-blue-800">Branch ID</span> - this field is <b><em>required</em></b>, <b><em>numeric</em></b> and should <b><em>exist in the branches</em></b> table in user section. Branch ID with a value of <b>1</b> will be saved in the Warehouse section otherwise it will be save in the inventory of the branch specified.
+                        </div>
+                        <div class="py-2 px-6 mb-4 text-base text-blue-700 mb-3" role="alert">
+                            <span class="font-bold text-blue-800">Name</span> - this field is <b><em>required</em></b> and should have a maximum of 255 characters. (will not change when updating)
+                        </div>
+                        <div class="py-2 px-6 mb-4 text-base text-blue-700 mb-3" role="alert">
+                            <span class="font-bold text-blue-800">Unit</span> - this field is <b><em>required</em></b> and should be one of the following <b><em>Kg, g, pcs, boxes</em></b>. (will not change when updating)
+                        </div>
+                        <div class="py-2 px-6 mb-4 text-base text-blue-700 mb-3" role="alert">
+                            <span class="font-bold text-blue-800">Stock</span> - this field is <b><em>required</em></b> and should have a minimum value of <b><em>0</em></b>.
+                        </div>
+                        <div class="py-2 px-6 mb-4 text-base text-blue-700 mb-3" role="alert">
+                            <span class="font-bold text-blue-800">Action</span> - this field is <b><em>required</em></b>, should have a value of <b><em>A</em></b> when you want to add the item and a value of <b><em>U</em></b> if you want to update the stock of an existing item.
                         </div>
                     @endif
                 </div>

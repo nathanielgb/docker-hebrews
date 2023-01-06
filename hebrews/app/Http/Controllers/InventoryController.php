@@ -428,6 +428,10 @@ class InventoryController extends Controller
 
     public function importInventory (Request $request)
     {
+        $request->validate([
+            'file' => 'required|file|mimes:csv,xlsx'
+        ]);
+
         $file = $request->file('file');
         $records = [];
 
