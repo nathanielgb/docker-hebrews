@@ -10,6 +10,7 @@
     padding-bottom: 10px !important;
 }
 
+
 .styled-input {
     @apply block w-full m-0 mt-1 text-sm font-normal text-gray-700 transition ease-in-out bg-white border border-gray-300 border-solid rounded form-control bg-clip-padding focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none;
 }

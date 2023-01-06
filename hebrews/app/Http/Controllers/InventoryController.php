@@ -9,6 +9,8 @@ use App\Imports\InventoryImport;
 use App\Models\BranchMenuInventory;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Http\Requests\StoreInventoryRequest;
+use Illuminate\Validation\ValidationException;
+use App\Models\ErrorLog;
 
 class InventoryController extends Controller
 {
@@ -426,10 +428,29 @@ class InventoryController extends Controller
 
     public function importInventory (Request $request)
     {
-
         $file = $request->file('file');
+        $records = [];
 
-        Excel::import(new InventoryImport, $file);
-        dd('good');
+        try {
+            $import = new InventoryImport;
+            $import->import($file);
+
+            $records = $import->records;
+
+        } catch (ValidationException $e) {
+            ErrorLog::create([
+                'location' => 'InventoryController.importInventory',
+                'message' => gettype($e->errors()) == 'string' ? $e->errors() : json_encode($e->errors())
+            ]);
+
+            return redirect()
+                ->back()
+                ->with('error', "Failed to import file. Please try again.");
+        }
+
+        return redirect()
+            ->back()
+            ->with('success', "Records are successfully imported successfully.")
+            ->with('records', $records);
     }
 }
