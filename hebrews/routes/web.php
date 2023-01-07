@@ -128,6 +128,11 @@ Route::middleware('auth')->group(function () {
             Route::post('branch-inventory/update', [\App\Http\Controllers\InventoryController::class, 'updateBranchInventory'])->name('branch.inventory.update');
             Route::post('branch-inventory/delete', [\App\Http\Controllers\InventoryController::class, 'deleteBranchInventory'])->name('branch.inventory.delete');
         });
+
+        Route::group(['middleware' => 'CheckAccessActions:import-inventory-action'], function () {
+            Route::get('import-inventory', [\App\Http\Controllers\InventoryController::class, 'viewImportInventory'])->name('branch.inventory.import.show');
+            Route::post('import-inventory', [\App\Http\Controllers\InventoryController::class, 'importInventory'])->name('branch.inventory.import.store');
+        });
     });
 
     Route::group(['middleware' => 'CheckAccessActions:view-menu-addons-action'], function () {
@@ -139,7 +144,7 @@ Route::middleware('auth')->group(function () {
         });
     });
 
-    // Categories Section ( SUPERADMIN)
+    // Categories Section (SUPERADMIN)
     Route::group(['middleware' => 'CheckAccessActions:view-categories-action'], function () {
         Route::get('categories', [\App\Http\Controllers\MenuController::class, 'viewCategories'])->name('menu.show_categories');
 
