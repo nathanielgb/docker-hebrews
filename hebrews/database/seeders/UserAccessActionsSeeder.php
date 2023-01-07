@@ -223,6 +223,10 @@ class UserAccessActionsSeeder extends Seeder
                     'view-inventory-action',
                     'add-inventory-action',
 
+                    // Branch Inventory
+                    'view-branch-inventory-action',
+                    'add-branch-inventory-action',
+
                     // Orders
                     'view-order-list-action'
                 ]),
