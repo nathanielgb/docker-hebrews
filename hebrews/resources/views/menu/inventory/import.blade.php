@@ -66,7 +66,7 @@
                     </form>
                 </div>
 
-                <div class="block p-6 rounded-lg shadow-lg bg-white overflow-hidden">
+                <div class="block p-6 rounded-lg shadow-lg bg-white overflow-hidden mmd:max-w-2xl mxl:max-w-3xl">
                     @if(session()->has('records'))
                         <div class="w-full mb-8 overflow-hidden border rounded-lg shadow-xs">
                             <div class="w-full overflow-x-auto">
