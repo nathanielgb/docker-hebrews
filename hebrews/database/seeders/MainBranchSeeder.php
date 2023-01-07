@@ -17,6 +17,11 @@ class MainBranchSeeder extends Seeder
                 'id'=> 1,
                 'name' => 'Main Branch',
                 'location' => ''
+            ],
+            [
+                'id'=> 2,
+                'name' => 'Sub Branch',
+                'location' => ''
             ]
         ];
         DB::table('branches')->insert($data);
