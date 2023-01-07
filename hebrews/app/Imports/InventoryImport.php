@@ -42,7 +42,7 @@ class InventoryImport implements ToCollection, WithHeadingRow, SkipsEmptyRows
 
             switch ($action) {
                 case 'A':
-                    if ($row['branch_id'] == 1) {
+                    if ($row['branch_id'] == 'w') {
                         $exist = MenuInventory::where('inventory_code', $row['inventory_code'])->exists();
 
                         // Add only if item does not exist
@@ -131,7 +131,7 @@ class InventoryImport implements ToCollection, WithHeadingRow, SkipsEmptyRows
                         'action' => 'Update',
                         'errors' => []
                     ];
-                    if ($row['branch_id'] == 1) {
+                    if ($row['branch_id'] == 'w') {
                         $item = MenuInventory::where('inventory_code', $row['inventory_code'])->first();
 
                         if (!$item) {
@@ -198,13 +198,22 @@ class InventoryImport implements ToCollection, WithHeadingRow, SkipsEmptyRows
     {
         $data = $data->toArray();
 
-        $validator = Validator::make($data, [
-            'branch_id' => ['required', Rule::exists(Branch::class, 'id')],
-            'inventory_code' => 'required|max:255|alpha_dash',
-            'name' => 'required|max:255',
-            'unit' => ['required', Rule::in(['Kg', 'g', 'pcs', 'boxes'])],
-            'stock' => 'required|numeric|between:0,9999999'
-        ]);
+        if ($data['branch_id'] == 'w') {
+            $validator = Validator::make($data, [
+                'inventory_code' => 'required|max:255|alpha_dash',
+                'name' => 'required|max:255',
+                'unit' => ['required', Rule::in(['Kg', 'g', 'pcs', 'boxes'])],
+                'stock' => 'required|numeric|between:0,9999999'
+            ]);
+        } else {
+            $validator = Validator::make($data, [
+                'branch_id' => ['required', Rule::exists(Branch::class, 'id')],
+                'inventory_code' => 'required|max:255|alpha_dash',
+                'name' => 'required|max:255',
+                'unit' => ['required', Rule::in(['Kg', 'g', 'pcs', 'boxes'])],
+                'stock' => 'required|numeric|between:0,9999999'
+            ]);
+        }
 
         $errors = $validator->errors()->messages();
 

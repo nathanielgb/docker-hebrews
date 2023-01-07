@@ -170,7 +170,7 @@
                                             the unique identifier for the inventory item
                                         </td>
                                         <td class="text-sm text-gray-900 font-normal px-6 py-4 whitespace-nowrap border-r break-all">
-                                            specify branch of the item
+                                            specify branch of the item <br>(enter 'w' to save in warehouse)
                                         </td>
                                         <td class="text-sm text-gray-900 font-normal px-6 py-4 whitespace-nowrap border-r break-all">
                                             specify name (for adding)
@@ -194,7 +194,7 @@
                             <span class="font-bold text-blue-800">Inventory Code</span> - this field is <b><em>required</em></b> and may have lowercase alpha-numeric characters, as well as dashes and underscores.
                         </div>
                         <div class="py-2 px-6 mb-4 text-base text-blue-700 mb-3" role="alert">
-                            <span class="font-bold text-blue-800">Branch ID</span> - this field is <b><em>required</em></b>, <b><em>numeric</em></b> and should <b><em>exist in the branches</em></b> table in user section. Branch ID with a value of <b>1</b> will be saved in the Warehouse section otherwise it will be save in the inventory of the branch specified.
+                            <span class="font-bold text-blue-800">Branch ID</span> - this field is <b><em>required</em></b>, <b><em>numeric</em></b> and should <b><em>exist in the branches</em></b> table in user section. <br> Branch ID with a value of <b>w</b> will be saved in the Warehouse section otherwise it will be save in the inventory of the branch specified.
                         </div>
                         <div class="py-2 px-6 mb-4 text-base text-blue-700 mb-3" role="alert">
                             <span class="font-bold text-blue-800">Name</span> - this field is <b><em>required</em></b> and should have a maximum of 255 characters. (will not change when updating)
