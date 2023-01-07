@@ -38,7 +38,7 @@ class UserSeeder extends Seeder
                 'password' => Hash::make('admin123')
             ],
             [
-                'name' => 'MANAGER',
+                'name' => 'SAMPLE-MANAGER',
                 'email' => 'manager@admin.com',
                 'username' => 'manager',
                 'branch_id' => '2',
@@ -46,7 +46,7 @@ class UserSeeder extends Seeder
                 'password' => Hash::make('admin123')
             ],
             [
-                'name' => 'KITCHEN',
+                'name' => 'SAMPLE-KITCHEN',
                 'email' => 'kitchen@admin.com',
                 'username' => 'kitchen',
                 'branch_id' => '2',
@@ -54,7 +54,7 @@ class UserSeeder extends Seeder
                 'password' => Hash::make('admin123')
             ],
             [
-                'name' => 'WAITER',
+                'name' => 'SAMPLE-WAITER',
                 'email' => 'waiter@admin.com',
                 'username' => 'waiter',
                 'branch_id' => '2',
@@ -62,7 +62,7 @@ class UserSeeder extends Seeder
                 'password' => Hash::make('admin123')
             ],
             [
-                'name' => 'DISPATCHER',
+                'name' => 'SAMPLE-DISPATCHER',
                 'email' => 'dispatcher@admin.com',
                 'username' => 'dispatcher',
                 'branch_id' => '2',
