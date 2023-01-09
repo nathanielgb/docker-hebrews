@@ -83,6 +83,11 @@ Route::middleware('auth')->group(function () {
         Route::group(['middleware' => 'CheckAccessActions:add-menu-action'], function () {
             Route::post('add-menu', [\App\Http\Controllers\MenuController::class, 'store'])->name('menu.store');
         });
+        
+        Route::group(['middleware' => 'CheckAccessActions:import-menu-action'], function () {
+            Route::get('import-menu', [\App\Http\Controllers\MenuController::class, 'viewImport'])->name('menu.import.view');
+            Route::post('import-menu', [\App\Http\Controllers\MenuController::class, 'import'])->name('menu.import');
+        });
 
 
         Route::group(['middleware' => 'CheckAccessActions:update-menu-action'], function () {

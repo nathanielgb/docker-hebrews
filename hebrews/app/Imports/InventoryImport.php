@@ -154,7 +154,7 @@ class InventoryImport implements ToCollection, WithHeadingRow, SkipsEmptyRows
                             }
                         }
                     } else {
-                        $item = MenuInventory::where('branch_id', $row['branch_id'])->where('inventory_code', $row['inventory_code'])->first();
+                        $item = BranchMenuInventory::where('branch_id', $row['branch_id'])->where('inventory_code', $row['inventory_code'])->first();
                         if (!$item) {
                             $record['status'] = 'failed';
                             $record['errors']['others'][] = 'Item does not exist.';

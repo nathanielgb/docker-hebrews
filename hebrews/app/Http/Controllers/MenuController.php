@@ -11,6 +11,10 @@ use App\Http\Requests\StoreMenuRequest;
 use App\Http\Requests\UpdateMenuRequest;
 use App\Models\Branch;
 use App\Models\BranchMenuInventory;
+use App\Imports\MenuImport;
+use Illuminate\Validation\ValidationException;
+use App\Models\ErrorLog;
+
 
 class MenuController extends Controller
 {
@@ -71,6 +75,7 @@ class MenuController extends Controller
             }
 
             $menu = Menu::create([
+                'code' => $request->code,
                 'name' => $request->menu,
                 'units' => $request->unit,
                 'reg_price' => $request->reg_price,
@@ -86,6 +91,45 @@ class MenuController extends Controller
             return back()->with('success', 'Successfully added ' . $request->menu . ' to the menu.');
         }
         return back()->with('error', 'Item Inventory does not exist.');
+    }
+
+    public function viewImport ()
+    {
+        return view('menu.import');
+    }
+
+    public function import (Request $request)
+    {
+        $request->validate([
+            'file' => 'required|file|mimes:csv,xlsx'
+        ]);
+
+        
+        $file = $request->file('file');
+        $records = [];
+
+        try {
+            $import = new MenuImport;
+            $import->import($file);
+
+            $records = $import->records;
+
+        } catch (ValidationException $e) {
+            ErrorLog::create([
+                'location' => 'MenuController.import',
+                'message' => gettype($e->errors()) == 'string' ? $e->errors() : json_encode($e->errors())
+            ]);
+
+            return redirect()
+                ->back()
+                ->with('error', "Failed to import file. Please try again.");
+        }
+
+        
+        return redirect()
+            ->back()
+            ->with('success', "Records are successfully imported successfully.")
+            ->with('records', $records);
     }
 
     // public function viewUpdate(Request $request)

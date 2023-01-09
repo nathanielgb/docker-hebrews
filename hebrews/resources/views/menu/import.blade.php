@@ -1,19 +1,10 @@
 <x-app-layout>
     <x-slot name="headerscript">
-        <!-- You need focus-trap.js to make the modal accessible -->
-        <script src="{{ asset('js/focus-trap.js') }}"></script>
-        <script>
-            document.addEventListener('alpine:init', () => {
-                Alpine.store('inventory', {
-                    deleteInventoryData: [],
-                    updateInventoryData: [],
-                })
-            })
-        </script>
+ 
     </x-slot>
 
     <x-slot name="header">
-        {{ __('Inventory - Import') }}
+        {{ __('Menu - Import') }}
     </x-slot>
 
     @include('components.alert-message')
@@ -28,7 +19,6 @@
                 <span class="font-semibold" style="color: #06b6d4;">Note</span>
                 <ol class="list-decimal list-inside">
                     <li clas="text-sm text-gray-600">Adding items from the imported csv/xlsx file that is already in the database will we skipped/ignored.</li>
-                    <li clas="text-sm text-gray-600">Name, unit, and inventory code <b>WILL NOT</b> changed when updating. You can only change number of stock when updating.</li>
                     <li clas="text-sm text-gray-600">Please follow the proper format of headings as seen in the import sample guide.</li>
                     <li clas="text-sm text-gray-600">Items with <b>Failed</b> status will not be saved while status with <b>Success</b> will be saved.</li>
                 </ol>
@@ -38,13 +28,13 @@
 
     <div class="w-full mb-8">
         <div class="w-full">
-            <div class="flex">
-                <div class="block p-6 rounded-lg shadow-lg bg-white max-w-sm mr-5">
+            <div class="flex flex-col">
+                <div class="block p-6 rounded-lg shadow-lg bg-white max-w-sm mr-5 mb-5">
                     <h5 class="text-gray-900 text-xl leading-tight font-medium mb-2">Import</h5>
                     <p class="text-gray-700 text-base mb-4">
                         Make sure to follow proper format of csv/xlsx before importing data.
                     </p>
-                    <form action="{{ route('branch.inventory.import.store') }}" method="post" enctype="multipart/form-data">
+                    <form action="{{ route('menu.import') }}" method="post" enctype="multipart/form-data">
                         @csrf
                         <input class="form-control
                             block
@@ -74,11 +64,18 @@
                                     <thead>
                                     <tr class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase border-b bg-gray-50">
                                         <th class="px-4 py-3">Row #</th>
+                                        <th class="px-4 py-3">Code</th>
+                                        <th class="px-4 py-3">Name</th>
+                                        <th class="px-4 py-3">Category</th>
+                                        <th class="px-4 py-3">Sub-Category</th>
                                         <th class="px-4 py-3">Branch Id</th>
                                         <th class="px-4 py-3">Inventory Code</th>
-                                        <th class="px-4 py-3">Name</th>
-                                        <th class="px-4 py-3">Unit</th>
-                                        <th class="px-4 py-3">Stock</th>
+                                        <th class="px-4 py-3">Units</th>
+                                        <th class="px-4 py-3">Regular Price</th>
+                                        <th class="px-4 py-3">Retail Price</th>
+                                        <th class="px-4 py-3">Wholesale Price</th>
+                                        <th class="px-4 py-3">Distributor Price</th>
+                                        <th class="px-4 py-3">Rebranding Price</th>
                                         <th class="px-4 py-3 text-center">Action</th>
                                         <th class="px-4 py-3 text-center">Status</th>
                                         <th class="px-4 py-3 text-center">Errors</th>
@@ -91,19 +88,40 @@
                                                     {{ $record['row_number'] }}
                                                 </td>
                                                 <td class="px-4 py-3 text-sm text-s">
+                                                    {{ $record['code'] }}
+                                                </td>
+                                                <td class="px-4 py-3 text-sm">
+                                                    {{ $record['name'] }}
+                                                </td>
+                                                <td class="px-4 py-3 text-sm">
+                                                    {{ $record['category'] }}
+                                                </td>
+                                                <td class="px-4 py-3 text-sm">
+                                                    {{ $record['sub_category'] }}
+                                                </td>
+                                                <td class="px-4 py-3 text-sm">
                                                     {{ $record['branch_id'] }}
                                                 </td>
                                                 <td class="px-4 py-3 text-sm">
                                                     {{ $record['inventory_code'] }}
                                                 </td>
                                                 <td class="px-4 py-3 text-sm">
-                                                    {{ $record['name'] }}
+                                                    {{ $record['units'] }}
                                                 </td>
                                                 <td class="px-4 py-3 text-sm">
-                                                    {{ $record['unit'] }}
+                                                    {{ $record['regular_price'] }}
                                                 </td>
                                                 <td class="px-4 py-3 text-sm">
-                                                    {{ $record['stock'] }}
+                                                    {{ $record['retail_price'] }}
+                                                </td>
+                                                <td class="px-4 py-3 text-sm">
+                                                    {{ $record['wholesale_price'] }}
+                                                </td>
+                                                <td class="px-4 py-3 text-sm">
+                                                    {{ $record['distributor_price'] }}
+                                                </td>
+                                                <td class="px-4 py-3 text-sm">
+                                                    {{ $record['rebranding_price'] }}
                                                 </td>
                                                 <td class="px-4 py-3 text-sm text-center">
                                                     {{ $record['action'] }}

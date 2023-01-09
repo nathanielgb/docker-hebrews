@@ -16,6 +16,7 @@ class Menu extends Model
      */
     protected $fillable = [
         'name',
+        'code',
         'units',
         'reg_price',
         'retail_price',
@@ -24,6 +25,7 @@ class Menu extends Model
         'distributor_price',
         'category_id',
         'inventory_id',
+        'inventory_code',
         'sub_category',
     ];
 

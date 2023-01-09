@@ -50,7 +50,14 @@
                     >
                     <span>CATEGORIES</span>
                 </a>
-
+                @endif
+                @if(auth()->user()->can('access', 'import-menu-action'))
+                    <a
+                        href="{{ route('menu.import.view') }}"
+                        class="flex items-center inline-block px-6 py-2.5 bg-green-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-green-700 hover:shadow-lg focus:bg-green-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-green-800 active:shadow-lg transition duration-150 ease-in-out"
+                    >
+                    <span>IMPORT</span>
+                </a>
                 @endif
 
                 {{-- @if(auth()->user()->can('access', 'view-inventory-action'))
@@ -99,6 +106,7 @@
                     <thead>
                     <tr class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase border-b bg-gray-50">
                         <th class="px-4 py-3">Menu ID</th>
+                        <th class="px-4 py-3">Code</th>
                         <th class="px-4 py-3">Name</th>
                         <th class="px-4 py-3 text-center">No. of Unit</th>
                         <th class="px-4 py-3">Inventory</th>
@@ -112,6 +120,9 @@
                             <tr class="text-gray-700">
                                 <td class="px-4 py-3 text-sm text-s">
                                     {{ $item->id }}
+                                </td>
+                                <td class="px-4 py-3 text-sm">
+                                    {{ $item->code }}
                                 </td>
                                 <td class="px-4 py-3 text-sm">
                                     {{ $item->name }}
@@ -186,7 +197,7 @@
                                                 type="button"
                                                 data-bs-toggle="modal"
                                                 data-bs-target="#updateMenuModal"
-                                                data-branch_id="{{ $item->inventory->branch_id }}"
+                                                data-branch_id="{{ $item->inventory->branch_id ?? '' }}"
                                                 @click="$store.menu.updateMenuData={{ json_encode($item) }}, $store.menu.setCategories({{ $categories }}) ,$store.menu.setSubCategories({{ json_encode( $item->category->sub) }})"
                                                 >
                                                 <span><i class="fa-solid fa-pen"></i> Update</span>

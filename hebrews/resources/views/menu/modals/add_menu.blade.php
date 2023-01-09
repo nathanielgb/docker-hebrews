@@ -29,6 +29,10 @@
                         <input class="styled-input" name="menu" type="text" placeholder="Cheeseburger">
                     </label>
                     <label class="block mb-4 text-sm">
+                        <span class="text-gray-700">Code</span>
+                        <input class="styled-input" name="code" type="text" placeholder="ch01">
+                    </label>
+                    <label class="block mb-4 text-sm">
                         <span class="text-gray-700">Category</span>
                         <select id="addCategory" class="styled-input" name="category">
                             <option value="" selected disabled>Select a category</option>

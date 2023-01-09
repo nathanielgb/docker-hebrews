@@ -305,6 +305,7 @@ class CartController extends Controller
 
         $request->validate([
             'order_type' => 'required|string',
+            'fees' => 'required|numeric|between:0,9999999',
         ]);
 
         if ($request->customer) {
