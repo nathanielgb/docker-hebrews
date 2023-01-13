@@ -9,7 +9,7 @@
 
     @include('components.alert-message')
 
-    <div class="inline-flex w-full mt-2 mb-4 overflow-hidden bg-white rounded-lg shadow-md">
+    <div class="inline-flex w-full mt-2 mb-4 mr-5 overflow-hidden bg-white rounded-lg shadow-md">
         <div class="flex items-center justify-center w-12" style="background-color: #06b6d4;">
             <i class="text-lg text-white fa-solid fa-note-sticky"></i>
         </div>
@@ -56,7 +56,7 @@
                     </form>
                 </div>
 
-                <div class="block p-6 rounded-lg shadow-lg bg-white overflow-hidden mmd:max-w-2xl mxl:max-w-3xl">
+                <div class="block p-6 rounded-lg shadow-lg bg-white mr-5 mmd:max-w-2xl mxl:max-w-3xl">
                     @if(session()->has('records'))
                         <div class="w-full mb-8 overflow-hidden border rounded-lg shadow-xs">
                             <div class="w-full overflow-x-auto">
@@ -145,7 +145,7 @@
                                             </tr>
                                         @empty
                                             <tr class="text-gray-700">
-                                                <td colspan="9" class="px-4 py-3 text-sm text-center">
+                                                <td colspan="16" class="px-4 py-3 text-sm text-center">
                                                     No records found.
                                                 </td>
                                             </tr>
@@ -163,41 +163,83 @@
                                     <thead class="border-b">
                                     <tr>
                                         <th scope="col" class="text-sm font-semi-bold text-gray-900 px-6 py-4 border-r">
-                                        inventory_code
+                                            name
                                         </th>
                                         <th scope="col" class="text-sm font-semi-bold text-gray-900 px-6 py-4 border-r">
-                                        branch_id
+                                            code
                                         </th>
                                         <th scope="col" class="text-sm font-semi-bold text-gray-900 px-6 py-4 border-r">
-                                        name
+                                            category
                                         </th>
                                         <th scope="col" class="text-sm font-semi-bold text-gray-900 px-6 py-4 border-r">
-                                        unit
+                                            sub_category
                                         </th>
                                         <th scope="col" class="text-sm font-semi-bold text-gray-900 px-6 py-4 border-r">
-                                        stock
+                                            branch_id
+                                        </th>
+                                        <th scope="col" class="text-sm font-semi-bold text-gray-900 px-6 py-4 border-r">
+                                            inventory_code
+                                        </th>
+                                        <th scope="col" class="text-sm font-semi-bold text-gray-900 px-6 py-4 border-r">
+                                            units
+                                        </th>
+                                        <th scope="col" class="text-sm font-semi-bold text-gray-900 px-6 py-4 border-r">
+                                            regular_price
+                                        </th>
+                                        <th scope="col" class="text-sm font-semi-bold text-gray-900 px-6 py-4 border-r">
+                                            retail_price
+                                        </th>
+                                        <th scope="col" class="text-sm font-semi-bold text-gray-900 px-6 py-4 border-r">
+                                            rebranding_price
+                                        </th>
+                                        <th scope="col" class="text-sm font-semi-bold text-gray-900 px-6 py-4 border-r">
+                                            wholesale_price
+                                        </th>
+                                        <th scope="col" class="text-sm font-semi-bold text-gray-900 px-6 py-4 border-r">
+                                            distributor_price
                                         </th>
                                         <th scope="col" class="text-sm font-semi-bold text-gray-900 px-6 py-4">
-                                        action
+                                            action
                                         </th>
                                     </tr>
                                     </thead>
                                     <tbody>
                                     <tr class="border-b">
                                         <td class="text-sm text-gray-900 font-normal px-6 py-4 whitespace-nowrap border-r break-all">
-                                            the unique identifier for the inventory item
+                                            specify name of menu (must be unique)
                                         </td>
                                         <td class="text-sm text-gray-900 font-normal px-6 py-4 whitespace-nowrap border-r break-all">
-                                            specify branch of the item <br>(enter 'w' to save in warehouse)
+                                            specify unique code for menu
                                         </td>
                                         <td class="text-sm text-gray-900 font-normal px-6 py-4 whitespace-nowrap border-r break-all">
-                                            specify name (for adding)
+                                            specify category name (must exist in categories table)
                                         </td>
                                         <td class="text-sm text-gray-900 font-normal px-6 py-4 whitespace-nowrap border-r break-all">
-                                            specify unit (i.e. Kg, g, pcs., boxes) (for adding)
+                                            specify sub-category name (must exist in categories table)
                                         </td>
                                         <td class="text-sm text-gray-900 font-normal px-6 py-4 whitespace-nowrap border-r break-all">
-                                            specify running stock of the item
+                                            specify which branch id does the inventory code belong
+                                        </td>
+                                        <td class="text-sm text-gray-900 font-normal px-6 py-4 whitespace-nowrap border-r break-all">
+                                            specify inventory code of the menu
+                                        </td>
+                                        <td class="text-sm text-gray-900 font-normal px-6 py-4 whitespace-nowrap border-r break-all">
+                                            specify number of units for the menu per inventory stock
+                                        </td>
+                                        <td class="text-sm text-gray-900 font-normal px-6 py-4 whitespace-nowrap border-r break-all">
+                                            specify regular price
+                                        </td>
+                                        <td class="text-sm text-gray-900 font-normal px-6 py-4 whitespace-nowrap border-r break-all">
+                                            specify retail price
+                                        </td>
+                                        <td class="text-sm text-gray-900 font-normal px-6 py-4 whitespace-nowrap border-r break-all">
+                                            specify rebranding price
+                                        </td>
+                                        <td class="text-sm text-gray-900 font-normal px-6 py-4 whitespace-nowrap border-r break-all">
+                                            specify wholesale price
+                                        </td>
+                                        <td class="text-sm text-gray-900 font-normal px-6 py-4 whitespace-nowrap border-r break-all">
+                                            specify distributor price
                                         </td>
                                         <td class="text-sm text-gray-900 font-normal px-6 py-4 whitespace-nowrap border-rbreak-all">
                                             action to perform (i.e. A or U)
@@ -209,7 +251,7 @@
                             </div>
                         </div>
                         <div class="py-2 px-6 mb-4 text-base text-blue-700 mb-3" role="alert">
-                            <span class="font-bold text-blue-800">Inventory Code</span> - this field is <b><em>required</em></b> and may have lowercase alpha-numeric characters, as well as dashes and underscores.
+                            <span class="font-bold text-blue-800">Name</span> - this field is <b><em>required</em></b>, should have a maximum of <b><em>255</em></b> characters and should be <b><em>unique</em></b>.
                         </div>
                         <div class="py-2 px-6 mb-4 text-base text-blue-700 mb-3" role="alert">
                             <span class="font-bold text-blue-800">Branch ID</span> - this field is <b><em>required</em></b>, <b><em>numeric</em></b> and should <b><em>exist in the branches</em></b> table in user section. <br> Branch ID with a value of <b>w</b> will be saved in the Warehouse section otherwise it will be save in the inventory of the branch specified.

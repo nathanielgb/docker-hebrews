@@ -18,54 +18,89 @@ class MenuCategorySeeder extends Seeder
 
         $data = [
             [
-                'name' => 'FOOD-AND-BEVERAGES',
+                'name' => 'Iced and Hot Coffee',
                 'sub'=> json_encode([
-                    'Hot and Iced Coffee',
-                    'Frappuchino',
-                    'Fruit Tea',
-                    'Milk Tea',
-                    'Pastries',
-                    'Pasta',
-                    'Sandwiches',
-                    'Waffle',
-                    'All Day Breakfast'
+                    'Espresso Based - Hot',
                 ]),
                 'from' => 'kitchen'
             ],
             [
-                'name' => 'COFFEE-ESSENTIALS',
+                'name' => 'Frappuchino',
                 'sub'=> json_encode([
-                    'Honey',
-                    'Sugar',
-                    'Cacao',
+                    'Espresso Based - Frappe',
+                    'Non coffee - Frappe'
+                ]),
+                'from' => 'kitchen'
+            ],
+            [
+                'name' => 'Fruit Tea',
+                'sub'=> json_encode([
+                    'Hot Tea',
+                    'Cold Tea'
+                ]),
+                'from' => 'kitchen'
+            ],
+            [
+                'name' => 'Fruit Juice',
+                'sub'=> json_encode([
+                    'Lemon Juice',
+                    'Orange Juice',
+                    'Dalandan Juice',
+                    'Calamansi Juice',
+                ]),
+                'from' => 'kitchen'
+            ],
+            [
+                'name' => 'Food',
+                'sub'=> json_encode([
+                    'Pastries',
+                    'Filipino Deli',
+                    'Pasta',
+                    'Sandwiches',
+                    'Waffles',
+                    'All day Breakfast',
+                    'Ala Carte',
+                ]),
+                'from' => 'kitchen'
+            ],
+            [
+                'name' => 'Native Flavouring',
+                'sub'=> json_encode([
+                    'Sweetener',
+                    'Native Chocolate',
+                ]),
+                'from' => 'storage'
+            ],
+            [
+                'name' => 'Flavoring Syrups and Sauces',
+                'sub'=> json_encode([
                     'Torani Syrup',
-                    'Torani Sauce',
-                    'Davinci Syrup',
-                    'Davinci Sauce'
+                    'Torani Sauces',
+                    'DaVinci Gourmet Classic Syrup'
                 ]),
                 'from' => 'storage'
             ],
             [
-                'name' => 'COFFEE-EQUIPMENT',
-                'from' => 'storage',
-                'sub'=> json_encode([])
-            ],
-            [
-                'name' => 'ROASTED-BEANS',
+                'name' => 'Flavouring Milk and Creamer',
                 'sub'=> json_encode([
-                    'Classic',
-                    'Flavoured Aroma',
-                    'Philippine Single Origin',
-                    'International Single Origin'
                 ]),
                 'from' => 'storage'
             ],
             [
-                'name' => 'GREEN-BEANS',
+                'name' => 'Coffee Essentials',
                 'sub'=> json_encode([
-                    'Classic',
-                    'Philippine Single Origin',
-                    'International Single Origin'
+                    'Coffee Equipment',
+                    'Consumables'
+                ]),
+                'from' => 'storage'
+            ],
+            [
+                'name' => 'Roasted Beans',
+                'sub'=> json_encode([
+                    'Classic Coffee Beans',
+                    'Flavored Coffee Beans',
+                    'Single Origin Coffee Beans',
+                    'International Coffee Beans'
                 ]),
                 'from' => 'storage'
             ],

@@ -25,7 +25,7 @@ class CreateOrderItemsTable extends Migration
             $table->string('type');
             $table->decimal('price', 8, 2);
             $table->string('unit_label');
-            $table->decimal('units', 8, 2);
+            $table->decimal('units', 8, 3);
             $table->integer('qty');
             $table->json('data');
             $table->decimal('total_amount', 8, 2);

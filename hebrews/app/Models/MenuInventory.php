@@ -20,7 +20,6 @@ class MenuInventory extends Model
         'stock',
         'previous_stock',
         'modified_by',
-        'branch_id',
     ];
 
     // /**

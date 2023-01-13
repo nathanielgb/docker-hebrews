@@ -30,6 +30,7 @@ class InventoryImport implements ToCollection, WithHeadingRow, SkipsEmptyRows
         $records = [];
         $rowNum = 1;
         $validate = [];
+        $this->records = [];
 
         foreach ($rows as $row) {
             $row['row_number'] = ++$rowNum;
@@ -131,12 +132,16 @@ class InventoryImport implements ToCollection, WithHeadingRow, SkipsEmptyRows
                         'action' => 'Update',
                         'errors' => []
                     ];
+
                     if ($row['branch_id'] == 'w') {
                         $item = MenuInventory::where('inventory_code', $row['inventory_code'])->first();
 
                         if (!$item) {
                             $record['status'] = 'failed';
                             $record['errors']['others'][] = 'Item does not exist.';
+
+                            $records[] = $record;
+                            break;
                         } else {
                             $validate = $this->validateUpdateRow($row);
 
@@ -145,12 +150,21 @@ class InventoryImport implements ToCollection, WithHeadingRow, SkipsEmptyRows
                                 foreach($validate['errors'] as $column => $error) {
                                     $record['errors'][$column] = $error;
                                 }
+
+                                $records[] = $record;
+                                break;
                             } else {
                                 $record['status'] = 'success';
+                                $old_stock = $item->stock;
+                                $item->stock = number_format($row['stock'], 3);
 
-                                $item->previous_stock = $item->stock;
-                                $item->stock = $row['stock'];
-                                $item->save();
+                                if ($item->isDirty()) {
+                                    $item->previous_stock = $old_stock;
+                                    $item->save();
+                                    // changes have been made
+                                    $records[] = $record;
+                                    break;
+                                }
                             }
                         }
                     } else {
@@ -158,6 +172,9 @@ class InventoryImport implements ToCollection, WithHeadingRow, SkipsEmptyRows
                         if (!$item) {
                             $record['status'] = 'failed';
                             $record['errors']['others'][] = 'Item does not exist.';
+
+                            $records[] = $record;
+                            break;
                         } else {
                             $validate = $this->validateUpdateRow($row);
 
@@ -166,17 +183,24 @@ class InventoryImport implements ToCollection, WithHeadingRow, SkipsEmptyRows
                                 foreach($validate['errors'] as $column => $error) {
                                     $record['errors'][$column] = $error;
                                 }
+
+                                $records[] = $record;
+                                break;
                             } else {
                                 $record['status'] = 'success';
+                                $old_stock = $item->stock;
+                                $item->stock = number_format($row['stock'], 3);
 
-                                $item->previous_stock = $item->stock;
-                                $item->stock = $row['stock'];
-                                $item->save();
+                                if($item->isDirty()){
+                                    $item->previous_stock = $old_stock;
+                                    $item->save();
+                                    // changes have been made
+                                    $records[] = $record;
+                                    break;
+                                }
                             }
                         }
                     }
-
-                    $records[] = $record;
                     break;
                 default:
                     break;

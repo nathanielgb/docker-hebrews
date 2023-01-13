@@ -25,7 +25,6 @@ class Menu extends Model
         'distributor_price',
         'category_id',
         'inventory_id',
-        'inventory_code',
         'sub_category',
     ];
 
