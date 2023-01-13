@@ -124,12 +124,12 @@ class CartController extends Controller
                 }
 
                 // Validate Add-on
-                $AddonService = new AddonService;
-                $response = $AddonService->validateAddon($request->cartAddon, $item);
+                // $AddonService = new AddonService;
+                // $response = $AddonService->validateAddon($request->cartAddon, $item);
 
-                if (isset($response) && $response['status'] == 'fail') {
-                    return back()->with('error', $response['message']);
-                }
+                // if (isset($response) && $response['status'] == 'fail') {
+                //     return back()->with('error', $response['message']);
+                // }
 
                 //Save the item to the cart
                 Cart::create([
@@ -202,12 +202,12 @@ class CartController extends Controller
             $branches = Branch::all();
         }
 
-        $addons = MenuAddOn::whereHas('inventory', function ($q) {
-            // Check branch of current user
-            if (auth()->user()->branch_id) {
-                $q->where('branch_id', auth()->user()->branch_id);
-            }
-        })->get();
+        // $addons = MenuAddOn::whereHas('inventory', function ($q) {
+        //     // Check branch of current user
+        //     if (auth()->user()->branch_id) {
+        //         $q->where('branch_id', auth()->user()->branch_id);
+        //     }
+        // })->get();
 
         return view('orders.sections.view_cart', compact(
             'cart_items',
@@ -215,8 +215,7 @@ class CartController extends Controller
             'discounts',
             'cart_subtotal',
             'customers',
-            'branches',
-            'addons'
+            'branches'
         ));
     }
 
@@ -253,12 +252,12 @@ class CartController extends Controller
                 }
 
                 // Validate Add-on
-                $AddonService = new AddonService;
-                $response = $AddonService->validateAddon($request->cartAddon, $product_item);
+                // $AddonService = new AddonService;
+                // $response = $AddonService->validateAddon($request->cartAddon, $product_item);
 
-                if (isset($response) && $response['status'] == 'fail') {
-                    return back()->with('error', $response['message']);
-                }
+                // if (isset($response) && $response['status'] == 'fail') {
+                //     return back()->with('error', $response['message']);
+                // }
 
                 $citem->update([
                     'qty' => $request->qty,
@@ -350,13 +349,13 @@ class CartController extends Controller
             $citem['total'] = number_format($price * $citem->qty, 2, '.', '');
 
             // Validate Add-on
-            $AddonService = new AddonService;
-            $addOnResponse = $AddonService->validateAddon($citem->data, $citem->menu);
-            if (isset($addOnResponse)) {
-                if ($addOnResponse['status'] == 'fail') {
-                    return redirect()->route('order.show_cart')->with('error', $addOnResponse['message']);
-                }
-            }
+            // $AddonService = new AddonService;
+            // $addOnResponse = $AddonService->validateAddon($citem->data, $citem->menu);
+            // if (isset($addOnResponse)) {
+            //     if ($addOnResponse['status'] == 'fail') {
+            //         return redirect()->route('order.show_cart')->with('error', $addOnResponse['message']);
+            //     }
+            // }
         }
 
         // Calculate fees, discounts and total amount
@@ -475,26 +474,26 @@ class CartController extends Controller
                 ];
 
                 if (isset($citem->data)) {
-                    foreach ($citem->data as $addon) {
-                        $addonModel = MenuAddOn::where('id', $addon['addon_id'])->first();
+                    // foreach ($citem->data as $addon) {
+                    //     $addonModel = MenuAddOn::where('id', $addon['addon_id'])->first();
 
-                        if (!$addonModel) {
-                            return redirect()->route('order.show_cart')->with('error', "Addon Item (name: $addon->name ) does not exist.");
-                        }
+                    //     if (!$addonModel) {
+                    //         return redirect()->route('order.show_cart')->with('error', "Addon Item (name: $addon->name ) does not exist.");
+                    //     }
 
-                        $addon_item[] = [
-                            'order_id' => $order->order_id,
-                            'order_item_id' => $orderItemId,
-                            'addon_id' => $addon['addon_id'],
-                            'inventory_id' => $addonModel->inventory_id,
-                            'inventory_name' => $addonModel->inventory->name,
-                            'inventory_code' => $addonModel->inventory->inventory_code,
-                            'name' => $addon['name'],
-                            'qty' => $addon['qty'],
-                            'created_at' => Carbon::now(),
-                            'updated_at' => Carbon::now(),
-                        ];
-                    }
+                    //     $addon_item[] = [
+                    //         'order_id' => $order->order_id,
+                    //         'order_item_id' => $orderItemId,
+                    //         'addon_id' => $addon['addon_id'],
+                    //         'inventory_id' => $addonModel->inventory_id,
+                    //         'inventory_name' => $addonModel->inventory->name,
+                    //         'inventory_code' => $addonModel->inventory->inventory_code,
+                    //         'name' => $addon['name'],
+                    //         'qty' => $addon['qty'],
+                    //         'created_at' => Carbon::now(),
+                    //         'updated_at' => Carbon::now(),
+                    //     ];
+                    // }
                 }
             }
 

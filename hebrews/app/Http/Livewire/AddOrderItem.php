@@ -11,8 +11,6 @@ class AddOrderItem extends Component
     public $menus;
     public $menuid;
     public $menuitem;
-    public $orderItemAddons = [];
-    public $addons;
     public $order;
 
 
@@ -20,7 +18,6 @@ class AddOrderItem extends Component
     public function updatedMenuId ($id)
     {
         $this->menuitem = Menu::where('id', $id)->first();
-        $this->orderItemAddons =[];
     }
 
     public function mount ()
@@ -30,29 +27,11 @@ class AddOrderItem extends Component
         $this->menus = Menu::whereHas('inventory', function ($q) use ($branch_id) {
             // Check branch of order
             $q->where('branch_id', $branch_id);
+            $q->where('stock', '>', 0);
         })->get();
-
-        $this->addons = MenuAddOn::whereHas('inventory', function ($q) use ($branch_id) {
-            // Check branch of order
-            $q->where('branch_id', $branch_id);
-
-        })->get();
-
     }
 
-    public function addAddon ()
-    {
-        $this->orderItemAddons[] = [
-            'addon_id' => '',
-            'qty' => 1
-        ];
-    }
 
-    public function removeAddon ($index)
-    {
-        unset($this->orderItemAddons[$index]);
-        $this->orderItemAddons = array_values($this->orderItemAddons);
-    }
 
     public function render()
     {

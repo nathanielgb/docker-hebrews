@@ -68,7 +68,7 @@
                                         <th class="px-4 py-3">Name</th>
                                         <th class="px-4 py-3">Category</th>
                                         <th class="px-4 py-3">Sub-Category</th>
-                                        <th class="px-4 py-3">Branch Id</th>
+                                        <th class="px-4 py-3">Branch ID</th>
                                         <th class="px-4 py-3">Inventory Code</th>
                                         <th class="px-4 py-3">Units</th>
                                         <th class="px-4 py-3">Regular Price</th>
@@ -157,113 +157,135 @@
                     @else
                         <div class="flex flex-col">
                             <div class="overflow-x-auto sm:-mx-6 lg:-mx-8">
-                            <div class="py-2 inline-block min-w-full sm:px-6 lg:px-8">
-                                <div class="overflow-hidden">
-                                <table class="min-w-full border text-center">
-                                    <thead class="border-b">
-                                    <tr>
-                                        <th scope="col" class="text-sm font-semi-bold text-gray-900 px-6 py-4 border-r">
-                                            name
-                                        </th>
-                                        <th scope="col" class="text-sm font-semi-bold text-gray-900 px-6 py-4 border-r">
-                                            code
-                                        </th>
-                                        <th scope="col" class="text-sm font-semi-bold text-gray-900 px-6 py-4 border-r">
-                                            category
-                                        </th>
-                                        <th scope="col" class="text-sm font-semi-bold text-gray-900 px-6 py-4 border-r">
-                                            sub_category
-                                        </th>
-                                        <th scope="col" class="text-sm font-semi-bold text-gray-900 px-6 py-4 border-r">
-                                            branch_id
-                                        </th>
-                                        <th scope="col" class="text-sm font-semi-bold text-gray-900 px-6 py-4 border-r">
-                                            inventory_code
-                                        </th>
-                                        <th scope="col" class="text-sm font-semi-bold text-gray-900 px-6 py-4 border-r">
-                                            units
-                                        </th>
-                                        <th scope="col" class="text-sm font-semi-bold text-gray-900 px-6 py-4 border-r">
-                                            regular_price
-                                        </th>
-                                        <th scope="col" class="text-sm font-semi-bold text-gray-900 px-6 py-4 border-r">
-                                            retail_price
-                                        </th>
-                                        <th scope="col" class="text-sm font-semi-bold text-gray-900 px-6 py-4 border-r">
-                                            rebranding_price
-                                        </th>
-                                        <th scope="col" class="text-sm font-semi-bold text-gray-900 px-6 py-4 border-r">
-                                            wholesale_price
-                                        </th>
-                                        <th scope="col" class="text-sm font-semi-bold text-gray-900 px-6 py-4 border-r">
-                                            distributor_price
-                                        </th>
-                                        <th scope="col" class="text-sm font-semi-bold text-gray-900 px-6 py-4">
-                                            action
-                                        </th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    <tr class="border-b">
-                                        <td class="text-sm text-gray-900 font-normal px-6 py-4 whitespace-nowrap border-r break-all">
-                                            specify name of menu (must be unique)
-                                        </td>
-                                        <td class="text-sm text-gray-900 font-normal px-6 py-4 whitespace-nowrap border-r break-all">
-                                            specify unique code for menu
-                                        </td>
-                                        <td class="text-sm text-gray-900 font-normal px-6 py-4 whitespace-nowrap border-r break-all">
-                                            specify category name (must exist in categories table)
-                                        </td>
-                                        <td class="text-sm text-gray-900 font-normal px-6 py-4 whitespace-nowrap border-r break-all">
-                                            specify sub-category name (must exist in categories table)
-                                        </td>
-                                        <td class="text-sm text-gray-900 font-normal px-6 py-4 whitespace-nowrap border-r break-all">
-                                            specify which branch id does the inventory code belong
-                                        </td>
-                                        <td class="text-sm text-gray-900 font-normal px-6 py-4 whitespace-nowrap border-r break-all">
-                                            specify inventory code of the menu
-                                        </td>
-                                        <td class="text-sm text-gray-900 font-normal px-6 py-4 whitespace-nowrap border-r break-all">
-                                            specify number of units for the menu per inventory stock
-                                        </td>
-                                        <td class="text-sm text-gray-900 font-normal px-6 py-4 whitespace-nowrap border-r break-all">
-                                            specify regular price
-                                        </td>
-                                        <td class="text-sm text-gray-900 font-normal px-6 py-4 whitespace-nowrap border-r break-all">
-                                            specify retail price
-                                        </td>
-                                        <td class="text-sm text-gray-900 font-normal px-6 py-4 whitespace-nowrap border-r break-all">
-                                            specify rebranding price
-                                        </td>
-                                        <td class="text-sm text-gray-900 font-normal px-6 py-4 whitespace-nowrap border-r break-all">
-                                            specify wholesale price
-                                        </td>
-                                        <td class="text-sm text-gray-900 font-normal px-6 py-4 whitespace-nowrap border-r break-all">
-                                            specify distributor price
-                                        </td>
-                                        <td class="text-sm text-gray-900 font-normal px-6 py-4 whitespace-nowrap border-rbreak-all">
-                                            action to perform (i.e. A or U)
-                                        </td>
-                                    </tbody>
-                                </table>
+                                <div class="py-2 inline-block min-w-full sm:px-6 lg:px-8">
+                                    <div class="overflow-hidden">
+                                    <table class="min-w-full border text-center">
+                                        <thead class="border-b">
+                                        <tr>
+                                            <th scope="col" class="text-sm font-semi-bold text-gray-900 px-6 py-4 border-r">
+                                                name
+                                            </th>
+                                            <th scope="col" class="text-sm font-semi-bold text-gray-900 px-6 py-4 border-r">
+                                                code
+                                            </th>
+                                            <th scope="col" class="text-sm font-semi-bold text-gray-900 px-6 py-4 border-r">
+                                                category
+                                            </th>
+                                            <th scope="col" class="text-sm font-semi-bold text-gray-900 px-6 py-4 border-r">
+                                                sub_category
+                                            </th>
+                                            <th scope="col" class="text-sm font-semi-bold text-gray-900 px-6 py-4 border-r">
+                                                branch_id
+                                            </th>
+                                            <th scope="col" class="text-sm font-semi-bold text-gray-900 px-6 py-4 border-r">
+                                                inventory_code
+                                            </th>
+                                            <th scope="col" class="text-sm font-semi-bold text-gray-900 px-6 py-4 border-r">
+                                                units
+                                            </th>
+                                            <th scope="col" class="text-sm font-semi-bold text-gray-900 px-6 py-4 border-r">
+                                                regular_price
+                                            </th>
+                                            <th scope="col" class="text-sm font-semi-bold text-gray-900 px-6 py-4 border-r">
+                                                retail_price
+                                            </th>
+                                            <th scope="col" class="text-sm font-semi-bold text-gray-900 px-6 py-4 border-r">
+                                                rebranding_price
+                                            </th>
+                                            <th scope="col" class="text-sm font-semi-bold text-gray-900 px-6 py-4 border-r">
+                                                wholesale_price
+                                            </th>
+                                            <th scope="col" class="text-sm font-semi-bold text-gray-900 px-6 py-4 border-r">
+                                                distributor_price
+                                            </th>
+                                            <th scope="col" class="text-sm font-semi-bold text-gray-900 px-6 py-4">
+                                                action
+                                            </th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr class="border-b">
+                                                <td class="text-sm text-gray-900 font-normal px-6 py-4 whitespace-nowrap border-r break-all">
+                                                    specify name of menu (must be unique)
+                                                </td>
+                                                <td class="text-sm text-gray-900 font-normal px-6 py-4 whitespace-nowrap border-r break-all">
+                                                    specify unique code for menu
+                                                </td>
+                                                <td class="text-sm text-gray-900 font-normal px-6 py-4 whitespace-nowrap border-r break-all">
+                                                    specify category name (must exist in categories table)
+                                                </td>
+                                                <td class="text-sm text-gray-900 font-normal px-6 py-4 whitespace-nowrap border-r break-all">
+                                                    specify sub-category name (must exist in categories table)
+                                                </td>
+                                                <td class="text-sm text-gray-900 font-normal px-6 py-4 whitespace-nowrap border-r break-all">
+                                                    specify which branch id does the inventory code belong
+                                                </td>
+                                                <td class="text-sm text-gray-900 font-normal px-6 py-4 whitespace-nowrap border-r break-all">
+                                                    specify inventory code of the menu
+                                                </td>
+                                                <td class="text-sm text-gray-900 font-normal px-6 py-4 whitespace-nowrap border-r break-all">
+                                                    specify number of units for the menu per inventory stock
+                                                </td>
+                                                <td class="text-sm text-gray-900 font-normal px-6 py-4 whitespace-nowrap border-r break-all">
+                                                    specify regular price
+                                                </td>
+                                                <td class="text-sm text-gray-900 font-normal px-6 py-4 whitespace-nowrap border-r break-all">
+                                                    specify retail price
+                                                </td>
+                                                <td class="text-sm text-gray-900 font-normal px-6 py-4 whitespace-nowrap border-r break-all">
+                                                    specify rebranding price
+                                                </td>
+                                                <td class="text-sm text-gray-900 font-normal px-6 py-4 whitespace-nowrap border-r break-all">
+                                                    specify wholesale price
+                                                </td>
+                                                <td class="text-sm text-gray-900 font-normal px-6 py-4 whitespace-nowrap border-r break-all">
+                                                    specify distributor price
+                                                </td>
+                                                <td class="text-sm text-gray-900 font-normal px-6 py-4 whitespace-nowrap border-rbreak-all">
+                                                    action to perform (i.e. A or U)
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                    </div>
                                 </div>
-                            </div>
                             </div>
                         </div>
                         <div class="py-2 px-6 mb-4 text-base text-blue-700 mb-3" role="alert">
                             <span class="font-bold text-blue-800">Name</span> - this field is <b><em>required</em></b>, should have a maximum of <b><em>255</em></b> characters and should be <b><em>unique</em></b>.
                         </div>
                         <div class="py-2 px-6 mb-4 text-base text-blue-700 mb-3" role="alert">
-                            <span class="font-bold text-blue-800">Branch ID</span> - this field is <b><em>required</em></b>, <b><em>numeric</em></b> and should <b><em>exist in the branches</em></b> table in user section. <br> Branch ID with a value of <b>w</b> will be saved in the Warehouse section otherwise it will be save in the inventory of the branch specified.
+                            <span class="font-bold text-blue-800">Code</span> - this field is <b><em>required</em></b>, may have lowercase alpha-numeric characters, as well as dashes and underscores, and should be <b><em>unique</em></b>.
                         </div>
                         <div class="py-2 px-6 mb-4 text-base text-blue-700 mb-3" role="alert">
-                            <span class="font-bold text-blue-800">Name</span> - this field is <b><em>required</em></b> and should have a maximum of 255 characters. (will not change when updating)
+                            <span class="font-bold text-blue-800">Category</span> - this field is <b><em>required</em></b>, should have a maximum of 255 characters and should exist in Categories table.
                         </div>
                         <div class="py-2 px-6 mb-4 text-base text-blue-700 mb-3" role="alert">
-                            <span class="font-bold text-blue-800">Unit</span> - this field is <b><em>required</em></b> and should be one of the following <b><em>Kg, g, pcs, boxes</em></b>. (will not change when updating)
+                            <span class="font-bold text-blue-800">Sub-Category</span> - this field is <b><em>required</em></b>, should have a maximum of 255 characters and should exist in Categories table.
                         </div>
                         <div class="py-2 px-6 mb-4 text-base text-blue-700 mb-3" role="alert">
-                            <span class="font-bold text-blue-800">Stock</span> - this field is <b><em>required</em></b> and should have a minimum value of <b><em>0</em></b>.
+                            <span class="font-bold text-blue-800">Branch ID</span> - this field is <b><em>required</em></b>, and should be <b><em>numeric</em></b>. Specify the branch ID in which the inventory item belongs to.
+                        </div>
+                        <div class="py-2 px-6 mb-4 text-base text-blue-700 mb-3" role="alert">
+                            <span class="font-bold text-blue-800">Inventory Code</span> - this field is <b><em>required</em></b> and may have lowercase alpha-numeric characters, as well as dashes and underscores. Specify the inventory code that is linked to the menu item <b><em>(inventory should exist in branch)</em></b>.
+                        </div>
+                        <div class="py-2 px-6 mb-4 text-base text-blue-700 mb-3" role="alert">
+                            <span class="font-bold text-blue-800">Units</span> - this field is <b><em>required</em></b> and should be <b><em>numeric</em></b>. Specify number of units of menu item per inventory item.
+                        </div>
+                        <div class="py-2 px-6 mb-4 text-base text-blue-700 mb-3" role="alert">
+                            <span class="font-bold text-blue-800">Regular Price</span> - this field is <b><em>can be empty</em></b> and should be <b><em>numeric</em></b>.
+                        </div>
+                        <div class="py-2 px-6 mb-4 text-base text-blue-700 mb-3" role="alert">
+                            <span class="font-bold text-blue-800">Retail Price</span> - this field is <b><em>can be empty</em></b> and should be <b><em>numeric</em></b>.
+                        </div>
+                        <div class="py-2 px-6 mb-4 text-base text-blue-700 mb-3" role="alert">
+                            <span class="font-bold text-blue-800">Rebranding Price</span> - this field is <b><em>can be empty</em></b> and should be <b><em>numeric</em></b>.
+                        </div>
+                        <div class="py-2 px-6 mb-4 text-base text-blue-700 mb-3" role="alert">
+                            <span class="font-bold text-blue-800">Wholesale Price</span> - this field is <b><em>can be empty</em></b> and should be <b><em>numeric</em></b>.
+                        </div>
+                        <div class="py-2 px-6 mb-4 text-base text-blue-700 mb-3" role="alert">
+                            <span class="font-bold text-blue-800">Distributor Price</span> - this field is <b><em>can be empty</em></b> and should be <b><em>numeric</em></b>.
                         </div>
                         <div class="py-2 px-6 mb-4 text-base text-blue-700 mb-3" role="alert">
                             <span class="font-bold text-blue-800">Action</span> - this field is <b><em>required</em></b>, should have a value of <b><em>A</em></b> when you want to add the item and a value of <b><em>U</em></b> if you want to update the stock of an existing item.

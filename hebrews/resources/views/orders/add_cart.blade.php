@@ -123,10 +123,10 @@
                 $('.cart-submit').prop('disabled', true);
             });
 
-            $('.addon-active').on("click", function() {
-                var state = $(this).is(":checked");
-                $( ".menu-addons" ).toggle(state);
-            });
+            // $('.addon-active').on("click", function() {
+            //     var state = $(this).is(":checked");
+            //     $( ".menu-addons" ).toggle(state);
+            // });
         </script>
     </x-slot>
 </x-app-layout>

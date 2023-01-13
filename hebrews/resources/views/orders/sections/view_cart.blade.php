@@ -92,15 +92,6 @@
                                 <td class="px-4 py-4 text-sm text-center">
                                     {{ $item->total }}
                                 </td>
-                                {{-- <td class="px-4 py-4 text-sm">
-                                    @if ($item->data)
-                                        <ul>
-                                            @foreach ($item->data as $addon)
-                                                <li>{{ $addon['name'] }} - {{ $addon['qty'] }}</li>
-                                            @endforeach
-                                        </ul>
-                                    @endif
-                                </td> --}}
                                 <td class="px-4 py-4 text-sm f">
                                     <div class="flex items-center justify-center space-x-4 text-sm">
                                         @if ($item->available)
@@ -150,7 +141,6 @@
         </div>
     </div>
 
-    {{-- @include('orders.modals.confirm') --}}
     @include('orders.modals.confirm_cart')
     @include('orders.modals.update_cart_item')
     @include('orders.modals.delete_cart_item')
