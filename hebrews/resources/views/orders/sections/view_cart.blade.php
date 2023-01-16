@@ -43,6 +43,7 @@
                     <tr class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase border-b bg-gray-50">
                         <th class="px-4 py-4 text-center">Menu Id</th>
                         <th class="px-4 py-4">Name</th>
+                        <th class="px-4 py-4 text-center">Order Type</th>
                         <th class="px-4 py-4">Inventory</th>
                         <th class="px-4 py-4 text-center">Status</th>
                         <th class="px-4 py-4 text-center">Type</th>
@@ -60,6 +61,14 @@
                                 </td>
                                 <td class="px-4 py-4 text-sm">
                                     {{ $item->menu->name ?? 'N/A' }}
+                                </td>
+                                <td class="px-4 py-4 text-sm text-center">
+                                    @if (isset($item->data['is_dinein']) && $item->data['is_dinein'])
+                                        <span class="text-xs inline-block py-1 px-2.5 leading-none text-center whitespace-nowrap align-baseline font-bold bg-blue-400 text-white rounded">Dine-in</span>
+                                    @else
+                                        <span class="text-xs inline-block py-1 px-2.5 leading-none text-center whitespace-nowrap align-baseline font-bold bg-blue-400 text-white rounded">Take-out</span>
+                                    @endif
+
                                 </td>
                                 <td class="px-4 py-4 text-sm">
                                     @if (isset($item->inventory))

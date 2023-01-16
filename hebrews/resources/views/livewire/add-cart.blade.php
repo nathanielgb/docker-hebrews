@@ -50,11 +50,11 @@
             </select>
         </label>
 
-        @if (!isset($cart->is_beans))
+        @if (isset($cart->is_beans) && $cart->is_beans)
             <label class="block mb-4 text-sm">
                 <span class="text-gray-700 dark:text-gray-400">Grind Type</span>
                 <select
-                    name="isdinein"
+                    name="grind_type"
                     class="styled-input"
                 >
                     <option value="" selected disabled>Select grind type</option>

@@ -14,12 +14,12 @@ class DispatcherController extends Controller
     {
 
         $orders = Order::with(['items' => function ($query) {
-
             $query->where('status', '!=', 'served');
+            $query->where('from', '=', 'kitchen');
 
         }])->whereHas('items', function ($query) {
             $query->where('status', '!=', 'served');
-            $query->where('from', '!=', 'storage');
+            $query->where('from', '=', 'kitchen');
         })
         ->where('cancelled', false)
         ->where('completed', false)

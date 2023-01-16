@@ -131,6 +131,15 @@ class CartController extends Controller
                 //     return back()->with('error', $response['message']);
                 // }
 
+                // Order type of item
+                $data = [
+                    'is_dinein' => isset($request->isdinein) && $request->isdinein == 1 ? true : false,
+                    'grind_type' => isset($request->grind_type) ? $request->grind_type : null
+                ];
+                
+                // Check if have grind type
+
+
                 //Save the item to the cart
                 Cart::create([
                     'admin_id' => auth()->user()->id,
@@ -142,7 +151,7 @@ class CartController extends Controller
                     // 'price' => $product_price,
                     'qty' => $request->qty,
                     // 'total' => $total,
-                    'data' => $response['data'] ?? []
+                    'data' => $data
                 ]);
             }
             return back()->with('success', 'Item (name: '. $item->name .') has been successfully added.');
@@ -259,10 +268,17 @@ class CartController extends Controller
                 //     return back()->with('error', $response['message']);
                 // }
 
+                // Order type of item
+                $data = [
+                    'is_dinein' => isset($request->isdinein) && $request->isdinein == 1 ? true : false,
+                    'grind_type' => isset($request->grind_type) ? $request->grind_type : null
+                ];
+
                 $citem->update([
                     'qty' => $request->qty,
+                    'type' => $request->type,
                     'note' => $request->note,
-                    'data' => $response['data'] ?? []
+                    'data' => $data
                 ]);
 
                 return back()->with('success', 'Item (name: '. $product_item->name .') has been successfully updated.');
@@ -282,7 +298,7 @@ class CartController extends Controller
                 return redirect()->route('order.show_cart')->with('error', 'Item does not exist. (1)');
             }
             $cart_item->delete();
-            return back()->with('success', 'Item (name: '. $cart_item->name .') has been removed.');
+            return back()->with('success', 'Item has been removed.');
         }
         return redirect()->route('order.show_cart')->with('error', 'Item does not exist.');
     }
