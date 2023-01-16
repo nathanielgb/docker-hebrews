@@ -19,6 +19,7 @@ class DispatcherController extends Controller
 
         }])->whereHas('items', function ($query) {
             $query->where('status', '!=', 'served');
+            $query->where('from', '!=', 'storage');
         })
         ->where('cancelled', false)
         ->where('completed', false)

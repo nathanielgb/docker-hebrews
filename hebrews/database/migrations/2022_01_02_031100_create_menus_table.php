@@ -26,6 +26,9 @@ class CreateMenusTable extends Migration
             $table->string('category_id');
             $table->string('inventory_id');
             $table->string('sub_category')->nullable();
+            $table->boolean('is_beans')->default(false);
+            $table->json('data')->nullable();
+
             $table->timestamps();
         });
     }

@@ -485,11 +485,13 @@ class OrderController extends Controller
                         }
                     }
 
-                    if ($ord_item->from == 'storage') {
-                        $ord_item->status = 'done';
-                    } else {
-                        $ord_item->status = 'ordered';
-                    }
+                    // if ($ord_item->from == 'storage') {
+                    //     $ord_item->status = 'done';
+                    // } else {
+                    //     $ord_item->status = 'ordered';
+                    // }
+
+                    $ord_item->status = 'ordered';
 
                     InventoryLog::create([
                         'title' => 'Order Confirmation',

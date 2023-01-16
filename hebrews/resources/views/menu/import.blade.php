@@ -76,6 +76,7 @@
                                         <th class="px-4 py-3">Wholesale Price</th>
                                         <th class="px-4 py-3">Distributor Price</th>
                                         <th class="px-4 py-3">Rebranding Price</th>
+                                        <th class="px-4 py-3 text-center">Is Beans</th>
                                         <th class="px-4 py-3 text-center">Action</th>
                                         <th class="px-4 py-3 text-center">Status</th>
                                         <th class="px-4 py-3 text-center">Errors</th>
@@ -124,13 +125,28 @@
                                                     {{ $record['rebranding_price'] }}
                                                 </td>
                                                 <td class="px-4 py-3 text-sm text-center">
+                                                    @if ($record['is_beans'])
+                                                        <div class="inline-flex items-center px-3 py-1 text-xs font-bold text-white uppercase bg-green-600 rounded-full leading-sm">
+                                                            YES
+                                                        </div>
+                                                    @else
+                                                        <div class="inline-flex items-center px-3 py-1 text-xs font-bold text-white uppercase bg-red-600 rounded-full leading-sm">
+                                                            NO
+                                                        </div>
+                                                    @endif
+                                                </td>
+                                                <td class="px-4 py-3 text-sm text-center">
                                                     {{ $record['action'] }}
                                                 </td>
                                                 <td class="px-4 py-3 text-sm text-center">
                                                     @if ($record['status'] == 'success')
-                                                        <span class="font-semibold text-green-600">Success</span>
+                                                        <div class="inline-flex items-center px-3 py-1 text-xs font-bold text-white uppercase bg-green-600 rounded-full leading-sm">
+                                                            SUCCESS
+                                                        </div>
                                                     @else
-                                                        <span class="font-semibold text-red-600">Failed</span>
+                                                        <div class="inline-flex items-center px-3 py-1 text-xs font-bold text-white uppercase bg-red-600 rounded-full leading-sm">
+                                                            FAILED
+                                                        </div>
                                                     @endif
                                                 </td>
                                                 <td class="px-4 py-3 text-sm">
@@ -145,8 +161,8 @@
                                             </tr>
                                         @empty
                                             <tr class="text-gray-700">
-                                                <td colspan="16" class="px-4 py-3 text-sm text-center">
-                                                    No records found.
+                                                <td colspan="17" class="px-4 py-3 text-sm text-center">
+                                                    No records to import.
                                                 </td>
                                             </tr>
                                         @endforelse
@@ -198,6 +214,9 @@
                                             <th scope="col" class="text-sm font-semi-bold text-gray-900 px-6 py-4 border-r">
                                                 distributor_price
                                             </th>
+                                            <th scope="col" class="text-sm font-semi-bold text-gray-900 px-6 py-4 border-r">
+                                                is_beans
+                                            </th>
                                             <th scope="col" class="text-sm font-semi-bold text-gray-900 px-6 py-4">
                                                 action
                                             </th>
@@ -240,6 +259,9 @@
                                                 </td>
                                                 <td class="text-sm text-gray-900 font-normal px-6 py-4 whitespace-nowrap border-r break-all">
                                                     specify distributor price
+                                                </td>
+                                                <td class="text-sm text-gray-900 font-normal px-6 py-4 whitespace-nowrap border-r break-all">
+                                                    specify if the item is beans
                                                 </td>
                                                 <td class="text-sm text-gray-900 font-normal px-6 py-4 whitespace-nowrap border-rbreak-all">
                                                     action to perform (i.e. A or U)
@@ -286,6 +308,9 @@
                         </div>
                         <div class="py-2 px-6 mb-4 text-base text-blue-700 mb-3" role="alert">
                             <span class="font-bold text-blue-800">Distributor Price</span> - this field is <b><em>can be empty</em></b> and should be <b><em>numeric</em></b>.
+                        </div>
+                        <div class="py-2 px-6 mb-4 text-base text-blue-700 mb-3" role="alert">
+                            <span class="font-bold text-blue-800">Is Beans</span> - this field is <b><em>required</em></b> and should be <b><em>boolean (i.e. 1 or 0)</em></b>.
                         </div>
                         <div class="py-2 px-6 mb-4 text-base text-blue-700 mb-3" role="alert">
                             <span class="font-bold text-blue-800">Action</span> - this field is <b><em>required</em></b>, should have a value of <b><em>A</em></b> when you want to add the item and a value of <b><em>U</em></b> if you want to update the stock of an existing item.

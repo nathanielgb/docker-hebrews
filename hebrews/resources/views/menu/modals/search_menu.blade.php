@@ -19,6 +19,10 @@
         <div class="relative p-4 modal-body">
             <form id="search-menu-form" action="{{ route('menu.index') }}" method="get" autocomplete="off">
                 <label class="block mb-4 text-sm">
+                    <span class="text-gray-700 dark:text-gray-400">Code</span>
+                    <input class="styled-input" name="code" type="text" placeholder="Enter code">
+                </label>
+                <label class="block mb-4 text-sm">
                     <span class="text-gray-700 dark:text-gray-400">Name</span>
                     <input class="styled-input" name="menu" type="text" placeholder="Enter name">
                 </label>

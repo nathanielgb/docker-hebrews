@@ -109,11 +109,17 @@
                                                     {{ $record['action'] }}
                                                 </td>
                                                 <td class="px-4 py-3 text-sm text-center">
-                                                    @if ($record['status'] == 'success')
-                                                        <span class="font-semibold text-green-600">Success</span>
-                                                    @else
-                                                        <span class="font-semibold text-red-600">Failed</span>
-                                                    @endif
+                                                    <td class="px-4 py-3 text-sm text-center">
+                                                        @if ($record['status'] == 'success')
+                                                            <div class="inline-flex items-center px-3 py-1 text-xs font-bold text-white uppercase bg-green-600 rounded-full leading-sm">
+                                                                SUCCESS
+                                                            </div>
+                                                        @else
+                                                            <div class="inline-flex items-center px-3 py-1 text-xs font-bold text-white uppercase bg-red-600 rounded-full leading-sm">
+                                                                FAILED
+                                                            </div>
+                                                        @endif
+                                                    </td>
                                                 </td>
                                                 <td class="px-4 py-3 text-sm">
                                                     <ol class="list-decimal list-inside">
@@ -128,7 +134,7 @@
                                         @empty
                                             <tr class="text-gray-700">
                                                 <td colspan="9" class="px-4 py-3 text-sm text-center">
-                                                    No records found.
+                                                    No records to import.
                                                 </td>
                                             </tr>
                                         @endforelse

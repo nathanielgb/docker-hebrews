@@ -15,14 +15,25 @@
             readonly/>
         </label>
         <label class="block mb-4 text-sm">
+            <span class="text-gray-700 dark:text-gray-400">Order Type</span>
+            <select
+                name="isdinein"
+                class="styled-input"
+            >
+                <option value="" disabled>Select type</option>
+                <option value="1" selected>Dine-in</option>
+                <option value="0">Takeout</option>
+            </select>
+        </label>
+        <label class="block mb-4 text-sm">
             <span class="text-gray-700 dark:text-gray-400">Product Type</span>
             <select
                 name="type"
                 class="styled-input"
             >
-                <option value="" selected disabled>Select type</option>
+                <option value="" disabled>Select type</option>
                 @if (isset($cart->reg_price))
-                    <option value="regular">Regular ({{ $cart->reg_price }})</option>
+                    <option value="regular" selected>Regular ({{ $cart->reg_price }})</option>
                 @endif
                 @if (isset($cart->wholesale_price))
                     <option value="wholesale">Wholesale ({{ $cart->wholesale_price }})</option>
@@ -38,9 +49,28 @@
                 @endif
             </select>
         </label>
+
+        @if (!isset($cart->is_beans))
+            <label class="block mb-4 text-sm">
+                <span class="text-gray-700 dark:text-gray-400">Grind Type</span>
+                <select
+                    name="isdinein"
+                    class="styled-input"
+                >
+                    <option value="" selected disabled>Select grind type</option>
+                    <option value="coarse">Coarse</option>
+                    <option value="medcoarse">Medium-Coarse</option>
+                    <option value="medium">Medium</option>
+                    <option value="medfine">Medium-Fine</option>
+                    <option value="fine">Fine</option>
+                </select>
+            </label>
+        @endif
+
         <label class="block mb-4 text-sm">
             <span class="text-gray-700">Quantity</span>
             <input class="styled-input" name="qty" type="number" min="1"  placeholder="1" required>
         </label>
+
     </form>
 </div>

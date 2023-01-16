@@ -117,6 +117,12 @@
                         <span class="text-gray-700">Rebranding Price</span>
                         <input class="styled-input" name="rebranding_price" type="number" min="0" step="0.01" placeholder="3.50" :value="$store.menu.updateMenuData?.rebranding_price">
                     </label>
+                    <div class="form-check">
+                        <input name="is_beans" class="float-left w-4 h-4 mt-1 mr-2 align-top transition duration-200 bg-white bg-center bg-no-repeat bg-contain border border-gray-300 rounded-sm appearance-none cursor-pointer form-check-input checked:bg-blue-600 checked:border-blue-600 focus:outline-none" type="checkbox" id="flexCheckChecked" :checked="$store.menu.updateMenuData?.is_beans ? true : false">
+                        <label class="inline-block text-gray-800 form-check-label" for="flexCheckChecked">
+                            Is Beans
+                        </label>
+                    </div>
                 </form>
             </div>
             <div

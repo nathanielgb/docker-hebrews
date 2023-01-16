@@ -112,6 +112,7 @@
                         <th class="px-4 py-3">Inventory</th>
                         <th class="px-4 py-3">Prices</th>
                         <th class="px-4 py-3">Category</th>
+                        <th class="px-4 py-3 text-center">Is Beans</th>
                         <th class="px-4 py-3 text-center">Action</th>
                     </tr>
                     </thead>
@@ -189,6 +190,17 @@
                                         {{ $item->sub_category }}
                                     </span>
                                 </td>
+                            <td class="px-4 py-3 text-sm text-center">
+                                @if ($item->is_beans)
+                                    <div class="inline-flex items-center px-3 py-1 text-xs font-bold text-white uppercase bg-green-600 rounded-full leading-sm">
+                                        YES
+                                    </div>
+                                @else
+                                    <div class="inline-flex items-center px-3 py-1 text-xs font-bold text-white uppercase bg-red-600 rounded-full leading-sm">
+                                        NO
+                                    </div>
+                                @endif
+                            </td>
                                 <td class="px-4 py-3 text-center">
                                     <div class="flex items-center justify-center space-x-4 text-sm">
                                         @if(auth()->user()->can('access', 'update-menu-action'))

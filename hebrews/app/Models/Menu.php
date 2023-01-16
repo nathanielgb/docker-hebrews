@@ -26,6 +26,8 @@ class Menu extends Model
         'category_id',
         'inventory_id',
         'sub_category',
+        'is_beans',
+        'data',
     ];
 
     /**

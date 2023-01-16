@@ -38,6 +38,9 @@ class MenuController extends Controller
 
         if ($request->except(['page'])) {
             $menu=$menu->where(function ($query) use ($request) {
+                if ($request->code !== null) {
+                    $query->where('code', 'LIKE', '%' . $request->code . '%');
+                }
                 if ($request->menu !== null) {
                     $query->where('name', 'LIKE', '%' . $request->menu . '%');
                 }
@@ -86,6 +89,7 @@ class MenuController extends Controller
                 'category_id' => $request->category,
                 'inventory_id' => $request->inventory,
                 'sub_category' => $request->sub_category,
+                'is_beans' => isset($request->is_beans) ? true : false
             ]);
 
             return back()->with('success', 'Successfully added ' . $request->menu . ' to the menu.');
@@ -185,6 +189,7 @@ class MenuController extends Controller
                 'category_id' => $request->category,
                 'inventory_id' => $request->inventory,
                 'sub_category' => $request->sub_category,
+                'is_beans' => isset($request->is_beans) ? true : false
             ]);
             return redirect()->route('menu.index')->with('success', 'Item ' . $menu->name . ' updated successfully.');
         }

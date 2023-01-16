@@ -63,6 +63,7 @@ class MenuImport implements ToCollection, WithHeadingRow, SkipsEmptyRows
                             'wholesale_price' => $row['wholesale_price'],
                             'distributor_price' => $row['distributor_price'],
                             'rebranding_price' => $row['rebranding_price'],
+                            'is_beans' => $row['is_beans'],
                             'action' => 'Add',
                             'error' => []
                         ];
@@ -92,6 +93,7 @@ class MenuImport implements ToCollection, WithHeadingRow, SkipsEmptyRows
                                 'category_id' => $category->id,
                                 'sub_category' => $row['sub_category'],
                                 'inventory_id' => $inventory->id,
+                                'is_beans' => $row['is_beans'] ? true : false,
                             ]);
     
                             $record['menu_id'] = $menu->id;
@@ -115,6 +117,7 @@ class MenuImport implements ToCollection, WithHeadingRow, SkipsEmptyRows
                         'wholesale_price' => $row['wholesale_price'],
                         'distributor_price' => $row['distributor_price'],
                         'rebranding_price' => $row['rebranding_price'],
+                        'is_beans' => $row['is_beans'],
                         'action' => 'Update',
                         'error' => []
                     ];
@@ -154,6 +157,7 @@ class MenuImport implements ToCollection, WithHeadingRow, SkipsEmptyRows
                             $item->wholesale_price =  number_format($row['wholesale_price'], 2,  '.', '');
                             $item->distributor_price =  number_format($row['distributor_price'], 2,  '.', '');
                             $item->rebranding_price = number_format($row['rebranding_price'], 2,  '.', '');
+                            $item->is_beans = $row['is_beans'] ? 1 : 0;
 
                             if ($item->isDirty()) {
                                 $item->save();
