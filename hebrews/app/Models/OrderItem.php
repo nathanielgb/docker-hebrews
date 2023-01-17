@@ -17,6 +17,7 @@ class OrderItem extends Model
      *  PREPARING
      *  DONE
      *  SERVED
+     *  VOID
      *
      * @var array<int, string>
      */

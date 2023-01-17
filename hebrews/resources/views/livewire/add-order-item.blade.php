@@ -1,13 +1,24 @@
 <div>
     <form id="add-order-item-form" action="{{ route('order.add_item', $order->order_id) }}" method="post" autocomplete="off">
         @csrf
-        <label class="block mb-4 text-sm">
+        <label class="block mb-4 text-sm" wire:ignore>
             <span class="text-gray-700 dark:text-gray-400">Menu Item</span>
             <select wire:model="menuid" id="item-select" class="styled-input" name="menuitem" required>
                 <option value="" selected>Select menu item</option>
                 @foreach ($menus as $item)
-                    <option value="{{ $item->id }}" data-item="{{ json_encode($item) }}">{{ $item->name }}</option>
+                    <option value="{{ $item->id }}" data-item="{{ json_encode($item) }}">{{ $item->name }} ({{ $item->inventory->branch->name }}) ({{  $item->inventory->stock }} left)</option>
                 @endforeach
+            </select>
+        </label>
+        <label class="block mb-4 text-sm">
+            <span class="text-gray-700 dark:text-gray-400">Order Type</span>
+            <select
+                name="isdinein"
+                class="styled-input"
+            >
+                <option value="" disabled>Select type</option>
+                <option value="1" selected>Dine-in</option>
+                <option value="0">Takeout</option>
             </select>
         </label>
         <label class="block mb-4 text-sm">
@@ -31,6 +42,24 @@
                 @endif
             </select>
         </label>
+
+        @if (isset($menuitem->is_beans))
+            <label class="block mb-4 text-sm">
+                <span class="text-gray-700 dark:text-gray-400">Grind Type</span>
+                <select
+                    name="grind_type"
+                    class="styled-input"
+                >
+                    <option value="" selected>Select grind type</option>
+                    <option value="coarse">Coarse</option>
+                    <option value="medcoarse">Medium-Coarse</option>
+                    <option value="medium">Medium</option>
+                    <option value="medfine">Medium-Fine</option>
+                    <option value="fine">Fine</option>
+                </select>
+            </label>
+        @endif
+
         <label class="block mb-4 text-sm">
             <span class="text-gray-700">Quantity</span>
             <input class="styled-input" name="quantity" type="number" placeholder="Enter Quantity" min="1" required>

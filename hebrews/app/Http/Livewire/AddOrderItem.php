@@ -28,7 +28,7 @@ class AddOrderItem extends Component
             // Check branch of order
             $q->where('branch_id', $branch_id);
             $q->where('stock', '>', 0);
-        })->get();
+        })->orderBy('name')->get();
     }
 
 

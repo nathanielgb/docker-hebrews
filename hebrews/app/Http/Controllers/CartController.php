@@ -130,10 +130,10 @@ class CartController extends Controller
                 // if (isset($response) && $response['status'] == 'fail') {
                 //     return back()->with('error', $response['message']);
                 // }
-
                 // Order type of item
                 $data = [
                     'is_dinein' => isset($request->isdinein) && $request->isdinein == 1 ? true : false,
+                    'is_beans' => isset($item->is_beans) ? true : false,
                     'grind_type' => isset($request->grind_type) ? $request->grind_type : null
                 ];
                 
@@ -271,6 +271,7 @@ class CartController extends Controller
                 // Order type of item
                 $data = [
                     'is_dinein' => isset($request->isdinein) && $request->isdinein == 1 ? true : false,
+                    'is_beans' => isset($product_item->is_beans) ? true : false,
                     'grind_type' => isset($request->grind_type) ? $request->grind_type : null
                 ];
 

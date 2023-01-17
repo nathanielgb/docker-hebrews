@@ -101,13 +101,11 @@ class OrderController extends Controller
         }
 
         if ($order) {
-            $accounts = BankAccount::all();
-
             $onProgressItems = OrderItem::where('order_id', $order->order_id)
             ->where('status', 'served')
             ->count();
 
-            return view('orders.order_summary',compact('order','onProgressItems','accounts'));
+            return view('orders.order_summary',compact('order','onProgressItems'));
         }
         return redirect()->route('order.list')->with('error', 'Order does not exist.');
     }
@@ -134,16 +132,15 @@ class OrderController extends Controller
         }
 
         $menus = Menu::whereHas('inventory', function ($q) use ($order) {
+            $q->where('stock' > 0);
             // Check branch of current user
             if (auth()->user()->branch_id) {
                 $q->where('branch_id', $order->branch_id);
             }
+
         });
 
         if ($order) {
-            if ($order->confirmed) {
-                return redirect()->back()->with('error', 'Cannot add item for confirmed orders.');
-            }
             if ($order->paid) {
                 return redirect()->back()->with('error', 'Cannot add item for paid orders.');
             }
@@ -167,8 +164,9 @@ class OrderController extends Controller
                 'type' => 'required',
                 'quantity' => 'required|numeric|min:1'
             ]);
+
             try {
-                $addItem = $orderService->addItem($order, $request->menuitem, $request->quantity, $request->type, $request->orderItemAddon);
+                $addItem = $orderService->addItem($order, $request->menuitem, $request->quantity, $request->type, $request->grind_type, (bool) $request->isdinein, $request->orderItemAddon);
 
                 if ($addItem['status'] == 'warning') {
                     return redirect()->back()->with('warning', $addItem['message']);
@@ -216,7 +214,6 @@ class OrderController extends Controller
         $request->validate([
             'quantity' => 'nullable|integer'
         ]);
-
         $item = OrderItem::where('id', $request->item_id)->first();
 
         if ($item) {
@@ -232,9 +229,9 @@ class OrderController extends Controller
                 }
 
                 try {
-                    $response = $orderService->updateItem($order, $item, $request->quantity, $request->orderItemAddon);
+                    $response = $orderService->updateItem($order, $item, $request->quantity, $request->grind_type, (bool) $request->isdinein, $request->orderItemAddon);
 
-                    return redirect()->back()->with('success', 'Order Item ID  ' . $item->id . ' is updated successfully.');
+                    return redirect()->back()->with('success', "Order Item  (name: $item->name) is updated successfully.");
                 } catch (\Exception $exception) {
                     //throw $th;
                     return redirect()->back()->with('error', $exception->getMessage());
@@ -433,11 +430,11 @@ class OrderController extends Controller
         }
 
         if ($order) {
-            $acccount = BankAccount::where('id', $request->account)->first();
+            // $acccount = BankAccount::where('id', $request->account)->first();
 
-            if (!$acccount) {
-                return redirect()->back()->with('error', 'Failed to confirm order. Bank account does not exist.');
-            }
+            // if (!$acccount) {
+            //     return redirect()->back()->with('error', 'Failed to confirm order. Bank account does not exist.');
+            // }
 
             DB::beginTransaction();
             try {
@@ -454,36 +451,36 @@ class OrderController extends Controller
                         return redirect()->back()->with('error', "Order Item $ord_item->name does not have enough stock.");
                     }
 
-                    if (isset($ord_item->data)) {
-                        foreach ($ord_item->data as $addon) {
-                            $orderAddonItem = AddonOrderItem::where('order_item_id', $ord_item->order_item_id)
-                                ->where('addon_id', $addon['addon_id'])->first();
-                            $deduct_addon = $orderService->deductQtyToInventory($orderAddonItem->addon->inventory, 1, $addon['qty']);
+                    // if (isset($ord_item->data)) {
+                    //     foreach ($ord_item->data as $addon) {
+                    //         $orderAddonItem = AddonOrderItem::where('order_item_id', $ord_item->order_item_id)
+                    //             ->where('addon_id', $addon['addon_id'])->first();
+                    //         $deduct_addon = $orderService->deductQtyToInventory($orderAddonItem->addon->inventory, 1, $addon['qty']);
 
-                            if ($deduct_addon['status'] == 'fail') {
-                                return redirect()->back()->with('error', "Add-on Item $addon->name does not have enough stock.");
-                            }
+                    //         if ($deduct_addon['status'] == 'fail') {
+                    //             return redirect()->back()->with('error', "Add-on Item $addon->name does not have enough stock.");
+                    //         }
 
-                            InventoryLog::create([
-                                'title' => 'Order Confirmation',
-                                'data' => [
-                                    'section' => "addon-order-item",
-                                    'type' => "deduct",
-                                    'order_id' => $orderAddonItem->order_id,
-                                    'addon_order_item_id' =>$orderAddonItem->id,
-                                    'addon_name' => $orderAddonItem->name,
-                                    'addon_id' => $orderAddonItem->addon_id,
-                                    'inventory_id' => $orderAddonItem->inventory_id,
-                                    'inventory_code' => $orderAddonItem->inventory_code,
-                                    'units' => $orderAddonItem->units,
-                                    'order_qty' => $orderAddonItem->qty,
-                                    'stock_deducted' => $deduct_addon['deducted_stock'],
-                                    'stock_before_deduction' => $deduct_addon['previous_stock'],
-                                    'stock_after_deduction' => $deduct_addon['stock']
-                                ]
-                            ]);
-                        }
-                    }
+                    //         InventoryLog::create([
+                    //             'title' => 'Order Confirmation',
+                    //             'data' => [
+                    //                 'section' => "addon-order-item",
+                    //                 'type' => "deduct",
+                    //                 'order_id' => $orderAddonItem->order_id,
+                    //                 'addon_order_item_id' =>$orderAddonItem->id,
+                    //                 'addon_name' => $orderAddonItem->name,
+                    //                 'addon_id' => $orderAddonItem->addon_id,
+                    //                 'inventory_id' => $orderAddonItem->inventory_id,
+                    //                 'inventory_code' => $orderAddonItem->inventory_code,
+                    //                 'units' => $orderAddonItem->units,
+                    //                 'order_qty' => $orderAddonItem->qty,
+                    //                 'stock_deducted' => $deduct_addon['deducted_stock'],
+                    //                 'stock_before_deduction' => $deduct_addon['previous_stock'],
+                    //                 'stock_after_deduction' => $deduct_addon['stock']
+                    //             ]
+                    //         ]);
+                    //     }
+                    // }
 
                     // if ($ord_item->from == 'storage') {
                     //     $ord_item->status = 'done';
@@ -515,31 +512,31 @@ class OrderController extends Controller
                 }
 
                 // Save the transaction if there is bank account selected
-                if ($request->account) {
-                    $account = BankAccount::where('id', $request->account)->first();
-                    if ($account && $order->confirmed_amount > 0) {
-                        $prev_bal = $account->bal;
-                        $new_bal = $prev_bal + $order->confirmed_amount;
+                // if ($request->account) {
+                //     $account = BankAccount::where('id', $request->account)->first();
+                //     if ($account && $order->confirmed_amount > 0) {
+                //         $prev_bal = $account->bal;
+                //         $new_bal = $prev_bal + $order->confirmed_amount;
 
-                        $account->update([
-                            'bal' => $new_bal,
-                        ]);
+                //         $account->update([
+                //             'bal' => $new_bal,
+                //         ]);
 
-                        // Save transaction record
-                        BankTransaction::create([
-                            'order_id' => $order->order_id,
-                            'account_id' => $account->id,
-                            'action' => 'Confirmed Order (Initial Deposit)',
-                            'amount' => $order->confirmed_amount,
-                            'running_bal' => $new_bal,
-                            'prev_bal' => $prev_bal
-                        ]);
-                    }
-                }
+                //         // Save transaction record
+                //         BankTransaction::create([
+                //             'order_id' => $order->order_id,
+                //             'account_id' => $account->id,
+                //             'action' => 'Confirmed Order (Initial Deposit)',
+                //             'amount' => $order->confirmed_amount,
+                //             'running_bal' => $new_bal,
+                //             'prev_bal' => $prev_bal
+                //         ]);
+                //     }
+                // }
 
                 // Tag order as confirmed
                 $order->confirmed = true;
-                $order->bank_id = $account->id;
+                // $order->bank_id = $account->id;
                 $order->confirmed_by = auth()->user()->name;
                 $order->save();
 

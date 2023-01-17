@@ -53,14 +53,14 @@
         </label>
 
 
-        @if (isset($cart->data->grind_type))
+        @if (isset($cart->menu->is_beans) && $cart->menu->is_beans)
             <label class="block mb-4 text-sm">
                 <span class="text-gray-700 dark:text-gray-400">Grind Type</span>
                 <select
                     name="grind_type"
                     class="styled-input"
                 >
-                    <option value="" disabled>Select grind type</option>
+                    <option value="">Select grind type</option>
                     <option value="coarse"  @if ($cart->data->grind_type == 'coarse') selected @endif>Coarse</option>
                     <option value="medcoarse" @if ($cart->data->grind_type == 'medcoarse') selected @endif>Medium-Coarse</option>
                     <option value="medium" @if ($cart->data->grind_type == 'medium') selected @endif>Medium</option>

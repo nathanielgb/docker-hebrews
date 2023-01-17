@@ -23,14 +23,16 @@ class OrderService
      * @param String $id menu id of the item being added
      * @param String $quantity order quantity of the item
      * @param String $type product type of menu item
+     * @param String $grind_type grind type of menu item (if beans)
+     * @param Boolean $isdinein if dine-in or take-out order
      * @param Array $addons attached Add-ons for the menu item
      * @return array|string
      */
-    public function addItem($order, $id, $qty, $type, $addons)
+    public function addItem($order, $id, $qty, $type, $grind_type, $isdinein,  $addons)
     {
-        if ($order->confirmed) {
-            throw new \Exception('Cannot add item for confirmed orders.');
-        }
+        // if ($order->confirmed) {
+        //     throw new \Exception('Cannot add item for confirmed orders.');
+        // }
 
         $item = Menu::where('id', $id)->first();
 
@@ -76,24 +78,16 @@ class OrderService
         $added_item_subtotal = floatval($product_price) * intval($qty);
 
         // Validate Add-on
-        $AddonService = new AddonService;
-        $response = $AddonService->validateAddon($addons, $item);
+        // $AddonService = new AddonService;
+        // $response = $AddonService->validateAddon($addons, $item);
 
-        if (isset($response) && $response['status'] == 'fail') {
-            throw new \Exception($response['message']);
-        }
+        // if (isset($response) && $response['status'] == 'fail') {
+        //     throw new \Exception($response['message']);
+        // }
 
         DB::beginTransaction();
 
         try {
-
-            // // Deduct to inventory for cart items
-            // $deduct_inventory = $this->deductQtyToInventory($item->inventory, $item->units, $qty);
-
-            // if ($deduct_inventory['status'] == 'fail') {
-            //     return redirect()->back()->with('error', "Failed to generate order. Item $item->name does not have enough stock.");
-            // }
-
             // foreach ($response['data'] as $addon) {
             //     $addonModel = MenuAddOn::where('id', $addon['addon_id'])->first();
             //     $deduct_addon = $this->deductQtyToInventory($addonModel->inventory, 1, $addon['qty']);
@@ -103,6 +97,12 @@ class OrderService
             //     }
             // }
 
+            $data = [
+                'is_dinein' => $isdinein ? true : false,
+                'is_beans' => isset($item->is_beans) ? true : false,
+                'grind_type' => isset($grind_type) ? $grind_type : null
+            ];
+            
             $orderItemId = OrderItem::generateUniqueId();
 
             $ord_item = new OrderItem();
@@ -119,35 +119,44 @@ class OrderService
             $ord_item->unit_label = $item->inventory->unit;
             $ord_item->units = $item->units;
             $ord_item->qty = $qty;
-            $ord_item->data = $response['data'] ?? [];
+            $ord_item->data = $data;
             $ord_item->total_amount = $added_item_subtotal;
-            $ord_item->status = 'pending';
+            $ord_item->status = $order->confirmed ? 'ordered' : 'pending';
             $ord_item->save();
 
-            if (isset($response['data'])) {
-                $addon_item = [];
-                foreach ($response['data'] as $addon) {
-                    $addonModel = MenuAddOn::where('id', $addon['addon_id'])->first();
+            if ($order->confirmed) {
+                // // Deduct to inventory for cart items
+                $deduct_inventory = $this->deductQtyToInventory($item->inventory, $item->units, $qty);
 
-                    if (!$addonModel) {
-                        return redirect()->route('order.show_cart')->with('error', "Addon Item (name: $addon->name ) does not exist.");
-                    }
-
-                    $addon_item[] = [
-                        'order_id' => $order->order_id,
-                        'order_item_id' => $orderItemId,
-                        'addon_id' => $addon['addon_id'],
-                        'inventory_id' => $addonModel->inventory_id,
-                        'inventory_name' => $addonModel->inventory->name,
-                        'name' => $addon['name'],
-                        'qty' => $addon['qty'],
-                        'created_at' => Carbon::now(),
-                        'updated_at' => Carbon::now(),
-                    ];
+                if ($deduct_inventory['status'] == 'fail') {
+                    return redirect()->back()->with('error', "Failed to add order. Item $item->name does not have enough stock.");
                 }
-
-                DB::table('addon_order_items')->insert($addon_item);
             }
+
+            // if (isset($response['data'])) {
+            //     $addon_item = [];
+            //     foreach ($response['data'] as $addon) {
+            //         $addonModel = MenuAddOn::where('id', $addon['addon_id'])->first();
+
+            //         if (!$addonModel) {
+            //             return redirect()->route('order.show_cart')->with('error', "Addon Item (name: $addon->name ) does not exist.");
+            //         }
+
+            //         $addon_item[] = [
+            //             'order_id' => $order->order_id,
+            //             'order_item_id' => $orderItemId,
+            //             'addon_id' => $addon['addon_id'],
+            //             'inventory_id' => $addonModel->inventory_id,
+            //             'inventory_name' => $addonModel->inventory->name,
+            //             'name' => $addon['name'],
+            //             'qty' => $addon['qty'],
+            //             'created_at' => Carbon::now(),
+            //             'updated_at' => Carbon::now(),
+            //         ];
+            //     }
+
+            //     DB::table('addon_order_items')->insert($addon_item);
+            // }
 
             // Re-calculate total order price
             $new_subtotal = $this->getOrderSubtotal($order->order_id);
@@ -186,10 +195,12 @@ class OrderService
      * @param Object $order  order to update
      * @param Object $item  order item model to update
      * @param String $quantity quantity of order item
+     * @param String $grind_type grind type of menu item (if beans)
+     * @param Boolean $isdinein if dine-in or take-out order
      * @param Array $addons attached Add-ons for the order item
      * @return array|string
      */
-    public function updateItem($order, $item, $quantity=0, $addons)
+    public function updateItem($order, $item, $quantity=0, $grind_type, $isdinein, $addons)
     {
         $unit_price = $item->price;
         $new_qty = $quantity;
@@ -212,11 +223,18 @@ class OrderService
         }
 
         // Validate Add-on
-        $AddonService = new AddonService;
-        $response = $AddonService->validateAddon($addons, $item->menu);
+        // $AddonService = new AddonService;
+        // $response = $AddonService->validateAddon($addons, $item->menu);
 
-        if (isset($response) && $response['status'] == 'fail') {
-            throw new \Exception($response['message']);
+        // if (isset($response) && $response['status'] == 'fail') {
+        //     throw new \Exception($response['message']);
+        // }
+        
+        $data = $item->data ?? [];
+        $data['is_dinein'] = $isdinein ? true : false;
+
+        if (isset($data['is_beans']) && $data['is_beans']) {
+            $data['grind_type'] = $grind_type;
         }
 
         DB::beginTransaction();
@@ -225,36 +243,36 @@ class OrderService
             // Update total amount of item
             $item->total_amount = round(floatval($unit_price*$new_qty), 2);
             $item->qty = $new_qty;
-            $item->data = $response['data'] ?? [];
+            $item->data = $data;
             $item->save();
 
             // Manage Addons - Delete Add ons that are not in the list
-            $deleteAddons = AddonOrderItem::where('order_item_id', $item->order_item_id)
-                ->whereNotIn('addon_id', $response['ids'] ?? [])
-                ->delete();
+            // $deleteAddons = AddonOrderItem::where('order_item_id', $item->order_item_id)
+            //     ->whereNotIn('addon_id', $response['ids'] ?? [])
+            //     ->delete();
 
-            if (isset($response['data'])) {
-                foreach($response['data'] as $addon) {
-                    $addonModel = MenuAddOn::where('id', $addon['addon_id'])->first();
+            // if (isset($response['data'])) {
+            //     foreach($response['data'] as $addon) {
+            //         $addonModel = MenuAddOn::where('id', $addon['addon_id'])->first();
 
-                    // Update or create
-                    $updateAddons = AddonOrderItem::updateOrCreate(
-                        [
-                            'order_id'  => $item->order_id,
-                            'order_item_id'  => $item->order_item_id,
-                            'addon_id'  => $addon['addon_id'],
-                        ],
-                        [
-                            'inventory_id' => $addonModel->inventory_id,
-                            'inventory_name' => $addonModel->inventory->name,
-                            'name' => $addon['name'],
-                            'qty' => $addon['qty'],
-                            'created_at' => Carbon::now(),
-                            'updated_at' => Carbon::now(),
-                        ]
-                    );
-                }
-            }
+            //         // Update or create
+            //         $updateAddons = AddonOrderItem::updateOrCreate(
+            //             [
+            //                 'order_id'  => $item->order_id,
+            //                 'order_item_id'  => $item->order_item_id,
+            //                 'addon_id'  => $addon['addon_id'],
+            //             ],
+            //             [
+            //                 'inventory_id' => $addonModel->inventory_id,
+            //                 'inventory_name' => $addonModel->inventory->name,
+            //                 'name' => $addon['name'],
+            //                 'qty' => $addon['qty'],
+            //                 'created_at' => Carbon::now(),
+            //                 'updated_at' => Carbon::now(),
+            //             ]
+            //         );
+            //     }
+            // }
 
 
             // Re-calculate total order price

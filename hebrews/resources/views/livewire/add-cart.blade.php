@@ -57,7 +57,7 @@
                     name="grind_type"
                     class="styled-input"
                 >
-                    <option value="" selected disabled>Select grind type</option>
+                    <option value="" selected>Select grind type</option>
                     <option value="coarse">Coarse</option>
                     <option value="medcoarse">Medium-Coarse</option>
                     <option value="medium">Medium</option>
@@ -69,7 +69,7 @@
 
         <label class="block mb-4 text-sm">
             <span class="text-gray-700">Quantity</span>
-            <input class="styled-input" name="qty" type="number" min="1"  placeholder="1" required>
+            <input class="styled-input" name="qty" type="number" min="1"  placeholder="Enter quantity" required>
         </label>
 
     </form>

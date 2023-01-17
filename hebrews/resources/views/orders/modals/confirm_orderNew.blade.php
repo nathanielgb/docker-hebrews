@@ -25,18 +25,19 @@
                 <form id="confirm-order-form" action="{{ route('order.confirm', $order->order_id) }}" method="post">
                     @csrf
                     <div>
-                        <p class="text-center text-tiny">You will not be able to make any changes to the order upon confirming. Are you sure you want to continue?</p>
-                        <br>
-                        <label class="block mb-4 text-sm">
-                            <span class="text-gray-700 dark:text-gray-400">Credit to Bank Account</span>
-                            <select class="styled-input" name="account">
-                                <option value="" selected disabled>Select account</option>
-                                <option value="">None</option>
-                                    @foreach ($accounts as $account)
-                                        <option value="{{ $account->id }}" >{{ $account->bank }} - {{ $account->account_name }} @if ($account->account_number) ({{ $account->account_number }}) @endif</option>
-                                    @endforeach
-                            </select>
-                        </label>
+                        <p class="text-center text-tiny">Order items will be <b>deducted</b> to branch inventory stocks upon confirm. Are you sure you want to continue?</p>
+                       {{--  <br>
+                            <label class="block mb-4 text-sm">
+                                <span class="text-gray-700 dark:text-gray-400">Credit to Bank Account</span>
+                                <select class="styled-input" name="account">
+                                    <option value="" selected disabled>Select account</option>
+                                    <option value="">None</option>
+                                        @foreach ($accounts as $account)
+                                            <option value="{{ $account->id }}" >{{ $account->bank }} - {{ $account->account_name }} @if ($account->account_number) ({{ $account->account_number }}) @endif</option>
+                                        @endforeach
+                                </select>
+                            </label>
+                        --}}
                     </div>
                 </form>
             </div>

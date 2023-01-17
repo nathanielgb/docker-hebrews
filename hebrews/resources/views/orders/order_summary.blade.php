@@ -36,7 +36,7 @@
                         >
                         <span><i class="fa-solid fa-print"></i> PRINT</span>
                     </a>
-                    @if (!$order->paid && !$order->cancelled && !$order->confirmed)
+                    @if (!$order->paid && !$order->cancelled)
                         @if(auth()->user()->can('access', 'add-order-item-action'))
                             <a
                                 href="{{ route('order.show_add_item',['order_id'=>$order->order_id]) }}"
@@ -55,7 +55,7 @@
                             </a>
                         @endif
                     @endif
-                    @if ($order->confirmed || $order->cancelled || $order->completed)
+                    @if ($order->cancelled || $order->completed)
                         <a
                             href="{{ route('order.show_items', $order->order_id) }}"
                             class="flex items-center inline-block px-6 py-2.5 bg-green-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-green-700 hover:shadow-lg focus:bg-green-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-green-800 active:shadow-lg transition duration-150 ease-in-out"
@@ -72,9 +72,8 @@
                     <table class="w-full whitespace-no-wrap">
                         <thead>
                         <tr class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase border-b bg-gray-50">
-                            <th class="px-4 py-3">ID</th>
                             <th class="px-4 py-3">Name</th>
-                            <th class="px-4 py-4 text-center">Type</th>
+                            <th class="px-3 py-3 text-center">Order Type</th>
                             <th class="px-4 py-4 text-center">Status</th>
                             <th class="px-4 py-4 text-center">Units/Qty</th>
                             <th class="px-4 py-4 text-center">Qty</th>
@@ -87,13 +86,19 @@
                                 @forelse ($order->items as $item)
                                     <tr class="text-gray-700">
                                         <td class="px-4 py-4 text-sm">
-                                            <span>{{ $item->id }}</span>
+                                            <span>
+                                                {{ $item->name }}
+                                                @if (isset($item->data['grind_type']) && !empty($item->data['grind_type']))
+                                                    ({{ $item->data['grind_type'] }})
+                                                @endif
+                                            </span>
                                         </td>
-                                        <td class="px-4 py-4 text-sm">
-                                            <span>{{ $item->name }}</span>
-                                        </td>
-                                        <td class="px-4 py-4 text-sm text-center">
-                                            <span>{{ $item->type }}</span>
+                                        <td class="px-3 py-3 text-sm text-center">
+                                            @if (isset($item->data['is_dinein']) && $item->data['is_dinein'])
+                                                <span class="text-xs inline-block py-1 px-2.5 leading-none text-center whitespace-nowrap align-baseline font-bold bg-blue-400 text-white rounded">Dine-in</span>
+                                            @else
+                                                <span class="text-xs inline-block py-1 px-2.5 leading-none text-center whitespace-nowrap align-baseline font-bold bg-blue-400 text-white rounded">Take-out</span>
+                                            @endif
                                         </td>
                                         <td class="px-4 py-4 text-sm text-center">
                                             @if ($item->status == 'pending')
@@ -125,16 +130,8 @@
                                             <span>{{ $item->qty }}</span>
                                         </td>
                                         <td class="px-4 py-4 text-sm text-center">
-                                            @if ($item->data)
-                                                <ul>
-                                                    @foreach ($item->data as $addon)
-                                                        <li>{{ $addon['name'] }} - {{ $addon['qty'] }}</li>
-                                                    @endforeach
-
-                                                </ul>
-                                            @else
-                                                -
-                                            @endif
+                                            <!-- todo -->
+                                            -
                                         </td>
                                         <td class="px-4 py-4 text-sm text-center">
                                             <span>{{ $item->total_amount }}</span>
@@ -142,7 +139,7 @@
                                     </tr>
                                 @empty
                                     <tr class="text-gray-700">
-                                        <td colspan="8" class="px-4 py-3 text-sm text-center">
+                                        <td colspan="7" class="px-4 py-3 text-sm text-center">
                                             No items found.
                                         </td>
                                     </tr>
@@ -150,7 +147,7 @@
                         </tbody>
                         @if (!empty($order->items))
                             <tr class="border-t border-gray-300">
-                                <td class="px-4 py-2 text-sm font-semibold text-right" colspan="7">
+                                <td class="px-4 py-2 text-sm font-semibold text-right" colspan="6">
                                     Subtotal
                                 </td>
                                 <td class="px-4 py-2 text-sm font-semibold text-center" colspan="1">
@@ -158,7 +155,7 @@
                                 </td>
                             </tr>
                             <tr>
-                                <td class="px-4 py-2 text-sm font-semibold text-right" colspan="7">
+                                <td class="px-4 py-2 text-sm font-semibold text-right" colspan="6">
                                     Other Fees
                                 </td>
                                 <td class="px-4 py-2 text-sm font-semibold text-center" colspan="1">
@@ -166,7 +163,7 @@
                                 </td>
                             </tr>
                             <tr>
-                                <td class="px-4 py-2 text-sm font-semibold text-right" colspan="7">
+                                <td class="px-4 py-2 text-sm font-semibold text-right" colspan="6">
                                     Discount Amount
                                 </td>
                                 <td class="px-4 py-2 text-sm font-semibold text-center" colspan="1">
@@ -178,7 +175,7 @@
                                 </td>
                             </tr>
                             <tr>
-                                <td class="px-4 py-2 text-sm font-semibold text-right" colspan="7">
+                                <td class="px-4 py-2 text-sm font-semibold text-right" colspan="6">
                                     Total Amount
                                 </td>
                                 <td class="px-4 py-2 text-sm font-semibold text-center" colspan="1">

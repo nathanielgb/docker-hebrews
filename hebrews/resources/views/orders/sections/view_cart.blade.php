@@ -61,6 +61,9 @@
                                 </td>
                                 <td class="px-4 py-4 text-sm">
                                     {{ $item->menu->name ?? 'N/A' }}
+                                    @if (isset($item->data['grind_type']) && !empty($item->data['grind_type']))
+                                        ({{ $item->data['grind_type'] }})
+                                    @endif
                                 </td>
                                 <td class="px-4 py-4 text-sm text-center">
                                     @if (isset($item->data['is_dinein']) && $item->data['is_dinein'])

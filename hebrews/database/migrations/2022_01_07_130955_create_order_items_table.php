@@ -19,6 +19,7 @@ class CreateOrderItemsTable extends Migration
             $table->string('order_id');
             $table->string('menu_id');
             $table->string('inventory_id');
+            $table->string('inventory_code')->nullable();
             $table->string('inventory_name');
             $table->string('name');
             $table->string('from');

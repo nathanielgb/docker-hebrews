@@ -35,14 +35,12 @@
             <table class="w-full whitespace-no-wrap">
                 <thead>
                 <tr class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase border-b bg-gray-50">
-                    <th class="px-4 py-3">Id</th>
                     <th class="px-4 py-3">Name</th>
-                    <th class="px-4 py-3 text-center">Type</th>
+                    <th class="px-4 py-3 text-center">Order Type</th>
                     <th class="px-4 py-3 text-center">Status</th>
                     <th class="px-4 py-3 text-center">Price</th>
-                    <th class="px-4 py-3 text-center">Unit/Qty</th>
                     <th class="px-4 py-3 text-center">Qty</th>
-                    <th class="px-4 py-3 text-center">Tot. Units</th>
+                    <th class="px-4 py-3 text-center">Tot. Stock</th>
                     <th class="px-4 py-3 text-center">Total Amount</th>
                     <th class="px-4 py-3 text-center">Action</th>
                 </tr>
@@ -51,13 +49,17 @@
                     @forelse ($order_items as $item)
                         <tr class="text-gray-700">
                             <td class="px-4 py-3 text-sm">
-                                {{ $item->id }}
-                            </td>
-                            <td class="px-4 py-3 text-sm">
                                 {{ $item->name }}
+                                @if (isset($item->data['grind_type']) && !empty($item->data['grind_type']))
+                                    ({{ $item->data['grind_type'] }})
+                                @endif
                             </td>
-                            <td class="px-4 py-3 text-sm text-center">
-                                {{ $item->type }}
+                            <td class="px-3 py-3 text-sm text-center">
+                                @if (isset($item->data['is_dinein']) && $item->data['is_dinein'])
+                                    <span class="text-xs inline-block py-1 px-2.5 leading-none text-center whitespace-nowrap align-baseline font-bold bg-blue-400 text-white rounded">Dine-in</span>
+                                @else
+                                    <span class="text-xs inline-block py-1 px-2.5 leading-none text-center whitespace-nowrap align-baseline font-bold bg-blue-400 text-white rounded">Take-out</span>
+                                @endif
                             </td>
                             <td class="px-4 py-3 text-sm text-center">
                                 @if ($item->status == 'pending')
@@ -83,10 +85,7 @@
                                 @endif
                             </td>
                             <td class="px-4 py-3 text-sm text-center">
-                                {{ $item->price }}
-                            </td>
-                            <td class="px-4 py-3 text-sm text-center">
-                                {{ $item->units }}
+                                {{ $item->price }} ({{ $item->type }})
                             </td>
                             <td class="px-4 py-3 text-sm text-center">
                                 {{ $item->qty }}
