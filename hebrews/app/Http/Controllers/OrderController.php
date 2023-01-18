@@ -115,7 +115,10 @@ class OrderController extends Controller
         if (auth()->user()->branch_id) {
             $order = Order::where('branch_id', auth()->user()->branch_id)->where('order_id', $request->order_id)->with('items')->first();
         } else {
-            $order = Order::where('order_id', $request->order_id)->with('items')->first();
+            $order = Order::where('order_id', $request->order_id)->with(['items' => function ($query) {
+                $query->where('status', '!=', 'void');
+            }])->first();
+
         }
 
         if ($order) {
@@ -267,6 +270,34 @@ class OrderController extends Controller
                     //throw $th;
                     return redirect()->back()->with('error', $exception->getMessage());
                 }
+            }
+            return redirect()->route('order.list')->with('error', 'Order does not exist.');
+        }
+        return redirect()->back()->with('error', 'Order item no longer exist.');
+    }
+
+    public function voidOrderItem (Request $request, OrderService $orderService)
+    {
+        $order_item = OrderItem::where('id', $request->id)->first();
+
+        if ($order_item) {
+            if (auth()->user()->branch_id) {
+                $order = Order::where('branch_id', auth()->user()->branch_id)->where('order_id', $order_item->order_id)->first();
+            } else {
+                $order = Order::where('order_id', $order_item->order_id)->first();
+            }
+
+            if ($order) {
+                try {
+                    $response = $orderService->voidItem($order_item, $order);
+
+                    return redirect()->back()->with('success', 'Order item is removed successfully.');
+                } catch (\Exception $exception) {
+                    //throw $th;
+                    return redirect()->back()->with('error', $exception->getMessage());
+                }
+
+                return redirect()->back()->with('success', 'Order item is voided successfully.');
             }
             return redirect()->route('order.list')->with('error', 'Order does not exist.');
         }

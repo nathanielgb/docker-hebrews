@@ -97,6 +97,10 @@
                                     <div class="inline-flex items-center px-3 py-1 text-xs font-bold text-teal-700 uppercase bg-teal-200 rounded-full leading-sm">
                                         SERVED
                                     </div>
+                                @elseif ($item->status == 'void')
+                                    <div class="inline-flex items-center px-3 py-1 text-xs font-bold text-white uppercase bg-red-600 rounded-full leading-sm">
+                                        VOID
+                                    </div>
                                 @endif
                             </td>
                             <td class="px-4 py-3 text-sm text-center">

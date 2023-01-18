@@ -11,6 +11,7 @@ use App\Models\Order;
 use App\Models\OrderItem;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use App\Models\InventoryLog;
 
 
 class OrderService
@@ -49,6 +50,7 @@ class OrderService
         // Check if item is already ordered
         $ord_item = OrderItem::where('order_id', $order->order_id)
             ->where('menu_id', $item->id)
+            ->where('status', '!=', 'void')
             ->first();
 
         if ($ord_item) {
@@ -62,7 +64,7 @@ class OrderService
         $checkStock = $this->checkItemStock($item, $item->units, $qty);
 
         if ($checkStock['status'] == 'fail') {
-            throw new \Exception("Item (name: {$item->name}) does not have enough stock.");
+            throw new \Exception("Item (name: $item->name) does not have enough stock.");
         }
 
         // Retrieve product price
@@ -130,7 +132,26 @@ class OrderService
 
                 if ($deduct_inventory['status'] == 'fail') {
                     return redirect()->back()->with('error', "Failed to add order. Item $item->name does not have enough stock.");
+                    throw new \Exception("Failed to add order. Item (name: $item->name) does not have enough stock.");
                 }
+
+                InventoryLog::create([
+                    'title' => 'Add Order Item',
+                    'data' => [
+                        'section' => "order-item",
+                        'type' => "deduct",
+                        'order_id' => $ord_item->order_id,
+                        'order_item_id' =>$ord_item->id,
+                        'order_item_name' => $ord_item->name,
+                        'inventory_id' => $ord_item->inventory_id,
+                        'inventory_code' => $ord_item->inventory_code,
+                        'units' => $ord_item->units,
+                        'order_qty' => $ord_item->qty,
+                        'stock_deducted' => $deduct_inventory['deducted_stock'],
+                        'stock_before_deduction' => $deduct_inventory['previous_stock'],
+                        'stock_after_deduction' => $deduct_inventory['stock']
+                    ]
+                ]);
             }
 
             // if (isset($response['data'])) {
@@ -349,6 +370,50 @@ class OrderService
     }
 
     /**
+     * void item to the order
+     *
+     * @param Object $item  order item to void
+     * @param Object $order  order  to update
+     * @return array|string
+     */
+    public function voidItem($item, $order)
+    {
+        DB::beginTransaction();
+
+        try {
+            // Delete order item
+            $item->status = 'void';
+            $item->save();
+
+            // Re-calculate total order price
+            $new_subtotal = $this->getOrderSubtotal($order->order_id);
+            $orderInvoice = $this->calculateOrderInvoice($new_subtotal, $order->discount_type, $order->discount_unit, $order->fees, $order->deposit_bal, 0);
+
+            // update subtotal of orders table
+            $order->subtotal = round(floatval($new_subtotal), 2);
+            $order->total_amount = round($orderInvoice['total_amount'], 2);
+            $order->remaining_bal = round($orderInvoice['remaining_balance'], 2);
+            $order->discount_amount = round($orderInvoice['discount'], 2);
+            $order->save();
+
+            DB::commit();
+
+            return [
+                'status' => 'success',
+            ];
+        } catch (\Exception $exception) {
+            DB::rollBack();
+
+            ErrorLog::create([
+                'location' => 'OrderService.deleteItem',
+                'message' => $exception->getMessage()
+            ]);
+
+            throw new \Exception('Something went wrong. Please contact Administrator. (99)');
+        }
+    }
+
+    /**
      * Calculate invoice of order total (adjust discount according to discount type)
      *
      * total_amount = (subtotal + fees) - discount
@@ -415,7 +480,7 @@ class OrderService
     public function getOrderSubtotal($id)
     {
         $ord_item = new OrderItem();
-        $subtotal = $ord_item->where('order_id', $id)->sum('total_amount');
+        $subtotal = $ord_item->where('order_id', $id)->where('status', '!=', 'void')->sum('total_amount');
 
         return $subtotal;
     }

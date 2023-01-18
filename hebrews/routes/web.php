@@ -191,6 +191,7 @@ Route::middleware('auth')->group(function () {
 
         Route::group(['middleware' => 'CheckAccessActions:manage-orders-action'], function () {
             Route::post('delete-order-item', [\App\Http\Controllers\OrderController::class, 'deleteOrderItem'])->name('order.delete_item');
+            Route::post('void-order-item', [\App\Http\Controllers\OrderController::class, 'voidOrderItem'])->name('order.void_item');
         });
 
         Route::group(['middleware' => 'CheckAccessActions:add-order-item-action'], function () {
