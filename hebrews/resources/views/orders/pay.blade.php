@@ -16,12 +16,12 @@
         <div class="p-4 bg-white rounded-lg shadow-xs">
             <form id="pay_form" action="{{ route('order.pay',$order->order_id) }}" method="post" autocomplete="off">
                 @csrf
-                <label class="block mb-4 text-sm">
+                {{--  <label class="block mb-4 text-sm">
                     <span class="text-gray-700 dark:text-gray-400">Credit to Bank Account</span>
                     <select class="styled-input" name="account" required>
                         <option value="{{ $account->id }}">{{ $account->bank }} - {{ $account->account_name }} @if ($account->account_number) ({{ $account->account_number }}) @endif</option>
                     </select>
-                </label>
+                </label> --}}
                 <label class="block mb-4 text-sm">
                     <span class="text-gray-700">Cash Input</span>
                     <input id="given-input" name="input_amt" min="0.01" step=".01" class="styled-input" type="number" placeholder="Enter Amount received">

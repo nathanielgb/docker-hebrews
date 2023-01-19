@@ -101,11 +101,13 @@ class OrderController extends Controller
         }
 
         if ($order) {
+            $accounts = BankAccount::all();
+
             $onProgressItems = OrderItem::where('order_id', $order->order_id)
             ->where('status', 'served')
             ->count();
 
-            return view('orders.order_summary',compact('order','onProgressItems'));
+            return view('orders.order_summary',compact('order','onProgressItems', 'accounts'));
         }
         return redirect()->route('order.list')->with('error', 'Order does not exist.');
     }
@@ -320,7 +322,7 @@ class OrderController extends Controller
         return redirect()->route('order.list')->with('error', 'Order does not exist.');
     }
 
-    public function pay (PayOrderRequest $request, $id)
+    public function pay (PayOrderRequest $request, $id, OrderService $orderService)
     {
         $order = Order::where('order_id', $id)->first();
         if ($order) {
@@ -331,46 +333,32 @@ class OrderController extends Controller
             }
 
             $amount_given = floatval($request->input_amt);
-            $confirmed_amount = $order->confirmed_amount + $amount_given;
-            $total_amount = floatval($order->total_amount);
-            $remaining_balance = $confirmed_amount - $total_amount;
-            if (!$request->account) {
-                return redirect()->back()->with('error', 'Credit to Bank Account is required.');
-            }
+            // $confirmed_amount = $order->confirmed_amount + $amount_given;
+
+
             DB::beginTransaction();
             try {
-                // Save the transaction if there is bank account selected
-                if ($request->account) {
-                    $account = BankAccount::where('id', $request->account)->first();
-                    if ($account) {
-                        if ($remaining_balance < 0) {
-                            $amount_credited = $amount_given;
-                        } else {
-                            $amount_credited =  $amount_given - $remaining_balance;
-                        }
+                $subtotal = $orderService->getOrderSubtotal($order->order_id);
+                $discount_type = $order->discount_type;
+                $discount_unit = $order->discount_unit ?? 0;
+                $fees = $order->fees ?? 0;
+                $deposit = $order->deposil_bal ?? 0;
+                $cash_given = $order->amount_given + $amount_given;
 
-                        $prev_bal = $account->bal;
-                        $new_bal = $prev_bal + $amount_credited;
+                $invoice = $orderService->calculateOrderInvoice($subtotal, $discount_type, $discount_unit, $fees, $deposit, $cash_given);
 
-                        $account->update([
-                            'bal' => $new_bal,
-                        ]);
-
-                        // Save transaction record
-                        BankTransaction::create([
-                            'order_id' => $order->order_id,
-                            'account_id' => $account->id,
-                            'action' => 'Order Payment',
-                            'amount' => $amount_credited,
-                            'running_bal' => $new_bal,
-                            'prev_bal' => $prev_bal
-                        ]);
-                    }
+                if ($invoice['discount'] > ($invoice['subtotal'] + $invoice['fees'])) {
+                    return back()->with('error', "Discount amount cannot be greater than the order total.");
                 }
-
-                $order->amount_given = $order->amount_given + $amount_given;
-                $order->confirmed_amount = $confirmed_amount;
-                $order->remaining_bal = $remaining_balance;
+    
+                $order->subtotal = round(floatval($subtotal), 2);
+                $order->total_amount = $invoice['total_amount'];
+                $order->discount_amount = $invoice['discount'];
+                $order->fees = $invoice['fees'];
+                $order->deposit_bal = $invoice['deposit_balance'];
+                $order->confirmed_amount = $invoice['amount_given'];
+                $order->remaining_bal = $invoice['remaining_balance'];
+                $order->amount_given = $invoice['cashgiven'];
                 $order->paid = true;
                 $order->pending = false;
                 $order->credited_by = auth()->user()->name;
@@ -414,7 +402,7 @@ class OrderController extends Controller
                 $discount_unit = $order->discount_unit ?? 0;
             }
 
-            $subtotal = $order->subtotal;
+            $subtotal = $orderService->getOrderSubtotal($order->order_id);
             $fees = $request->fees ?? 0;
             $deposit = $request->deposit ?? 0;
 
@@ -430,12 +418,14 @@ class OrderController extends Controller
                     $order->discount_type = 'custom';
                     $order->discount_unit = $request->custom_discount ?? 0;
                 }
+
                 $order->order_type = $request->order_type;
                 $order->table = $request->tables;
                 $order->delivery_method = $request->delivery_method;
-                $order->discount_amount = $invoice['discount'];
                 $order->fees = $invoice['fees'];
+                $order->subtotal = round(floatval($subtotal), 2);
                 $order->total_amount = $invoice['total_amount'];
+                $order->discount_amount = $invoice['discount'];
                 $order->deposit_bal = $invoice['deposit_balance'];
                 $order->confirmed_amount = $invoice['amount_given'];
                 $order->remaining_bal = $invoice['remaining_balance'];
@@ -461,11 +451,6 @@ class OrderController extends Controller
         }
 
         if ($order) {
-            // $acccount = BankAccount::where('id', $request->account)->first();
-
-            // if (!$acccount) {
-            //     return redirect()->back()->with('error', 'Failed to confirm order. Bank account does not exist.');
-            // }
 
             DB::beginTransaction();
             try {
@@ -542,29 +527,6 @@ class OrderController extends Controller
                     $ord_item->save();
                 }
 
-                // Save the transaction if there is bank account selected
-                // if ($request->account) {
-                //     $account = BankAccount::where('id', $request->account)->first();
-                //     if ($account && $order->confirmed_amount > 0) {
-                //         $prev_bal = $account->bal;
-                //         $new_bal = $prev_bal + $order->confirmed_amount;
-
-                //         $account->update([
-                //             'bal' => $new_bal,
-                //         ]);
-
-                //         // Save transaction record
-                //         BankTransaction::create([
-                //             'order_id' => $order->order_id,
-                //             'account_id' => $account->id,
-                //             'action' => 'Confirmed Order (Initial Deposit)',
-                //             'amount' => $order->confirmed_amount,
-                //             'running_bal' => $new_bal,
-                //             'prev_bal' => $prev_bal
-                //         ]);
-                //     }
-                // }
-
                 // Tag order as confirmed
                 $order->confirmed = true;
                 // $order->bank_id = $account->id;
@@ -626,6 +588,7 @@ class OrderController extends Controller
 
     public function complete (Request $request, $id)
     {
+        dd($request->all());
         $order = Order::with('items')->where('order_id', $id)->first();
 
         if ($order) {
@@ -637,10 +600,40 @@ class OrderController extends Controller
                 return redirect()->route('order.list')->with('error', 'Order is already completed.');
             }
 
+            $acccount = BankAccount::where('id', $request->account)->first();
+
+            if (!$acccount) {
+                return redirect()->back()->with('error', 'Failed to complete order. Bank account does not exist.');
+            }
+
             $order->pending = false;
             $order->completed = true;
             $order->cancelled = false;
             $order->save();
+
+            // Save the transaction if there is bank account selected
+            if ($request->account) {
+                $account = BankAccount::where('id', $request->account)->first();
+                if ($account && $order->confirmed_amount > 0) {
+                    $prev_bal = $account->bal;
+                    $new_bal = $prev_bal + $order->confirmed_amount;
+
+                    $account->update([
+                        'bal' => $new_bal,
+                    ]);
+
+                    // Save transaction record
+                    BankTransaction::create([
+                        'order_id' => $order->order_id,
+                        'account_id' => $account->id,
+                        'action' => 'Confirmed Order (Initial Deposit)',
+                        'amount' => $order->confirmed_amount,
+                        'running_bal' => $new_bal,
+                        'prev_bal' => $prev_bal
+                    ]);
+                }
+            }
+
 
             return redirect()->route('order.show_summary', $order->order_id)->with('success', 'Order is successfully completed.');
         }

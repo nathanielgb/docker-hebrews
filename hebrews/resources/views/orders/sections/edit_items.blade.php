@@ -43,6 +43,8 @@
                     <th class="px-4 py-3 text-center">Qty</th>
                     <th class="px-4 py-3 text-center">Tot. Stock</th>
                     <th class="px-4 py-3 text-center">Total Amount</th>
+                    <th class="px-4 py-3 text-center">Note</th>
+                    <th class="px-4 py-3 text-center">Served by</th>
                     <th class="px-4 py-3 text-center">Action</th>
                 </tr>
                 </thead>
@@ -100,6 +102,16 @@
                             </td>
                             <td class="px-4 py-3 text-sm text-center">
                                 {{ $item->total_amount }}
+                            </td>
+                            <td class="px-4 py-3 text-sm text-center">
+                                <p>
+                                    {{ $item->note }}
+                                </p>
+                            </td>
+                            <td class="px-4 py-3 text-sm text-center">
+                                <p>
+                                    {{ $item->served_by }}
+                                </p>
                             </td>
                             <td class="px-4 py-3 text-center">
                                 <div class="flex justify-center space-x-4 text-sm">

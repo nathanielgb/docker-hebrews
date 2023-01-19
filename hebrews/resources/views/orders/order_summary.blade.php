@@ -193,7 +193,7 @@
 
             <div class="flex w-full" style="justify-content:end;">
                 <div class="flex mb-2 space-x-2 jusify-center">
-                    @if (!$order->paid && !$order->cancelled && !$order->confirmed)
+                    @if (!$order->paid && !$order->cancelled)
                         @if(auth()->user()->can('access', 'manage-order-item-action'))
                             <button
                                 data-url="{{ route('order.edit', $order->order_id) }}"
