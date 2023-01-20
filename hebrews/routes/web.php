@@ -237,6 +237,18 @@ Route::middleware('auth')->group(function () {
         Route::post('bar/complete-order', [\App\Http\Controllers\BarController::class, 'complete'])->name('bar.order.complete');
     });
 
+
+    // Production section
+    Route::group(['middleware' => 'CheckAccessActions:view-production-dashboard-action'], function () {
+        Route::get('production-orders', [\App\Http\Controllers\ProductionController::class, 'index'])->name('production.list');
+    });
+
+    Route::group(['middleware' => 'CheckAccessActions:manage-production-actions'], function () {
+        Route::get('production/prepare-order/{item_id}', [\App\Http\Controllers\ProductionController::class, 'prepare'])->name('production.order.prepare');
+        Route::post('production/done-order', [\App\Http\Controllers\ProductionController::class, 'done'])->name('production.order.complete');
+        Route::post('production/clear-order', [\App\Http\Controllers\ProductionController::class, 'clear'])->name('production.order.clear');
+    });
+
     // Process payment and printing
     Route::group(['middleware' => 'CheckAccessActions:manage-order-process-action'], function () {
         Route::get('pay-order/{order_id}', [\App\Http\Controllers\OrderController::class, 'showPayForm'])->name('order.show_payform');

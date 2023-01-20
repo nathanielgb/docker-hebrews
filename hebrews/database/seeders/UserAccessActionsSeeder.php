@@ -87,6 +87,10 @@ class UserAccessActionsSeeder extends Seeder
                     'view-dispatch-dashboard-action',
                     'manage-dispatch-actions',
 
+                    // Production
+                    'view-production-dashboard-action',
+                    'manage-production-actions',
+
                     // Manager
                     'manage-order-process-action',
                 ]),
@@ -160,6 +164,10 @@ class UserAccessActionsSeeder extends Seeder
                     // Dispatcher
                     'view-dispatch-dashboard-action',
                     'manage-dispatch-actions',
+
+                    // Production
+                    'view-production-dashboard-action',
+                    'manage-production-actions',
 
                     // Manager
                     'manage-order-process-action',

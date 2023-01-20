@@ -265,6 +265,17 @@
                     </x-nav-link>
                 </li>
             @endif
+
+            @if(auth()->user()->can('access', 'view-production-dashboard-action'))
+                <li class="relative px-6 py-3">
+                    <x-nav-link href="{{ route('production.list') }}" :active="request()->routeIs('production.list')">
+                        <x-slot name="icon">
+                            <i class="fa-solid fa-box"></i>
+                        </x-slot>
+                        {{ __('Production Orders') }}
+                    </x-nav-link>
+                </li>
+            @endif
         </ul>
     </div>
 </aside>

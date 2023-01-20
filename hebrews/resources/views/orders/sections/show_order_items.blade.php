@@ -36,7 +36,6 @@
                     <th class="px-4 py-3 text-center">Total Amount</th>
                     <th class="px-4 py-3 text-center">Note</th>
                     <th class="px-4 py-3 text-center">Served by</th>
-
                 </tr>
                 </thead>
                 <tbody class="bg-white divide-y">

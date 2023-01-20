@@ -586,7 +586,7 @@ class OrderController extends Controller
         return redirect()->route('order.list')->with('error', 'Order does not exist.');
     }
 
-    public function complete (Request $request, $id)
+    public function complete (Request $request, $id, OrderService $orderService)
     {
         dd($request->all());
         $order = Order::with('items')->where('order_id', $id)->first();
@@ -606,6 +606,28 @@ class OrderController extends Controller
                 return redirect()->back()->with('error', 'Failed to complete order. Bank account does not exist.');
             }
 
+            $subtotal = $orderService->getOrderSubtotal($order->order_id);
+            $discount_type = $order->discount_type;
+            $discount_unit = $order->discount_unit ?? 0;
+            $fees = $order->fees ?? 0;
+            $deposit = $order->deposil_bal ?? 0;
+            $cash_given = $order->amount_given;
+
+            $invoice = $orderService->calculateOrderInvoice($subtotal, $discount_type, $discount_unit, $fees, $deposit, $cash_given);
+
+            if ($invoice['discount'] > ($invoice['subtotal'] + $invoice['fees'])) {
+                return back()->with('error', "Discount amount cannot be greater than the order total.");
+            }
+
+
+            $order->subtotal = round(floatval($subtotal), 2);
+            $order->total_amount = $invoice['total_amount'];
+            $order->discount_amount = $invoice['discount'];
+            $order->fees = $invoice['fees'];
+            $order->deposit_bal = $invoice['deposit_balance'];
+            $order->confirmed_amount = $invoice['amount_given'];
+            $order->remaining_bal = $invoice['remaining_balance'];
+            $order->amount_given = $invoice['cashgiven'];
             $order->pending = false;
             $order->completed = true;
             $order->cancelled = false;
@@ -626,7 +648,7 @@ class OrderController extends Controller
                     BankTransaction::create([
                         'order_id' => $order->order_id,
                         'account_id' => $account->id,
-                        'action' => 'Confirmed Order (Initial Deposit)',
+                        'action' => 'Order Completion',
                         'amount' => $order->confirmed_amount,
                         'running_bal' => $new_bal,
                         'prev_bal' => $prev_bal
@@ -643,8 +665,9 @@ class OrderController extends Controller
 
     public function print (Request $request)
     {
-
-        $order = Order::with('items')->where('order_id', $request->order_id)->first();
+        $order = Order::where('order_id', $request->order_id)->with(['items' => function ($query) {
+            $query->where('status', '!=', 'void');
+        }])->first();
 
         if ($order) {
             $total_amount = number_format($order->total_amount, 2);
