@@ -128,6 +128,49 @@ class OrderController extends Controller
         }
         return redirect()->route('order.list')->with('error', 'Order does not exist.');
     }
+
+    public function printKitchenSummary(Request $request)
+    {
+        if (auth()->user()->branch_id) {
+            $order = Order::where('branch_id', auth()->user()->branch_id)->where('order_id', $request->order_id)->with(['items' => function ($query) {
+                $query->where('status', '!=', 'void');
+                $query->where('from', 'kitchen');
+            }])->first();
+        } else {
+            $order = Order::where('order_id', $request->order_id)->with(['items' => function ($query) {
+                $query->where('status', '!=', 'void');
+                $query->where('from', 'kitchen');
+            }])->first();
+
+        }
+
+        if ($order) {
+            return view('orders.sections.summary_kitchen_print', compact('order'));
+        }
+        return redirect()->route('order.list')->with('error', 'Order does not exist.');
+    }
+
+    public function printProductionSummary(Request $request)
+    {
+        if (auth()->user()->branch_id) {
+            $order = Order::where('branch_id', auth()->user()->branch_id)->where('order_id', $request->order_id)->with(['items' => function ($query) {
+                $query->where('status', '!=', 'void');
+                $query->where('from', 'storage');
+            }])->first();;
+        } else {
+            $order = Order::where('order_id', $request->order_id)->with(['items' => function ($query) {
+                $query->where('status', '!=', 'void');
+                $query->where('from', 'storage');
+            }])->first();
+        }
+
+        if ($order) {
+            return view('orders.sections.summary_production_print',compact('order'));
+        }
+        return redirect()->route('order.list')->with('error', 'Order does not exist.');
+    }
+
+
     public function showAddOrderItem(Request $request)
     {
         if (auth()->user()->branch_id) {
@@ -581,6 +624,13 @@ class OrderController extends Controller
             $order->cancelled_by = auth()->user()->name;
             $order->save();
 
+            // OrderItem::where('order_id', $order->order_id)
+            //     ->update([
+            //         'kitchen_cleared' => true,
+            //         'dispatcher_cleared' => true,
+            //         'production_cleared' => true
+            //     ]);
+            
             return redirect()->route('order.show_summary', $order->order_id)->with('success', 'Order is successfully cancelled.');
         }
         return redirect()->route('order.list')->with('error', 'Order does not exist.');
@@ -588,7 +638,6 @@ class OrderController extends Controller
 
     public function complete (Request $request, $id, OrderService $orderService)
     {
-        dd($request->all());
         $order = Order::with('items')->where('order_id', $id)->first();
 
         if ($order) {
@@ -632,6 +681,14 @@ class OrderController extends Controller
             $order->completed = true;
             $order->cancelled = false;
             $order->save();
+
+            // OrderItem::where('order_id', $order->order_id)
+            //     ->update([
+            //         'kitchen_cleared' => true,
+            //         'dispatcher_cleared' => true,
+            //         'production_cleared' => true
+            //     ]);
+            
 
             // Save the transaction if there is bank account selected
             if ($request->account) {

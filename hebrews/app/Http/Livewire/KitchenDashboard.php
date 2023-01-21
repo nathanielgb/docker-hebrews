@@ -5,21 +5,19 @@ namespace App\Http\Livewire;
 use App\Models\Order;
 use Livewire\Component;
 
-class ProductionDashboard extends Component
+class KitchenDashboard extends Component
 {
     public $orders;
 
     public function updateData ()
     {
         $orders = Order::with(['items' => function ($query) {
-            $query->where('status', '!=', 'served');
-            $query->where('production_cleared', false);
-            $query->where('from', '=', 'storage');
+            $query->where('kitchen_cleared', false);
+            $query->where('from', '=', 'kitchen');
 
         }])->whereHas('items', function ($query) {
-            $query->where('status', '!=', 'served');
-            $query->where('production_cleared', false);
-            $query->where('from', '=', 'storage');
+            $query->where('kitchen_cleared', false);
+            $query->where('from', '=', 'kitchen');
         })
         ->where('cancelled', false)
         ->where('completed', false)
@@ -32,6 +30,6 @@ class ProductionDashboard extends Component
 
     public function render()
     {
-        return view('livewire.production-dashboard');
+        return view('livewire.kitchen-dashboard');
     }
 }

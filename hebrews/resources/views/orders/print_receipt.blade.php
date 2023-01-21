@@ -58,7 +58,7 @@
         <!-- ... -->
 
         <div class="flex flex-col text-center">
-            <span>Hebrews Cafe</span>
+            <span>Hebrews Kape</span>
             <span>Cavite</span>
 
         </div>
@@ -89,6 +89,10 @@
                     <td style="width: 120px;">{{ $order->subtotal }}</td>
                 </tr>
                 <tr>
+                    <td>Fees</td>
+                    <td style="width: 120px;">{{ $order->fees }}</td>
+                </tr>
+                <tr>
                     <td>Discount</td>
                     <td style="width: 120px;">-{{ $order->discount_amount }}</td>
                 </tr>
@@ -108,7 +112,7 @@
         </div>
         <div class="flex flex-col text-center " style="margin-bottom: 30px;">
             <span>{{ Carbon\Carbon::now()->format('m/d/Y g:i A') }}</span>
-            <span>VAT Reg. TIN: 006-737-173-0000</span>
+            <!-- <span>VAT Reg. TIN: 006-737-173-0000</span>
             <span>BIR Accr. No.: 046-006737173-000611</span>
             <span>Date Issued: 03/01/2013</span>
             <span style="margin-bottom: 5px;">Valid Until: 07/31/2025</span>
@@ -118,7 +122,7 @@
             <span>THIS RECEIPT SHALL BE VALID</span>
             <span>FOR FIVE (5) YEARS</span>
             <span style="margin-bottom: 20px;">FROM THE DATE OF THE PERMIT TO USE.</span>
-            <span style="font-size: 14px;">This serves as a Sales Invoice</span>
+            <span style="font-size: 14px;">This serves as a Sales Invoice</span> -->
             <span style="font-size: 14px;">Thank you... Come Again...</span>
 
         </div>

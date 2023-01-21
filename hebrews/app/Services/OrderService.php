@@ -48,17 +48,17 @@ class OrderService
         }
 
         // Check if item is already ordered
-        $ord_item = OrderItem::where('order_id', $order->order_id)
-            ->where('menu_id', $item->id)
-            ->where('status', '!=', 'void')
-            ->first();
+        // $ord_item = OrderItem::where('order_id', $order->order_id)
+        //     ->where('menu_id', $item->id)
+        //     ->where('status', '!=', 'void')
+        //     ->first();
 
-        if ($ord_item) {
-            return [
-                'status' => 'warning',
-                'message' => 'Item is already in the order.'
-            ];
-        }
+        // if ($ord_item) {
+        //     return [
+        //         'status' => 'warning',
+        //         'message' => 'Item is already in the order.'
+        //     ];
+        // }
 
         // Check item for stocks in inventory
         $checkStock = $this->checkItemStock($item, $item->units, $qty);
@@ -101,7 +101,7 @@ class OrderService
 
             $data = [
                 'is_dinein' => $isdinein ? true : false,
-                'is_beans' => isset($item->is_beans) ? true : false,
+                'is_beans' => isset($item->is_beans) && $item->is_beans == 1 ? true : false,
                 'grind_type' => isset($grind_type) ? $grind_type : null
             ];
             

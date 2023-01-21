@@ -40,6 +40,9 @@ class OrderItem extends Model
         'status',
         'note',
         'served_by',
+        'kitchen_cleared',
+        'dispatcher_cleared',
+        'production_cleared',
     ];
 
     protected $casts = [

@@ -133,12 +133,10 @@ class CartController extends Controller
                 // Order type of item
                 $data = [
                     'is_dinein' => isset($request->isdinein) && $request->isdinein == 1 ? true : false,
-                    'is_beans' => isset($item->is_beans) ? true : false,
+                    'is_beans' => isset($item->is_beans)  && $item->is_beans == 1 ? true : false,
                     'grind_type' => isset($request->grind_type) ? $request->grind_type : null
                 ];
                 
-                // Check if have grind type
-
 
                 //Save the item to the cart
                 Cart::create([
@@ -271,7 +269,7 @@ class CartController extends Controller
                 // Order type of item
                 $data = [
                     'is_dinein' => isset($request->isdinein) && $request->isdinein == 1 ? true : false,
-                    'is_beans' => isset($product_item->is_beans) ? true : false,
+                    'is_beans' => isset($product_item->is_beans) && $product_item->is_beans == 1 ? true : false,
                     'grind_type' => isset($request->grind_type) ? $request->grind_type : null
                 ];
 

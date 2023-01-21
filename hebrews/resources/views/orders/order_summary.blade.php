@@ -31,11 +31,23 @@
             <div class="flex w-full" style="justify-content:end;">
                 <div class="flex mb-2 space-x-2 jusify-center">
                     <a
+                        href="{{ route('order.kitchen.summary.print',['order_id'=>$order->order_id]) }}"
+                        class="flex items-center inline-block px-6 py-2.5 bg-green-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-green-700 hover:shadow-lg focus:bg-green-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-green-800 active:shadow-lg transition duration-150 ease-in-out"
+                        >
+                        <span><i class="fa-solid fa-print"></i> Kitchen</span>
+                    </a>
+                    <a
+                        href="{{ route('order.production.summary.print',['order_id'=>$order->order_id]) }}"
+                        class="flex items-center inline-block px-6 py-2.5 bg-green-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-green-700 hover:shadow-lg focus:bg-green-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-green-800 active:shadow-lg transition duration-150 ease-in-out"
+                        >
+                        <span><i class="fa-solid fa-print"></i> Production</span>
+                    </a>
+                    <!-- <a
                         href="{{ route('order.summary.print',['order_id'=>$order->order_id]) }}"
                         class="flex items-center inline-block px-6 py-2.5 bg-green-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-green-700 hover:shadow-lg focus:bg-green-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-green-800 active:shadow-lg transition duration-150 ease-in-out"
                         >
                         <span><i class="fa-solid fa-print"></i> PRINT</span>
-                    </a>
+                    </a> -->
                     @if (!$order->paid && !$order->cancelled)
                         @if(auth()->user()->can('access', 'add-order-item-action'))
                             <a
@@ -76,7 +88,7 @@
                             <th class="px-3 py-3 text-center">Order Type</th>
                             <th class="px-4 py-4 text-center">Status</th>
                             <th class="px-4 py-4 text-center">Units/Qty</th>
-                            <th class="px-4 py-4 text-center">Qty</th>
+                            <th class="px-4 py-4 text-center">Tot.Stock</th>
                             <th class="px-4 py-4 text-center">Add-ons</th>
                             <th class="px-4 py-3 text-center">Total Amount</th>
                         </tr>
@@ -131,7 +143,7 @@
                                             <span>{{ $item->units }} ({{ $item->unit_label }})</span>
                                         </td>
                                         <td class="px-4 py-4 text-sm text-center">
-                                            <span>{{ $item->qty }}</span>
+                                            <span>{{ $item->qty*$item->units }}</span>
                                         </td>
                                         <td class="px-4 py-4 text-sm text-center">
                                             <!-- todo -->

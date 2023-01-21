@@ -1,6 +1,10 @@
 <div>
     <form id="add-order-item-form" action="{{ route('order.add_item', $order->order_id) }}" method="post" autocomplete="off">
         @csrf
+        <!-- <label class="block mb-4 text-sm" wire:ignore>
+            <span class="text-gray-700 dark:text-gray-400">Menu Item</span>
+            <select id="select-menu" class="menu-items" placeholder="Select menu..."></select>
+        </label> -->
         <label class="block mb-4 text-sm" wire:ignore>
             <span class="text-gray-700 dark:text-gray-400">Menu Item</span>
             <select wire:model="menuid" id="item-select" class="styled-input" name="menuitem" required>
@@ -43,7 +47,7 @@
             </select>
         </label>
 
-        @if (isset($menuitem->is_beans))
+        @if (isset($menuitem->is_beans) && $menuitem->is_beans == 1)
             <label class="block mb-4 text-sm">
                 <span class="text-gray-700 dark:text-gray-400">Grind Type</span>
                 <select

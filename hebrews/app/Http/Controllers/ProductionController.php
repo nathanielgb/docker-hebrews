@@ -14,12 +14,12 @@ class ProductionController extends Controller
     {
         $orders = Order::with(['items' => function ($query) {
             $query->where('status', '!=', 'served');
-            $query->where('cleared', false);
+            $query->where('production_cleared', false);
             $query->where('from', '=', 'storage');
 
         }])->whereHas('items', function ($query) {
             $query->where('status', '!=', 'served');
-            $query->where('cleared', false);
+            $query->where('production_cleared', false);
             $query->where('from', '=', 'storage');
         })
         ->where('cancelled', false)
@@ -65,6 +65,7 @@ class ProductionController extends Controller
             $order->save();
 
             $item->status = 'done';
+            $item->served_by = auth()->user()->name;
             $item->save();
             return back()->with('success', 'order item ' . $item->name . ' is completed.');
         }
@@ -77,11 +78,16 @@ class ProductionController extends Controller
 
         if ($order) {
             OrderItem::where('order_id', $order->order_id)
-                ->update(['cleared' => true]);
+                ->where('from', 'storage')
+                ->update(['production_cleared' => true]);
 
             OrderItem::where('order_id', $order->order_id)
                 ->where('status', '!=', 'void')
-                ->update(['status' => 'done']);
+                ->where('from', 'storage')
+                ->update(
+                    ['status' => 'done'],
+                    ['served_by' => auth()->user()->name]
+                );
 
             $order->updated_at = Carbon::now();
             $order->save();

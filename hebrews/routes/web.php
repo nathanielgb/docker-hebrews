@@ -187,6 +187,8 @@ Route::middleware('auth')->group(function () {
         Route::get('order-list', [\App\Http\Controllers\OrderController::class, 'showOrders'])->name('order.list');
 
         Route::get('order/summary/print', [\App\Http\Controllers\OrderController::class, 'printSummary'])->name('order.summary.print');
+        Route::get('order/kitchen-summary/print', [\App\Http\Controllers\OrderController::class, 'printKitchenSummary'])->name('order.kitchen.summary.print');
+        Route::get('order/production-summary/print', [\App\Http\Controllers\OrderController::class, 'printProductionSummary'])->name('order.production.summary.print');
         Route::get('show-order-items/{order_id}', [\App\Http\Controllers\OrderController::class, 'showOrderItems'])->name('order.show_items');
 
         Route::group(['middleware' => 'CheckAccessActions:manage-orders-action'], function () {
@@ -211,10 +213,11 @@ Route::middleware('auth')->group(function () {
     });
 
     Route::group(['middleware' => 'CheckAccessActions:manage-cook-actions'], function () {
-        Route::get('prepare-order/{item_id}', [\App\Http\Controllers\KitchenController::class, 'prepare'])->name('kitchen.order.prepare');
-        Route::post('cancel-order', [\App\Http\Controllers\KitchenController::class, 'cancel'])->name('kitchen.order.cancel');
-        Route::post('done-order', [\App\Http\Controllers\KitchenController::class, 'done'])->name('kitchen.order.done');
-        Route::post('complete-order', [\App\Http\Controllers\KitchenController::class, 'complete'])->name('kitchen.order.complete');
+        Route::get('kitchen/prepare-order/{item_id}', [\App\Http\Controllers\KitchenController::class, 'prepare'])->name('kitchen.order.prepare');
+        Route::post('kitchen/cancel-order', [\App\Http\Controllers\KitchenController::class, 'cancel'])->name('kitchen.order.cancel');
+        Route::post('kitchen/done-order', [\App\Http\Controllers\KitchenController::class, 'done'])->name('kitchen.order.done');
+        Route::post('kitchen/complete-order', [\App\Http\Controllers\KitchenController::class, 'complete'])->name('kitchen.order.complete');
+        Route::post('kitchen/clear-order', [\App\Http\Controllers\KitchenController::class, 'clear'])->name('kitchen.order.clear');
     });
 
     // Dispatch section
@@ -223,7 +226,8 @@ Route::middleware('auth')->group(function () {
     });
 
     Route::group(['middleware' => 'CheckAccessActions:manage-dispatch-actions'], function () {
-        Route::post('serve-orders', [\App\Http\Controllers\DispatcherController::class, 'serve'])->name('dispatch.order.serve');
+        Route::post('dispatch/serve-orders', [\App\Http\Controllers\DispatcherController::class, 'serve'])->name('dispatch.order.serve');
+        Route::post('dispatch/clear-orders', [\App\Http\Controllers\DispatcherController::class, 'clear'])->name('dispatch.order.clear');
     });
 
     // Bar section

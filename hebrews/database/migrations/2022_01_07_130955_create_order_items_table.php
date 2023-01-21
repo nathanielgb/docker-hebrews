@@ -31,7 +31,9 @@ class CreateOrderItemsTable extends Migration
             $table->json('data');
             $table->decimal('total_amount', 8, 2);
             $table->string('status')->default('preparing');
-            $table->boolean('cleared')->default(false);
+            $table->boolean('kitchen_cleared')->default(false);
+            $table->boolean('dispatcher_cleared')->default(false);
+            $table->boolean('production_cleared')->default(false);
             $table->string('served_by')->nullable();
             $table->text('note')->nullable();
             $table->timestamps();

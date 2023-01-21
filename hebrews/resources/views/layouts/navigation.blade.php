@@ -9,7 +9,7 @@
     class="z-20 flex-shrink-0 w-64 overflow-y-auto bg-white">
     <div class="py-4 text-gray-500">
         <a class="ml-6 text-lg font-bold text-gray-800" href="{{ route('dashboard') }}">
-            Hebrews
+            Hebrews Kape
         </a>
 
         {{-- <div class="container-fluid">
