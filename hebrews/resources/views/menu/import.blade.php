@@ -289,7 +289,7 @@
                             <span class="font-bold text-blue-800">Branch ID</span> - this field is <b><em>required</em></b>, and should be <b><em>numeric</em></b>. Specify the branch ID in which the inventory item belongs to.
                         </div>
                         <div class="py-2 px-6 mb-4 text-base text-blue-700 mb-3" role="alert">
-                            <span class="font-bold text-blue-800">Inventory Code</span> - this field is <b><em>required</em></b> and may have lowercase alpha-numeric characters, as well as dashes and underscores. Specify the inventory code that is linked to the menu item <b><em>(inventory should exist in branch)</em></b>.
+                            <span class="font-bold text-blue-800">Inventory Code</span> - this field <b><em>can be empty</em></b> and may have lowercase alpha-numeric characters, as well as dashes and underscores. Specify the inventory code that is linked to the menu item <b><em>(inventory should exist in branch)</em></b>.
                         </div>
                         <div class="py-2 px-6 mb-4 text-base text-blue-700 mb-3" role="alert">
                             <span class="font-bold text-blue-800">Units</span> - this field is <b><em>required</em></b> and should be <b><em>numeric</em></b>. Specify number of units of menu item per inventory item.

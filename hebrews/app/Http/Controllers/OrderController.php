@@ -179,13 +179,20 @@ class OrderController extends Controller
             $order = Order::where('order_id', $request->order_id)->first();
         }
 
-        $menus = Menu::whereHas('inventory', function ($q) use ($order) {
-            $q->where('stock' > 0);
+        $menus = Menu::where(function ($q1) use ($order) {
+            $q1->doesntHave('inventory');
+
             // Check branch of current user
             if (auth()->user()->branch_id) {
-                $q->where('branch_id', $order->branch_id);
+                $q1->where('branch_id', $order->branch_id);
             }
+        })->orWhereHas('inventory', function ($q2) use ($order) {
+            $q2->where('stock', '>', 0);
 
+            // Check branch of current user
+            if (auth()->user()->branch_id) {
+                $q2->where('branch_id', $order->branch_id);
+            }
         });
 
         if ($order) {
@@ -266,7 +273,7 @@ class OrderController extends Controller
 
         if ($item) {
             if (auth()->user()->branch_id) {
-                $order = Order::where('branch_id', auth()->user()->branch_id)->where('order_id', $request->order_id)->first();
+                $order = Order::where('branch_id', auth()->user()->branch_id)->where('order_id', $item->order_id)->first();
             } else {
                 $order = Order::where('order_id', $item->order_id)->first();
             }
@@ -503,11 +510,31 @@ class OrderController extends Controller
                 foreach ($ord_items as $ord_item) {
                     $menu = $ord_item->menu;
 
-                    // Deduct to inventory for order items
-                    $deduct_inventory = $orderService->deductQtyToInventory($menu->inventory, $ord_item->units, $ord_item->qty);
+                    if ($menu->inventory) {
+                        // Deduct to inventory for order items
+                        $deduct_inventory = $orderService->deductQtyToInventory($menu->inventory, $ord_item->units, $ord_item->qty);
 
-                    if ($deduct_inventory['status'] == 'fail') {
-                        return redirect()->back()->with('error', "Order Item $ord_item->name does not have enough stock.");
+                        if ($deduct_inventory['status'] == 'fail') {
+                            return redirect()->back()->with('error', "Order Item $ord_item->name does not have enough stock.");
+                        }
+
+                        InventoryLog::create([
+                            'title' => 'Order Confirmation',
+                            'data' => [
+                                'section' => "order-item",
+                                'type' => "deduct",
+                                'order_id' => $ord_item->order_id,
+                                'order_item_id' =>$ord_item->id,
+                                'order_item_name' => $ord_item->name,
+                                'inventory_id' => $ord_item->inventory_id,
+                                'inventory_code' => $ord_item->inventory_code,
+                                'units' => $ord_item->units,
+                                'order_qty' => $ord_item->qty,
+                                'stock_deducted' => $deduct_inventory['deducted_stock'],
+                                'stock_before_deduction' => $deduct_inventory['previous_stock'],
+                                'stock_after_deduction' => $deduct_inventory['stock']
+                            ]
+                        ]);
                     }
 
                     // if (isset($ord_item->data)) {
@@ -548,31 +575,11 @@ class OrderController extends Controller
                     // }
 
                     $ord_item->status = 'ordered';
-
-                    InventoryLog::create([
-                        'title' => 'Order Confirmation',
-                        'data' => [
-                            'section' => "order-item",
-                            'type' => "deduct",
-                            'order_id' => $ord_item->order_id,
-                            'order_item_id' =>$ord_item->id,
-                            'order_item_name' => $ord_item->name,
-                            'inventory_id' => $ord_item->inventory_id,
-                            'inventory_code' => $ord_item->inventory_code,
-                            'units' => $ord_item->units,
-                            'order_qty' => $ord_item->qty,
-                            'stock_deducted' => $deduct_inventory['deducted_stock'],
-                            'stock_before_deduction' => $deduct_inventory['previous_stock'],
-                            'stock_after_deduction' => $deduct_inventory['stock']
-                        ]
-                    ]);
-
                     $ord_item->save();
                 }
 
                 // Tag order as confirmed
                 $order->confirmed = true;
-                // $order->bank_id = $account->id;
                 $order->confirmed_by = auth()->user()->name;
                 $order->save();
 

@@ -18,14 +18,14 @@ class CreateOrderItemsTable extends Migration
             $table->string('order_item_id')->unique();
             $table->string('order_id');
             $table->string('menu_id');
-            $table->string('inventory_id');
+            $table->string('inventory_id')->nullable();
             $table->string('inventory_code')->nullable();
-            $table->string('inventory_name');
+            $table->string('inventory_name')->nullable();
             $table->string('name');
             $table->string('from');
             $table->string('type');
             $table->decimal('price', 8, 2);
-            $table->string('unit_label');
+            $table->string('unit_label')->nullable();
             $table->decimal('units', 8, 3);
             $table->integer('qty');
             $table->json('data');

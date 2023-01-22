@@ -44,7 +44,7 @@
                     <tr class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase">
                         <th class="px-6 py-3">Name</th>
                         <th class="px-2 py-3 text-center">Order Type</th>
-                        <th class="px-2 py-3 text-center">Qty</th>
+                        <th class="px-2 py-3 text-center">Tot.Qty</th>
                         <th class="px-2 py-3 text-center">Status</th>
                         <th class="px-2 py-3">Note</th>
                         <th class="px-2 py-3 text-center">Action</th>
@@ -64,7 +64,10 @@
                                     @endif
                                 </td>
                                 <td class="px-2 py-3 text-sm text-center">
-                                    {{ $item->qty }}
+                                    {{ $item->qty*$item->units }}
+                                    @if ($item->unit_label)
+                                        ({{ $item->unit_label }})
+                                    @endif
                                 </td>
                                 <td class="px-2 py-3 text-sm text-center">
                                     @if ($item->status == 'ordered')

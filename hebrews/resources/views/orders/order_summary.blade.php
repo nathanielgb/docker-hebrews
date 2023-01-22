@@ -88,6 +88,7 @@
                             <th class="px-3 py-3 text-center">Order Type</th>
                             <th class="px-4 py-4 text-center">Status</th>
                             <th class="px-4 py-4 text-center">Units/Qty</th>
+                            <th class="px-4 py-4 text-center">Qty</th>
                             <th class="px-4 py-4 text-center">Tot.Stock</th>
                             <th class="px-4 py-4 text-center">Add-ons</th>
                             <th class="px-4 py-3 text-center">Total Amount</th>
@@ -140,10 +141,22 @@
                                             @endif
                                         </td>
                                         <td class="px-4 py-4 text-sm text-center">
-                                            <span>{{ $item->units }} ({{ $item->unit_label }})</span>
+                                            <span>
+                                                {{ $item->units }} 
+                                                @if ($item->unit_label)
+                                                    ({{ $item->unit_label }})
+                                                @endif
+                                            </span>
                                         </td>
-                                        <td class="px-4 py-4 text-sm text-center">
-                                            <span>{{ $item->qty*$item->units }}</span>
+                                        <td class="px-4 py-3 text-sm text-center">
+                                            {{ $item->qty }}
+                                        </td>
+                                        <td class="px-4 py-3 text-sm text-center">
+                                            @if ($item->inventory_id)
+                                                {{ $item->qty*$item->units }}
+                                            @else
+                                                -
+                                            @endif
                                         </td>
                                         <td class="px-4 py-4 text-sm text-center">
                                             <!-- todo -->
@@ -155,7 +168,7 @@
                                     </tr>
                                 @empty
                                     <tr class="text-gray-700">
-                                        <td colspan="7" class="px-4 py-3 text-sm text-center">
+                                        <td colspan="8" class="px-4 py-3 text-sm text-center">
                                             No items found.
                                         </td>
                                     </tr>
@@ -163,7 +176,7 @@
                         </tbody>
                         @if (!empty($order->items))
                             <tr class="border-t border-gray-300">
-                                <td class="px-4 py-2 text-sm font-semibold text-right" colspan="6">
+                                <td class="px-4 py-2 text-sm font-semibold text-right" colspan="7">
                                     Subtotal
                                 </td>
                                 <td class="px-4 py-2 text-sm font-semibold text-center" colspan="1">
@@ -171,7 +184,7 @@
                                 </td>
                             </tr>
                             <tr>
-                                <td class="px-4 py-2 text-sm font-semibold text-right" colspan="6">
+                                <td class="px-4 py-2 text-sm font-semibold text-right" colspan="7">
                                     Other Fees
                                 </td>
                                 <td class="px-4 py-2 text-sm font-semibold text-center" colspan="1">
@@ -179,7 +192,7 @@
                                 </td>
                             </tr>
                             <tr>
-                                <td class="px-4 py-2 text-sm font-semibold text-right" colspan="6">
+                                <td class="px-4 py-2 text-sm font-semibold text-right" colspan="7">
                                     Discount Amount
                                 </td>
                                 <td class="px-4 py-2 text-sm font-semibold text-center" colspan="1">
@@ -191,7 +204,7 @@
                                 </td>
                             </tr>
                             <tr>
-                                <td class="px-4 py-2 text-sm font-semibold text-right" colspan="6">
+                                <td class="px-4 py-2 text-sm font-semibold text-right" colspan="7">
                                     Total Amount
                                 </td>
                                 <td class="px-4 py-2 text-sm font-semibold text-center" colspan="1">

@@ -107,6 +107,7 @@
                     <tr class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase border-b bg-gray-50">
                         <th class="px-4 py-3">Menu ID</th>
                         <th class="px-4 py-3">Code</th>
+                        <th class="px-4 py-3">Branch</th>
                         <th class="px-4 py-3">Name</th>
                         <th class="px-4 py-3 text-center">No. of Unit</th>
                         <th class="px-4 py-3">Inventory</th>
@@ -124,6 +125,9 @@
                                 </td>
                                 <td class="px-4 py-3 text-sm">
                                     {{ $item->code }}
+                                </td>
+                                <td class="px-4 py-3 text-sm">
+                                    {{ $item->branch->name ?? '' }}
                                 </td>
                                 <td class="px-4 py-3 text-sm">
                                     {{ $item->name }}
@@ -209,7 +213,7 @@
                                                 type="button"
                                                 data-bs-toggle="modal"
                                                 data-bs-target="#updateMenuModal"
-                                                data-branch_id="{{ $item->inventory->branch_id ?? '' }}"
+                                                data-branch_id="{{ $item->branch_id ?? '' }}"
                                                 @click="$store.menu.updateMenuData={{ json_encode($item) }}, $store.menu.setCategories({{ $categories }}) ,$store.menu.setSubCategories({{ json_encode( $item->category->sub) }})"
                                                 >
                                                 <span><i class="fa-solid fa-pen"></i> Update</span>
@@ -235,7 +239,7 @@
                             </tr>
                         @empty
                             <tr class="text-gray-700">
-                                <td colspan="7" class="px-4 py-3 text-sm text-center">
+                                <td colspan="8" class="px-4 py-3 text-sm text-center">
                                     No records found.
                                 </td>
                             </tr>

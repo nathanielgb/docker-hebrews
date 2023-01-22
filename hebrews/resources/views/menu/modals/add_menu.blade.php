@@ -86,7 +86,7 @@
 
                     <label class="block mb-4 text-sm">
                         <span class="text-gray-700">No. of Unit</span>
-                        <input class="styled-input" name="unit" type="number" step=".01" min="0"  placeholder="1">
+                        <input class="styled-input" name="unit" type="number" step=".001" min="0"  placeholder="1">
                         <p class="text-xs text-yellow-500">note: number of units to be deducted to the current stock of inventory for every quantity ordered</p>
                     </label>
                     <label class="block mb-4 text-sm">

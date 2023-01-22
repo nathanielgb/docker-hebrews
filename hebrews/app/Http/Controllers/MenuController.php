@@ -21,7 +21,7 @@ class MenuController extends Controller
     public function index(Request $request)
     {
         if (auth()->user()->branch_id) {
-            $menu = Menu::whereHas('inventory', function ($q) {
+            $menu = Menu::where(function ($q) {
                 // Check branch of current user
                 if (auth()->user()->branch_id) {
                     $q->where('branch_id', auth()->user()->branch_id);
@@ -38,6 +38,9 @@ class MenuController extends Controller
 
         if ($request->except(['page'])) {
             $menu=$menu->where(function ($query) use ($request) {
+                if ($request->menu_id !== null) {
+                    $query->where('id',  $request->menu_id);
+                }
                 if ($request->code !== null) {
                     $query->where('code', 'LIKE', '%' . $request->code . '%');
                 }
@@ -61,9 +64,13 @@ class MenuController extends Controller
     }
     public function store(StoreMenuRequest $request)
     {
-        $inventory = BranchMenuInventory::where('id', $request->inventory)->first();
+        if (isset($request->inventory)) {
+            $inventory = BranchMenuInventory::where('id', $request->inventory)->first();
 
-        if ($inventory) {
+            if (!$inventory) {
+                return back()->with('error', 'Item Inventory does not exist.');
+            }
+            
             // Check the minimum unit required
             if($inventory->unit == 'boxes' && $request->unit < 1) {
                 return back()->with('error', "The box must be at least 1.");
@@ -73,28 +80,28 @@ class MenuController extends Controller
                 return back()->with('error', "The unit must be at least 1.");
             }
 
-            if ($inventory->unit != 'pcs' && $request->unit < 0.01) {
-                return back()->with('error', "The unit must be at least 0.01.");
+            if ($inventory->unit != 'pcs' && $request->unit < 0.001) {
+                return back()->with('error', "The unit must be at least 0.001.");
             }
-
-            $menu = Menu::create([
-                'code' => $request->code,
-                'name' => $request->menu,
-                'units' => $request->unit,
-                'reg_price' => $request->reg_price,
-                'retail_price' => $request->retail_price,
-                'wholesale_price' => $request->wholesale_price,
-                'rebranding_price' => $request->rebranding_price,
-                'distributor_price' => $request->distributor_price,
-                'category_id' => $request->category,
-                'inventory_id' => $request->inventory,
-                'sub_category' => $request->sub_category,
-                'is_beans' => isset($request->is_beans) ? true : false
-            ]);
-
-            return back()->with('success', 'Successfully added ' . $request->menu . ' to the menu.');
         }
-        return back()->with('error', 'Item Inventory does not exist.');
+
+        $menu = Menu::create([
+            'code' => $request->code,
+            'name' => $request->menu,
+            'units' => $request->unit,
+            'reg_price' => $request->reg_price,
+            'retail_price' => $request->retail_price,
+            'wholesale_price' => $request->wholesale_price,
+            'rebranding_price' => $request->rebranding_price,
+            'distributor_price' => $request->distributor_price,
+            'category_id' => $request->category,
+            'inventory_id' => $request->inventory ?? null,
+            'branch_id' => $request->branch ?? null,
+            'sub_category' => $request->sub_category,
+            'is_beans' => isset($request->is_beans) ? true : false
+        ]);
+
+        return back()->with('success', 'Successfully added ' . $request->menu . ' to the menu.');
     }
 
     public function viewImport ()
@@ -136,48 +143,38 @@ class MenuController extends Controller
             ->with('records', $records);
     }
 
-    // public function viewUpdate(Request $request)
-    // {
-    //     $item = Menu::where('id', $request->menu_id)->first();
-
-    //     if ($item) {
-    //         $categories = MenuCategory::orderBy('name')->get();
-    //         $inventory_items = MenuInventory::all();
-
-
-    //         return view('menu.sections.update', compact(
-    //             'item',
-    //             'categories',
-    //             'inventory_items'
-    //         ));
-    //     }
-    // }
-
     public function update(UpdateMenuRequest $request)
     {
         $menu = Menu::where('id', $request->menu_id)->first();
 
         if ($menu) {
-            if (!$menu->inventory) {
-                return back()->with('error', "Failed to update Item $request->menu. Inventory does not exist.");
+
+            if (isset($request->inventory)) {
+                $inventory = BranchMenuInventory::where('id', $request->inventory)->first();
+    
+                if (!$inventory) {
+                    return back()->with('error', "Failed to update Item $request->menu. Inventory does not exist.");
+                }
+
+                if (fmod($request->unit, 1) != 0.0 && $inventory->unit == 'pcs') {
+                    return back()->with('error', "Item $request->menu cannot have a decimal stock.");
+                }
+    
+                // Check the minimum unit required
+                if($inventory->unit == 'boxes' && $request->unit < 1) {
+                    return back()->with('error', "The box must be at least 1.");
+                }
+    
+                if($inventory->unit == 'pcs' && $request->unit < 1) {
+                    return back()->with('error', "The unit must be at least 1.");
+                }
+    
+                if ($inventory->unit != 'pcs' && $request->unit < 0.001) {
+                    return back()->with('error', "The unit must be at least 0.001.");
+                }
             }
 
-            if (fmod($request->unit, 1) != 0.0 && $menu->inventory->unit == 'pcs') {
-                return back()->with('error', "Item $request->menu cannot have a decimal stock.");
-            }
 
-            // Check the minimum unit required
-            if($menu->inventory->unit == 'boxes' && $request->unit < 1) {
-                return back()->with('error', "The box must be at least 1.");
-            }
-
-            if($menu->inventory->unit == 'pcs' && $request->unit < 1) {
-                return back()->with('error', "The unit must be at least 1.");
-            }
-
-            if ($menu->inventory->unit != 'pcs' && $request->unit < 0.01) {
-                return back()->with('error', "The unit must be at least 0.01.");
-            }
             $menu->update([
                 'name' => $request->menu,
                 'units' => $request->unit,

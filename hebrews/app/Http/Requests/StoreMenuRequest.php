@@ -33,8 +33,9 @@ class StoreMenuRequest extends FormRequest
         'wholesale_price' => 'nullable|numeric|between:0,999999.99',
         'distributor_price' => 'nullable|numeric|between:0,999999.99',
         'rebranding_price' => 'nullable|numeric|between:0,999999.99',
-        'category' => 'required',
-        'sub_category' => 'nullable',
+        'category' => ['required', Rule::exists('menu_categories', 'id')],
+        'sub_category' => ['nullable'],
+        'branch' => ['required', Rule::exists('branches', 'id')],
         ];
     }
 

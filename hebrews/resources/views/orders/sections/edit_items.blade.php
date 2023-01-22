@@ -40,6 +40,7 @@
                     <th class="px-4 py-3 text-center">Order Type</th>
                     <th class="px-4 py-3 text-center">Status</th>
                     <th class="px-4 py-3 text-center">Price</th>
+                    <th class="px-4 py-3 text-center">Unit/Qty</th>
                     <th class="px-4 py-3 text-center">Qty</th>
                     <th class="px-4 py-3 text-center">Tot. Stock</th>
                     <th class="px-4 py-3 text-center">Total Amount</th>
@@ -95,10 +96,20 @@
                                 {{ $item->price }} ({{ $item->type }})
                             </td>
                             <td class="px-4 py-3 text-sm text-center">
+                                {{ $item->units }} 
+                                @if ($item->unit_label)
+                                    ({{ $item->unit_label }})
+                                @endif
+                            </td>
+                            <td class="px-4 py-3 text-sm text-center">
                                 {{ $item->qty }}
                             </td>
                             <td class="px-4 py-3 text-sm text-center">
-                                {{ $item->qty*$item->units }}
+                                @if ($item->inventory_id)
+                                    {{ $item->qty*$item->units }}
+                                @else
+                                    -
+                                @endif
                             </td>
                             <td class="px-4 py-3 text-sm text-center">
                                 {{ $item->total_amount }}
@@ -162,7 +173,7 @@
                         </tr>
                     @empty
                         <tr class="text-gray-700">
-                            <td colspan="7" class="px-4 py-3 text-sm text-center">
+                            <td colspan="11" class="px-4 py-3 text-sm text-center">
                                 No records found.
                             </td>
                         </tr>

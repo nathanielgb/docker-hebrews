@@ -43,7 +43,7 @@ class OrderService
         }
 
         // Check if proper branch
-        if($item->inventory->branch_id != $order->branch_id) {
+        if($item->branch_id != $order->branch_id) {
             throw new \Exception('Item is not available for the branch of order.');
         }
 
@@ -60,11 +60,13 @@ class OrderService
         //     ];
         // }
 
-        // Check item for stocks in inventory
-        $checkStock = $this->checkItemStock($item, $item->units, $qty);
+        if ($item->inventory) {
+            // Check item for stocks in inventory
+            $checkStock = $this->checkItemStock($item, $item->units, $qty);
 
-        if ($checkStock['status'] == 'fail') {
-            throw new \Exception("Item (name: $item->name) does not have enough stock.");
+            if ($checkStock['status'] == 'fail') {
+                throw new \Exception("Item (name: $item->name) does not have enough stock.");
+            }
         }
 
         // Retrieve product price
@@ -111,14 +113,14 @@ class OrderService
             $ord_item->order_id = $order->order_id;
             $ord_item->order_item_id = $orderItemId;
             $ord_item->menu_id = $item->id;
-            $ord_item->inventory_id = $item->inventory_id;
-            $ord_item->inventory_name = $item->inventory->name;
-            $ord_item->inventory_code = $item->inventory->inventory_code;
+            $ord_item->inventory_id = isset($item->inventory) ? $item->inventory->id : null;
+            $ord_item->inventory_name = isset($item->inventory) ? $item->inventory->name : null;
+            $ord_item->inventory_code = isset($item->inventory) ? $item->inventory->inventory_code : null;
             $ord_item->name = $item->name;
             $ord_item->from = $item->category->from;
             $ord_item->price = $product_price;
             $ord_item->type = $type;
-            $ord_item->unit_label = $item->inventory->unit;
+            $ord_item->unit_label =isset($item->inventory) ? $item->inventory->unit : null;
             $ord_item->units = $item->units;
             $ord_item->qty = $qty;
             $ord_item->data = $data;
@@ -127,31 +129,32 @@ class OrderService
             $ord_item->save();
 
             if ($order->confirmed) {
-                // // Deduct to inventory for cart items
-                $deduct_inventory = $this->deductQtyToInventory($item->inventory, $item->units, $qty);
+                if ($item->inventory) {
+                    // // Deduct to inventory for cart items
+                    $deduct_inventory = $this->deductQtyToInventory($item->inventory, $item->units, $qty);
 
-                if ($deduct_inventory['status'] == 'fail') {
-                    return redirect()->back()->with('error', "Failed to add order. Item $item->name does not have enough stock.");
-                    throw new \Exception("Failed to add order. Item (name: $item->name) does not have enough stock.");
+                    if ($deduct_inventory['status'] == 'fail') {
+                        throw new \Exception("Failed to add order. Item (name: $item->name) does not have enough stock.");
+                    }
+
+                    InventoryLog::create([
+                        'title' => 'Add Order Item',
+                        'data' => [
+                            'section' => "order-item",
+                            'type' => "deduct",
+                            'order_id' => $ord_item->order_id,
+                            'order_item_id' =>$ord_item->id,
+                            'order_item_name' => $ord_item->name,
+                            'inventory_id' => $ord_item->inventory_id,
+                            'inventory_code' => $ord_item->inventory_code,
+                            'units' => $ord_item->units,
+                            'order_qty' => $ord_item->qty,
+                            'stock_deducted' => $deduct_inventory['deducted_stock'],
+                            'stock_before_deduction' => $deduct_inventory['previous_stock'],
+                            'stock_after_deduction' => $deduct_inventory['stock']
+                        ]
+                    ]);
                 }
-
-                InventoryLog::create([
-                    'title' => 'Add Order Item',
-                    'data' => [
-                        'section' => "order-item",
-                        'type' => "deduct",
-                        'order_id' => $ord_item->order_id,
-                        'order_item_id' =>$ord_item->id,
-                        'order_item_name' => $ord_item->name,
-                        'inventory_id' => $ord_item->inventory_id,
-                        'inventory_code' => $ord_item->inventory_code,
-                        'units' => $ord_item->units,
-                        'order_qty' => $ord_item->qty,
-                        'stock_deducted' => $deduct_inventory['deducted_stock'],
-                        'stock_before_deduction' => $deduct_inventory['previous_stock'],
-                        'stock_after_deduction' => $deduct_inventory['stock']
-                    ]
-                ]);
             }
 
             // if (isset($response['data'])) {
@@ -232,15 +235,13 @@ class OrderService
 
         $inventory = BranchMenuInventory::where('id', $item->inventory_id)->first();
 
-        if (!$inventory) {
-            throw new \Exception('Error updating quantity. Inventory item does not exist.');
-        }
+        if ($inventory) {
+            // Check item for stocks in inventory
+            $checkStock = $this->checkItemStock($item->menu, $item->units, $new_qty);
 
-        // Check item for stocks in inventory
-        $checkStock = $this->checkItemStock($item->menu, $item->units, $new_qty);
-
-        if (isset($checkStock) &&  $checkStock['status'] == 'fail') {
-            throw new \Exception("Item (name: {$item->name}) does not have enough stock.");
+            if (isset($checkStock) &&  $checkStock['status'] == 'fail') {
+                throw new \Exception("Item (name: {$item->name}) does not have enough stock.");
+            }
         }
 
         // Validate Add-on
@@ -320,7 +321,6 @@ class OrderService
 
             throw new \Exception('Something went wrong. Please contact Administrator. (99)');
         }
-
     }
 
     /**

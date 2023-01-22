@@ -91,7 +91,7 @@
                         <input class="styled-input"
                             name="unit"
                             type="number"
-                            step=".01"
+                            step=".001"
                             min="0"
                             placeholder="1"
                             :value="$store.menu.updateMenuData?.units">

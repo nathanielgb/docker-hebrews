@@ -64,7 +64,10 @@
                                     @endif
                                 </td>
                                 <td class="px-2 py-3 text-sm text-center">
-                                    {{ $item->qty }}
+                                    {{ $item->qty*$item->units }}
+                                    @if ($item->unit_label)
+                                        ({{ $item->unit_label }})
+                                    @endif
                                 </td>
                                 <td class="px-2 py-3 text-sm text-center">
                                     @if ($item->status == 'ordered')

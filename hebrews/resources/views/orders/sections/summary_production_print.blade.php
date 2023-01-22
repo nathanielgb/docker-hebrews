@@ -87,7 +87,7 @@
                 <thead>
                     <th class="text-left" style="max-width: 120px;">Item</th>
                     <th class="text-center" style="max-width: 120px;">Type</th>
-                    <th class="text-center">Tot.Stock</th>
+                    <th class="text-center">Tot.Qty</th>
                 </thead>
                 <tbody>
                     @forelse ($order->items as $item)
@@ -105,7 +105,12 @@
                                     take-out
                                 @endif
                             </td>
-                            <td class="text-center">{{ $item->qty*$item->units }}({{ $item->unit_label }})</td>
+                            <td class="text-center">
+                                {{ $item->qty*$item->units }}
+                                @if ($item->unit_label)
+                                    ({{ $item->unit_label }})
+                                @endif
+                            </td>
                         </tr>
                     @empty
 

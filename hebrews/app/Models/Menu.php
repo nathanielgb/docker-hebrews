@@ -28,6 +28,7 @@ class Menu extends Model
         'sub_category',
         'is_beans',
         'data',
+        'branch_id',
     ];
 
     /**
@@ -81,5 +82,13 @@ class Menu extends Model
         }
 
         return null;
+    }
+    
+    /**
+     * Get the branch associated with the menu item.
+     */
+    public function branch()
+    {
+        return $this->belongsTo(Branch::class, 'branch_id', 'id');
     }
 }

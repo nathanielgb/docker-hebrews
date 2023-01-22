@@ -38,38 +38,34 @@ class MenuImport implements ToCollection, WithHeadingRow, SkipsEmptyRows
             $status = 'success';
 
             // make code lowercase
-            $row['inventory_code'] = strtolower(str_replace(' ', '',  $row['inventory_code']));
-
+            $row['inventory_code'] =  empty(!$row['inventory_code']) ? strtolower(str_replace(' ', '',  $row['inventory_code'])) : null;
             $action = strtoupper($row['action']);
 
             switch ($action) {
                 case 'A':
-
                     $exist = Menu::where('code', $row['code'])->exists();
 
                     // Add only if item does not exist
                     if (!$exist) {
                         $record = [
                             'row_number' => $rowNum,
-                            'code' => $row['code'],
-                            'name' => $row['name'],
-                            'category' => $row['category'],
-                            'sub_category' => $row['sub_category'],
-                            'branch_id' => $row['branch_id'],
+                            'name' => $row['name'] ?? null,
+                            'code' => $row['code'] ?? null,
+                            'category' => $row['category'] ?? null,
+                            'sub_category' => $row['sub_category'] ?? null,
+                            'branch_id' => $row['branch_id'] ?? null,
                             'inventory_code' => $row['inventory_code'],
-                            'units' => $row['units'],
-                            'regular_price' => $row['regular_price'],
-                            'retail_price' => $row['retail_price'],
-                            'wholesale_price' => $row['wholesale_price'],
-                            'distributor_price' => $row['distributor_price'],
-                            'rebranding_price' => $row['rebranding_price'],
-                            'is_beans' => $row['is_beans'],
+                            'units' => $row['units'] ?? null,
+                            'regular_price' => $row['regular_price'] ?? null,
+                            'retail_price' => $row['retail_price'] ?? null,
+                            'wholesale_price' => $row['wholesale_price'] ?? null,
+                            'distributor_price' => $row['distributor_price'] ?? null,
+                            'rebranding_price' => $row['rebranding_price'] ?? null,
+                            'is_beans' => $row['is_beans'] ?? false,
                             'action' => 'Add',
                             'error' => []
                         ];
-    
-                        $validate = $this->validateAddRow($row);
-
+                        $validate = $this->validateAddRow($record);
                         if (!empty($validate['errors'])) {
                             $record['status'] = 'failed';
                             foreach($validate['errors'] as $column => $error) {
@@ -78,10 +74,11 @@ class MenuImport implements ToCollection, WithHeadingRow, SkipsEmptyRows
                         } else {
                             $record['status'] = 'success';
                             
-                            $inventory = BranchMenuInventory::where('branch_id', '=', $row['branch_id'])->where('inventory_code', '=', $row['inventory_code'])->first();
+                            $inventory = BranchMenuInventory::where('branch_id', '=', $row['branch_id'])->where('inventory_code', '=', $row['inventory_code'] ?? null)->first();
                             $category = MenuCategory::where('name', $row['category'])->first();
     
                             $menu = Menu::create([
+                                'branch_id' => $row['branch_id'],
                                 'code' => $row['code'],
                                 'name' => $row['name'],
                                 'reg_price' => $row['regular_price'],
@@ -90,9 +87,9 @@ class MenuImport implements ToCollection, WithHeadingRow, SkipsEmptyRows
                                 'distributor_price' => $row['distributor_price'],
                                 'rebranding_price' => $row['rebranding_price'],
                                 'units' => $row['units'],
-                                'category_id' => $category->id,
+                                'category_id' => $category->id ?? null,
                                 'sub_category' => $row['sub_category'],
-                                'inventory_id' => $inventory->id,
+                                'inventory_id' => isset($inventory) ? (string) $inventory->id : null,
                                 'is_beans' => $row['is_beans'] ? true : false,
                             ]);
     
@@ -105,19 +102,19 @@ class MenuImport implements ToCollection, WithHeadingRow, SkipsEmptyRows
                 case 'U':
                     $record = [
                         'row_number' => $rowNum,
-                        'code' => $row['code'],
-                        'name' => $row['name'],
-                        'category' => $row['category'],
-                        'sub_category' => $row['sub_category'],
-                        'branch_id' => $row['branch_id'],
+                        'name' => $row['name'] ?? null,
+                        'code' => $row['code'] ?? null,
+                        'category' => $row['category'] ?? null,
+                        'sub_category' => $row['sub_category'] ?? null,
+                        'branch_id' => $row['branch_id'] ?? null,
                         'inventory_code' => $row['inventory_code'],
-                        'units' => $row['units'],
-                        'regular_price' => $row['regular_price'],
-                        'retail_price' => $row['retail_price'],
-                        'wholesale_price' => $row['wholesale_price'],
-                        'distributor_price' => $row['distributor_price'],
-                        'rebranding_price' => $row['rebranding_price'],
-                        'is_beans' => $row['is_beans'],
+                        'units' => $row['units'] ?? null,
+                        'regular_price' => $row['regular_price'] ?? null,
+                        'retail_price' => $row['retail_price'] ?? null,
+                        'wholesale_price' => $row['wholesale_price'] ?? null,
+                        'distributor_price' => $row['distributor_price'] ?? null,
+                        'rebranding_price' => $row['rebranding_price'] ?? null,
+                        'is_beans' => $row['is_beans'] ?? false,
                         'action' => 'Update',
                         'error' => []
                     ];
@@ -130,7 +127,7 @@ class MenuImport implements ToCollection, WithHeadingRow, SkipsEmptyRows
                         $records[] = $record;
                         break;
                     } else {
-                        $validate = $this->validateUpdateRow($row, $item->id);
+                        $validate = $this->validateUpdateRow($record, $item->id);
 
                         if (!empty($validate['errors'])) {
                             $record['status'] = 'failed';
@@ -145,12 +142,12 @@ class MenuImport implements ToCollection, WithHeadingRow, SkipsEmptyRows
 
                             // Get Category
                             $category = MenuCategory::where('name', $row['category'])->first();
-                            $inventory = BranchMenuInventory::where('branch_id', '=', $row['branch_id'])->where('inventory_code', '=', $row['inventory_code'])->first();
-
+                            $inventory = BranchMenuInventory::where('branch_id', '=', $row['branch_id'])->where('inventory_code', '=', $row['inventory_code'] ?? null)->first();
+                            $item->branch_id =  $row['branch_id'];
                             $item->name =  $row['name'];
                             $item->category_id = (string) $category->id;
-                            $item->sub_category =  $row['sub_category'];
-                            $item->inventory_id = (string) $inventory->id;
+                            $item->sub_category =  $row['sub_category'] ?? null;
+                            $item->inventory_id = isset($inventory) ? (string) $inventory->id : null;
                             $item->units =   number_format($row['units'], 3,  '.', '');
                             $item->reg_price =  number_format($row['regular_price'], 2,  '.', '');
                             $item->retail_price = number_format($row['retail_price'], 2,  '.', '');
@@ -186,17 +183,22 @@ class MenuImport implements ToCollection, WithHeadingRow, SkipsEmptyRows
     */
     private function validateAddRow($data)
     {
-        $data = $data->toArray();
-
+        $data = array_filter($data);
+        // dd($data);
         $validator = Validator::make($data, [
-            'inventory_code' =>  ['required',Rule::exists('branch_menu_inventories')->where(function ($query) use ($data) {
+            'branch_id' => ['required', Rule::exists('branches', 'id')],
+            'inventory_code' =>  ['sometimes', 'required',Rule::exists('branch_menu_inventories')->where(function ($query) use ($data) {
                 $query->where('branch_id', '=', $data['branch_id']);
                 $query->where('inventory_code', '=', $data['inventory_code']);
             })],
             'category' => ['required', Rule::exists('menu_categories', 'name')->where(function ($query) use ($data) {
                 $query->where('name', '=', $data['category']);
-                $query->whereJsonContains('sub', $data['sub_category']);
+                // $query->whereJsonContains('sub', $data['sub_category']);
             })],
+            // 'sub_category' => ['sometimes', 'required', Rule::exists('menu_categories', 'name')->where(function ($query) use ($data) {
+            //     $query->where('name', '=', $data['category']);
+            //     $query->whereJsonContains('sub', $data['sub_category']);
+            // })],
             'code' => ['required', 'max:255', 'alpha_dash', Rule::unique('menus')],
             'name' => ['required', 'max:255', Rule::unique('menus')],
             'units' => ['required', 'numeric', 'gt:0'],
@@ -225,16 +227,22 @@ class MenuImport implements ToCollection, WithHeadingRow, SkipsEmptyRows
     */
     private function validateUpdateRow($data, $menu_id)
     {
-        $data = $data->toArray();
+        $data = array_filter($data);
+
         $validator = Validator::make($data, [
-            'inventory_code' =>  ['required',Rule::exists('branch_menu_inventories')->where(function ($query) use ($data) {
+            'branch_id' => ['required', Rule::exists('branches', 'id')],
+            'inventory_code' =>  ['sometimes', 'required',Rule::exists('branch_menu_inventories')->where(function ($query) use ($data) {
                 $query->where('branch_id', '=', $data['branch_id']);
                 $query->where('inventory_code', '=', $data['inventory_code']);
             })],
             'category' => ['required', Rule::exists('menu_categories', 'name')->where(function ($query) use ($data) {
                 $query->where('name', '=', $data['category']);
-                $query->whereJsonContains('sub', $data['sub_category']);
+                // $query->whereJsonContains('sub', $data['sub_category']);
             })],
+            // 'sub_category' => ['sometimes', 'required', Rule::exists('menu_categories', 'name')->where(function ($query) use ($data) {
+            //     $query->where('name', '=', $data['category']);
+            //     $query->whereJsonContains('sub', $data['sub_category']);
+            // })],
             'name' => ['required', 'max:255', Rule::unique('menus', 'name')->ignore($menu_id)],
             'code' => ['required', 'max:255', 'alpha_dash', Rule::unique('menus', 'code')->ignore($menu_id)],
             'units' => ['required', 'numeric', 'gt:0'],
@@ -242,7 +250,7 @@ class MenuImport implements ToCollection, WithHeadingRow, SkipsEmptyRows
             'retail_price' => 'nullable|numeric|between:0,999999.99',
             'wholesale_price' => 'nullable|numeric|between:0,999999.99',
             'distributor_price' => 'nullable|numeric|between:0,999999.99',
-            'rebranding_price' => 'nullable|numeric|between:0,999999.99'
+            'rebranding_price' => 'nullable|numeric|between:0,999999.99',
         ]);
 
 

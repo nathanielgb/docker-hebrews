@@ -72,11 +72,11 @@ class OrderReportController extends Controller
         // Use this to be able to use group by, for some reason does not work without this line
         DB::statement("SET SQL_MODE=''");
 
-        $order_items = DB::table('order_items')->select(DB::raw('order_id, menu_id, inventory_id, name, inventory_name, inventory_code, SUM(qty) AS total_qty, SUM(qty*units) AS stock_used, SUM(total_amount) AS total_amount'))
+        $order_items = DB::table('order_items')->select(DB::raw('order_id, menu_id, inventory_id, name, inventory_name, inventory_code, unit_label, SUM(qty) AS total_qty, SUM(qty*units) AS stock_used, SUM(total_amount) AS total_amount'))
             ->whereIn('order_id', $order_numbers)
             ->groupBy('menu_id')->get();
 
-        $addon_order_items = DB::table('addon_order_items')->select(DB::raw('order_id, addon_id, name, inventory_name, inventory_code, SUM(qty) AS total_qty, SUM(qty*units) AS stock_used, SUM(total_amount) AS total_amount'))
+        $addon_order_items = DB::table('addon_order_items')->select(DB::raw('order_id, addon_id, name, inventory_name, inventory_code, unit_label, SUM(qty) AS total_qty, SUM(qty*units) AS stock_used, SUM(total_amount) AS total_amount'))
             ->whereIn('order_id', $order_numbers)
             ->groupBy('addon_id')->get();
 

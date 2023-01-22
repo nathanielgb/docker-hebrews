@@ -136,7 +136,7 @@
                             <table class="min-w-full text-center border">
                                 <thead class="border-b">
                                     <tr>
-                                        <th scope="col" colspan="5" class="px-6 py-4 text-gray-900 border-b ">Order Items Summary</th>
+                                        <th scope="col" colspan="6" class="px-6 py-4 text-gray-900 border-b ">Order Items Summary</th>
                                     </tr>
                                     <tr>
                                         <th scope="col" class="px-6 py-4 text-sm font-medium text-gray-900 border-r">
@@ -147,6 +147,9 @@
                                         </th>
                                         <th scope="col" class="px-6 py-4 text-sm font-medium text-gray-900 border-r">
                                             Order Qty
+                                        </th>
+                                        <th scope="col" class="px-6 py-4 text-sm font-medium text-gray-900 border-r">
+                                            Total Qty
                                         </th>
                                         <th scope="col" class="px-6 py-4 text-sm font-medium text-gray-900 border-r">
                                             Inventory
@@ -165,11 +168,19 @@
                                                 {{ $item->total_qty }}
                                             </td>
                                             <td class="px-6 py-4 text-sm text-gray-900 border-r whitespace-nowrap">
-                                                <ul>
-                                                    <li>Name: {{ $item->inventory_name }}</li>
-                                                    <li>Code: {{ $item->inventory_code }}</li>
-                                                    <li>Used: {{ $item->stock_used }}</li>
-                                                </ul>
+                                                {{ $item->stock_used }}
+                                                @if ($item->unit_label)
+                                                    ({{ $item->unit_label }})
+                                                @endif
+                                            </td>
+                                            <td class="px-6 py-4 text-sm text-gray-900 border-r whitespace-nowrap">
+                                                @if ($item->inventory_id)
+                                                    <ul>
+                                                        <li>Name: {{ $item->inventory_name }}</li>
+                                                        <li>Code: {{ $item->inventory_code }}</li>
+                                                        <li>Used: {{ $item->stock_used }}</li>
+                                                    </ul>
+                                                @endif
                                             </td>
                                             <td class="px-6 py-4 text-sm text-gray-900 whitespace-nowrap">
                                                 {{ $item->total_amount }}
@@ -184,11 +195,17 @@
                                                 {{ $addon->total_qty }}
                                             </td>
                                             <td class="px-6 py-4 text-sm text-gray-900 border-r whitespace-nowrap">
-                                                <ul>
-                                                    <li>Name: {{ $addon->inventory_name }}</li>
-                                                    <li>Code: {{ $item->inventory_code }}</li>
-                                                    <li>Used: {{ $addon->stock_used }}</li>
-                                                </ul>
+                                                {{ $addon->stock_used }}
+                                            </td>
+                                            <td class="px-6 py-4 text-sm text-gray-900 border-r whitespace-nowrap">
+                                                @if ($addon->inventory_id)
+
+                                                    <ul>
+                                                        <li>Name: {{ $addon->inventory_name }}</li>
+                                                        <li>Code: {{ $addon->inventory_code }}</li>
+                                                        <li>Used: {{ $addon->stock_used }}</li>
+                                                    </ul>
+                                                @endif
                                             </td>
                                             <td class="px-6 py-4 text-sm text-gray-900 whitespace-nowrap">
                                                 0.00
