@@ -56,6 +56,8 @@ class UserAccessActionsSeeder extends Seeder
                     'manage-inventory-action',
                     'transfer-inventory-action',
                     'import-inventory-action',
+                    'view-inventory-category-action',
+                    'manage-inventory-category-action',
 
                     // Branch Inventory
                     'view-branch-inventory-action',
@@ -134,6 +136,9 @@ class UserAccessActionsSeeder extends Seeder
                     'manage-inventory-action',
                     'transfer-inventory-action',
                     'import-inventory-action',
+                    'view-inventory-category-action',
+                    'manage-inventory-category-action',
+
 
                     // Branch Inventory
                     'view-branch-inventory-action',

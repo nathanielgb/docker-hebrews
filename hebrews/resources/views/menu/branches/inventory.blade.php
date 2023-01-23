@@ -64,8 +64,9 @@
                 <thead>
                 <tr class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase border-b bg-gray-50">
                     <th class="px-4 py-3 text-center">ID</th>
-                    <th class="px-4 py-3 text-center">Code</th>
-                    <th class="px-4 py-3 text-center">Branch</th>
+                    <th class="px-4 py-3">Code</th>
+                    <th class="px-4 py-3">Branch</th>
+                    <th class="px-4 py-3">Category</th>
                     <th class="px-4 py-3">Name</th>
                     <th class="px-4 py-3">Linked Products</th>
                     <th class="px-4 py-3">Stock</th>
@@ -80,11 +81,14 @@
                             <td class="px-4 py-3 text-center">
                                 {{ $item->id }}
                             </td>
-                            <td class="px-4 py-3 text-sm text-center">
+                            <td class="px-4 py-3 text-sm">
                                 {{ $item->inventory_code }}
                             </td>
-                            <td class="px-4 py-3 text-sm text-center">
+                            <td class="px-4 py-3 text-sm">
                                 {{ $item->branch->name }}
+                            </td>
+                            <td class="px-4 py-3 text-sm">
+                                {{ $item->category->name ?? '-' }}
                             </td>
                             <td class="px-4 py-3 text-sm">
                                 {{ $item->name }}

@@ -48,6 +48,14 @@ class Menu extends Model
     }
 
     /**
+     * Get the addons items associated with the menu item.
+     */
+    public function addonItems()
+    {
+        return $this->hasMany(MenuAddOn::class, 'id', 'menu_id');
+    }
+
+    /**
      * Get the order items associated with the menu item.
      */
     public function orderItems()

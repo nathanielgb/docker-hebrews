@@ -4,50 +4,63 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\MenuAddOn;
+use App\Models\Menu;
 use App\Models\Branch;
 use App\Models\BranchMenuInventory;
+use App\Models\InventoryCategory;
 
 class MenuAddOnController extends Controller
 {
-    public function index(Request $request)
+    public function index($menu)
     {
-        $addons = MenuAddOn::whereHas('inventory', function ($q) {
-            // Check branch of current user
-            if (auth()->user()->branch_id) {
-                $q->where('branch_id', auth()->user()->branch_id);
-            }
-        });
+        $menu = Menu::where('id', $menu)->first();
 
-        if (auth()->user()->branch_id) {
-            $inventory_items = BranchMenuInventory::where('branch_id', auth()->user()->branch_id)->get();;
-            $branches =  Branch::where('id', auth()->user()->branch_id)->get();
-        } else {
-            $inventory_items = BranchMenuInventory::all();
-            $branches = Branch::all();
+        if ($menu) {
+            $addons = MenuAddOn::where('menu_id', $menu->id);
+            $inventory_items = BranchMenuInventory::where('branch_id', $menu->branch_id)->where('stock', '>', 0)->get();
+            $category_ids = BranchMenuInventory::where('branch_id', $menu->branch_id)->where('stock', '>', 0)->groupBy('category_id')->pluck('category_id');
+            $categories = InventoryCategory::whereIn('id', $category_ids)->get();
+            $addons = $addons->orderBy('menu_id')->paginate(20);
+
+            return view('menu.add_ons', compact(
+                'menu',
+                'addons',
+                'inventory_items',
+                'categories'
+            ));
+
         }
-
-        $addons = $addons->orderBy('name')->paginate(20);
-
-        return view('menu.add_ons', compact(
-            'addons',
-            'branches',
-            'inventory_items'
-        ));
+        return redirect()->back()->with('error', 'Menu does not exist.');
     }
 
-    public function store(Request $request)
+    public function store(Request $request, $menu)
     {
-        $request->validate([
-            'name' => 'required|max:255|alpha_dash',
-            'inventory' => 'required|exists:branch_menu_inventories,id',
-        ]);
+        $menu = Menu::where('id', $menu)->first();
 
-        $addons = MenuAddOn::create([
-            'name' => $request->name,
-            'inventory_id' => $request->inventory
-        ]);
+        if ($menu) {
+            $request->validate([
+                'isdinein' => 'required',
+                'inventory' => 'required|exists:branch_menu_inventories,id',
+            ]);
 
-        return back()->with('success', 'Menu add-on added successfully.');
+            $exist = MenuAddOn::where('menu_id', $menu->id)
+                ->where('inventory_id', $request->inventory)
+                ->where('is_dinein', isset($request->isdinein) && $request->isdinein == 1 ? true : false)
+                ->first();
+
+            if ($exist) {
+                return redirect()->back()->with('warning', 'Selected inventory already exist.');
+            }
+
+            $addons = MenuAddOn::create([
+                'menu_id' => $menu->id,
+                'inventory_id' => $request->inventory,
+                'is_dinein' => isset($request->isdinein) && $request->isdinein == 1 ? true : false,
+            ]);
+
+            return back()->with('success', 'Menu add-on added successfully.');
+        }
+        return redirect()->back()->with('error', 'Menu does not exist.');
     }
 
     //

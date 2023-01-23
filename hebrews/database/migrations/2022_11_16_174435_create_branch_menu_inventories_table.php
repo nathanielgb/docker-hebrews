@@ -16,6 +16,7 @@ class CreateBranchMenuInventoriesTable extends Migration
         Schema::create('branch_menu_inventories', function (Blueprint $table) {
             $table->id();
             $table->string('branch_id')->nullable();
+            $table->string('category_id')->nullable();
             $table->string('inventory_code');
             $table->string('name');
             $table->string('unit');

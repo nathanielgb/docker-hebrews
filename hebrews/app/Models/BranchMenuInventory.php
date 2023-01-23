@@ -15,6 +15,7 @@ class BranchMenuInventory extends Model
         'stock',
         'previous_stock',
         'branch_id',
+        'category_id',
         'inventory_code',
         'modified_by',
     ];
@@ -41,5 +42,13 @@ class BranchMenuInventory extends Model
     public function branch()
     {
         return $this->belongsTo(Branch::class, 'branch_id', 'id');
+    }
+
+    /**
+     * Get the category associated with the inventory item.
+     */
+    public function category()
+    {
+        return $this->belongsTo(InventoryCategory::class, 'category_id', 'id');
     }
 }

@@ -18,9 +18,18 @@ class MenuInventory extends Model
         'name',
         'unit',
         'stock',
+        'category_id',
         'previous_stock',
         'modified_by',
     ];
+
+    /**
+     * Get the category associated with the inventory item.
+     */
+    public function category()
+    {
+        return $this->belongsTo(InventoryCategory::class, 'category_id', 'id');
+    }
 
     // /**
     //  * Get the products associated with the inventory item.

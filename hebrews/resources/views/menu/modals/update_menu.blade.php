@@ -76,7 +76,7 @@
                             name="inventory"
                             placeholder="Enter Inventory..."
                             autocomplete="off"
-                            class="block w-full rounded-sm cursor-pointer focus:outline-none"
+                            class="block w-full rounded-sm cursor-pointer focus:outline-none mt-1"
                         >
                             <option value="" selected disabled>Select inventory</option>
                             @foreach ($inventory_items as $i_item)

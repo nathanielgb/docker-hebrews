@@ -14,7 +14,7 @@ use App\Models\BranchMenuInventory;
 use App\Imports\MenuImport;
 use Illuminate\Validation\ValidationException;
 use App\Models\ErrorLog;
-
+use App\Models\MenuAddOn;
 
 class MenuController extends Controller
 {
@@ -70,7 +70,7 @@ class MenuController extends Controller
             if (!$inventory) {
                 return back()->with('error', 'Item Inventory does not exist.');
             }
-            
+
             // Check the minimum unit required
             if($inventory->unit == 'boxes' && $request->unit < 1) {
                 return back()->with('error', "The box must be at least 1.");
@@ -115,7 +115,7 @@ class MenuController extends Controller
             'file' => 'required|file|mimes:csv,xlsx'
         ]);
 
-        
+
         $file = $request->file('file');
         $records = [];
 
@@ -136,7 +136,7 @@ class MenuController extends Controller
                 ->with('error', "Failed to import file. Please try again.");
         }
 
-        
+
         return redirect()
             ->back()
             ->with('success', "Records are successfully imported successfully.")
@@ -151,7 +151,7 @@ class MenuController extends Controller
 
             if (isset($request->inventory)) {
                 $inventory = BranchMenuInventory::where('id', $request->inventory)->first();
-    
+
                 if (!$inventory) {
                     return back()->with('error', "Failed to update Item $request->menu. Inventory does not exist.");
                 }
@@ -159,16 +159,16 @@ class MenuController extends Controller
                 if (fmod($request->unit, 1) != 0.0 && $inventory->unit == 'pcs') {
                     return back()->with('error', "Item $request->menu cannot have a decimal stock.");
                 }
-    
+
                 // Check the minimum unit required
                 if($inventory->unit == 'boxes' && $request->unit < 1) {
                     return back()->with('error', "The box must be at least 1.");
                 }
-    
+
                 if($inventory->unit == 'pcs' && $request->unit < 1) {
                     return back()->with('error', "The unit must be at least 1.");
                 }
-    
+
                 if ($inventory->unit != 'pcs' && $request->unit < 0.001) {
                     return back()->with('error', "The unit must be at least 0.001.");
                 }
@@ -198,6 +198,7 @@ class MenuController extends Controller
         $menu = Menu::where('id', $request->id)->first();
 
         if ($menu) {
+            $addons = MenuAddOn::where('menu_id', $menu->id)->delete();
             $menu->delete();
             // Delete Inventory item
             // MenuCategory::where('id', $menu->id)->delete();
@@ -271,7 +272,7 @@ class MenuController extends Controller
             }
 
             // Delete all menu item with the same category
-            $deleted_menu_items = DB::table('menus')->where('category_id', '=', $category->id)->delete();
+            // $deleted_menu_items = DB::table('menus')->where('category_id', '=', $category->id)->delete();
             $deleted_category = DB::table('menu_categories')->where('id', '=', $category->id)->delete();
 
             return back()->with('success', 'Category has been successfully removed.');

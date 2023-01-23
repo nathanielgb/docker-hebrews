@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class MenuAddOn extends Model
+class InventoryCategory extends Model
 {
     use HasFactory;
 
@@ -15,17 +15,14 @@ class MenuAddOn extends Model
      * @var array<int, string>
      */
     protected $fillable = [
-        'name',
-        'menu_id',
-        'inventory_id',
-        'is_dinein'
+        'name'
     ];
 
     /**
-     * Get the inventory associated with the addon item.
+     * Get the branch inventories for the Inventory Category.
      */
-    public function inventory()
+    public function branchInventories()
     {
-        return $this->belongsTo(BranchMenuInventory::class, 'inventory_id', 'id');
+        return $this->hasMany(BranchMenuInventory::class, 'category_id', 'id');
     }
 }

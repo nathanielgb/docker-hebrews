@@ -83,7 +83,7 @@ Route::middleware('auth')->group(function () {
         Route::group(['middleware' => 'CheckAccessActions:add-menu-action'], function () {
             Route::post('add-menu', [\App\Http\Controllers\MenuController::class, 'store'])->name('menu.store');
         });
-        
+
         Route::group(['middleware' => 'CheckAccessActions:import-menu-action'], function () {
             Route::get('import-menu', [\App\Http\Controllers\MenuController::class, 'viewImport'])->name('menu.import.view');
             Route::post('import-menu', [\App\Http\Controllers\MenuController::class, 'import'])->name('menu.import');
@@ -96,6 +96,26 @@ Route::middleware('auth')->group(function () {
 
         Route::group(['middleware' => 'CheckAccessActions:delete-menu-action'], function () {
             Route::post('delete-menu', [\App\Http\Controllers\MenuController::class, 'delete'])->name('menu.delete');
+        });
+
+        Route::group(['middleware' => 'CheckAccessActions:view-menu-addons-action'], function () {
+            Route::get('menu/{menu}/add-ons', [\App\Http\Controllers\MenuAddOnController::class, 'index'])->name('menu.addon.index');
+
+            Route::group(['middleware' => 'CheckAccessActions:manage-menu-addons-action'], function () {
+                Route::post('menu/{menu}/add-ons', [\App\Http\Controllers\MenuAddOnController::class, 'store'])->name('menu.addon.store');
+                Route::delete('menu/{menu}/add-ons', [\App\Http\Controllers\MenuAddOnController::class, 'destroy'])->name('menu.addon.destroy');
+            });
+        });
+    });
+
+    // Inventory - Categories
+    Route::group(['middleware' => 'CheckAccessActions:view-inventory-category-action'], function () {
+        Route::get('inventory-categories', [\App\Http\Controllers\InventoryCategoryController::class, 'index'])->name('menu.inventories.categories');
+
+
+        Route::group(['middleware' => 'CheckAccessActions:manage-inventory-category-action'], function () {
+            Route::post('inventory-categories/add-category', [\App\Http\Controllers\InventoryCategoryController::class, 'addCategory'])->name('menu.inventories.categories.add');
+            Route::post('inventory-categories/delete-category', [\App\Http\Controllers\InventoryCategoryController::class, 'deleteCategory'])->name('menu.inventories.categories.delete');
         });
     });
 
@@ -140,14 +160,6 @@ Route::middleware('auth')->group(function () {
         });
     });
 
-    Route::group(['middleware' => 'CheckAccessActions:view-menu-addons-action'], function () {
-        Route::get('menu/add-ons', [\App\Http\Controllers\MenuAddOnController::class, 'index'])->name('menu.addon.index');
-
-        Route::group(['middleware' => 'CheckAccessActions:manage-menu-addons-action'], function () {
-            Route::post('menu/add-ons', [\App\Http\Controllers\MenuAddOnController::class, 'store'])->name('menu.addon.store');
-            Route::delete('menu/add-ons', [\App\Http\Controllers\MenuAddOnController::class, 'destroy'])->name('menu.addon.destroy');
-        });
-    });
 
     // Categories Section (SUPERADMIN)
     Route::group(['middleware' => 'CheckAccessActions:view-categories-action'], function () {

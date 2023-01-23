@@ -207,6 +207,14 @@
                             </td>
                                 <td class="px-4 py-3 text-center">
                                     <div class="flex items-center justify-center space-x-4 text-sm">
+                                        @if (auth()->user()->can('access', 'view-menu-addons-action'))
+                                            <a
+                                                class="flex items-center inline-block px-6 py-2.5 bg-blue-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-blue-700 hover:shadow-lg focus:bg-blue-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-blue-800 active:shadow-lg transition duration-150 ease-in-out"
+                                                href="{{ route('menu.addon.index', $item->id) }}"
+                                                >
+                                                <span><i class="fa-solid fa-cart-shopping"></i> Add-ons</span>
+                                            </a>
+                                        @endif
                                         @if(auth()->user()->can('access', 'update-menu-action'))
                                             <button
                                                 class="flex btn-update-menu items-center inline-block px-6 py-2.5 bg-green-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-green-700 hover:shadow-lg focus:bg-green-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-green-800 active:shadow-lg transition duration-150 ease-in-out"
@@ -239,7 +247,7 @@
                             </tr>
                         @empty
                             <tr class="text-gray-700">
-                                <td colspan="8" class="px-4 py-3 text-sm text-center">
+                                <td colspan="10" class="px-4 py-3 text-sm text-center">
                                     No records found.
                                 </td>
                             </tr>

@@ -15,8 +15,9 @@ class CreateMenuAddOnsTable extends Migration
     {
         Schema::create('menu_add_ons', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
+            $table->string('menu_id');
             $table->string('inventory_id')->nullable();
+            $table->boolean('is_dinein')->default(false);
             $table->timestamps();
         });
     }

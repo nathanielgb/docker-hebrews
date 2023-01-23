@@ -87,18 +87,6 @@
                                 <a class="w-full" href="{{ route('menu.index') }}">Menu</a>
                             </li>
                         @endif
-                        @if (auth()->user()->can('access', 'view-menu-addons-action'))
-                            <li
-                                @if (request()->routeIs('menu.addon.index'))
-                                    class="px-2 py-1 text-green-700"
-                                @else
-                                    class="px-2 py-1"
-                                @endif >
-                                <a class="w-full" href="{{ route('menu.addon.index') }}">
-                                    Add-ons
-                                </a>
-                            </li>
-                        @endif
                     </ul>
                 </li>
             @endif
@@ -148,6 +136,18 @@
                                 @endif >
                                 <a class="w-full" href="{{ route('branch.inventory.import.show') }}">
                                     Import
+                                </a>
+                            </li>
+                        @endif
+                        @if (auth()->user()->can('access', 'view-inventory-category-action'))
+                            <li
+                                @if (request()->routeIs('branch.inventory.import.show'))
+                                    class="px-2 py-1 text-green-700"
+                                @else
+                                    class="px-2 py-1"
+                                @endif >
+                                <a class="w-full" href="{{ route('menu.inventories.categories') }}">
+                                    Categories
                                 </a>
                             </li>
                         @endif

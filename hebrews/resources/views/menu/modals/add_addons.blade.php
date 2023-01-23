@@ -22,25 +22,29 @@
                 </button>
             </div>
             <div class="relative p-4 modal-body">
-                <form id="add-menu-form" action="{{ route('menu.addon.store') }}" method="post">
+                <form id="add-menu-form" action="{{ route('menu.addon.store', request()->menu) }}" method="post">
                     @csrf
                     <label class="block mb-4 text-sm">
-                        <span class="text-gray-700">Name</span>
-                        <input class="styled-input" name="name" type="text" placeholder="Enter name">
-                    </label>
-
-                    <label class="block mb-4 text-sm">
-                        <span class="text-gray-700">Branch</span>
-                        <select id="addBranch" class="styled-input" name="branch">
-                            <option value="" selected disabled>Select a branch</option>
-                            @foreach ($branches as $branch)
-                                <option value="{{ $branch->id }}" data-inventories="{{ json_encode($branch->inventories) }}">{{ $branch->name }}</option>
-                            @endforeach
+                        <span class="text-gray-700 dark:text-gray-400">Order Type</span>
+                        <select
+                            name="isdinein"
+                            class="styled-input"
+                        >
+                            <option value="" disabled>Select type</option>
+                            <option value="1" selected>Dine-in</option>
+                            <option value="0">Takeout</option>
                         </select>
-                        <p class="text-xs text-yellow-500">note: selecting a branch will show available inventory items for the selected branch</p>
+                        <p class="text-xs text-yellow-500">note: select in which order type will the add-on apply.</p>
                     </label>
 
                     <label class="block mb-4 text-sm">
+                        <span class="text-gray-700 dark:text-gray-400">Inventory</span>
+                        <select id="select-inventory" name="inventory" class="select-inventories mt-1" placeholder="Select inventory..."></select>
+                        <p class="text-xs text-yellow-500">note: unit per add-on will be defaulted to 1.</p>
+                    </label>
+
+
+                    {{-- <label class="block mb-4 text-sm">
                         <span class="text-gray-700 dark:text-gray-400">Inventory</span>
                         <select
                             id="select-inventory"
@@ -51,7 +55,7 @@
                         >
                             <option value="" selected disabled>Select inventory</option>
                         </select>
-                    </label>
+                    </label> --}}
 
                     {{-- <label class="block mb-4 text-sm">
                         <span class="text-gray-700">Inventory</span>

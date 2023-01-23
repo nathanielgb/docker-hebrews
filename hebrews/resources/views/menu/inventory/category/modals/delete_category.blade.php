@@ -9,7 +9,7 @@
     <div class="relative w-auto pointer-events-none modal-dialog modal-dialog-centered">
         <div class="relative flex flex-col w-full text-current bg-white border-none rounded-md shadow-lg outline-none pointer-events-auto modal-content bg-clip-padding">
         <div class="flex items-center justify-between flex-shrink-0 p-4 border-b border-gray-200 modal-header rounded-t-md">
-            <h5 class="text-xl font-medium leading-normal text-gray-800" id="exampleModalScrollableLabel">
+            <h5 class="text-xl font-medium leading-normal text-gray-800" id="deleteModalTitle">
                 Delete
             </h5>
             <button type="button"
@@ -17,11 +17,10 @@
                 data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="relative p-4 modal-body">
-            <form id="delete-form" action="{{ route('menu.addon.destroy', request()->menu) }}" method="post">
+            <form id="delete-form" action="{{ route('menu.delete_category') }}" method="post">
                 @csrf
-                @method('DELETE')
                 <label class="block mb-4 text-sm">
-                    <p>Are you sure you want to delete this add-on (name: <span x-text="$store.data.delete?.name" class="font-bold"></span>)? Deleting  will remove all data the for this account.</p>
+                    <p>Are you sure you want to delete this category (name: <span x-text="$store.data.delete?.name" class="font-bold"></span>)?</p>
                     <input name="id" type="hidden" :value="$store.data.delete?.id">
                 </label>
             </form>
