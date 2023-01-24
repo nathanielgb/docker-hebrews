@@ -40,6 +40,7 @@ class MenuAddOnController extends Controller
         if ($menu) {
             $request->validate([
                 'isdinein' => 'required',
+                'qty' => 'required|numeric|min:1|max:99999999',
                 'inventory' => 'required|exists:branch_menu_inventories,id',
             ]);
 
@@ -55,6 +56,7 @@ class MenuAddOnController extends Controller
             $addons = MenuAddOn::create([
                 'menu_id' => $menu->id,
                 'inventory_id' => $request->inventory,
+                'qty' => $request->qty,
                 'is_dinein' => isset($request->isdinein) && $request->isdinein == 1 ? true : false,
             ]);
 

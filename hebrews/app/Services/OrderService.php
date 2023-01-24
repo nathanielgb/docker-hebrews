@@ -106,7 +106,7 @@ class OrderService
                 'is_beans' => isset($item->is_beans) && $item->is_beans == 1 ? true : false,
                 'grind_type' => isset($grind_type) ? $grind_type : null
             ];
-            
+
             $orderItemId = OrderItem::generateUniqueId();
 
             $ord_item = new OrderItem();
@@ -251,7 +251,7 @@ class OrderService
         // if (isset($response) && $response['status'] == 'fail') {
         //     throw new \Exception($response['message']);
         // }
-        
+
         $data = $item->data ?? [];
         $data['is_dinein'] = $isdinein ? true : false;
 
@@ -505,17 +505,17 @@ class OrderService
     /**
      * Check check if item exist or have enough stock
      *
-     * @param Object $menu model of the menu item
-     * @param String $units model of the menu item
+     * @param Object $inventory model of the menu item
+     * @param String $units number of unit per qty the menu item
      * @param String $qty Order quantity of the item
      *
      * @return array
      */
-    public function checkItemStock($menu, $units, $qty)
+    public function checkItemStock($inventory, $units, $qty)
     {
         // Check if enough stock
         $units_needed = $qty * $units;
-        $item_stock = $menu->inventory->stock ?? 0;
+        $item_stock = $inventory->stock ?? 0;
 
         if ($units_needed > $item_stock) {
             return [

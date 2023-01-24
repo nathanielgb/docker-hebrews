@@ -63,6 +63,7 @@
                     <th class="px-4 py-3">ID</th>
                     <th class="px-4 py-3">Order Type</th>
                     <th class="px-4 py-3">Inventory</th>
+                    <th class="px-4 py-3 text-center">Quantity</th>
                     <th class="px-4 py-3 text-center">Action</th>
                 </tr>
                 </thead>
@@ -91,7 +92,9 @@
                                     </ul>
                                 @endif
                             </td>
-
+                            <td class="px-4 py-3 text-sm text-center">
+                                {{ $item->qty }}
+                            </td>
                             <td class="px-4 py-3 text-center">
                                 @if (auth()->user()->can('access', 'manage-inventory-action'))
                                     <div class="flex items-center justify-center space-x-4 text-sm">
@@ -120,7 +123,7 @@
                         </tr>
                     @empty
                         <tr class="text-gray-700">
-                            <td colspan="4" class="px-4 py-3 text-sm text-center">
+                            <td colspan="5" class="px-4 py-3 text-sm text-center">
                                 No records found.
                             </td>
                         </tr>

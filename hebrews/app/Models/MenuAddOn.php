@@ -18,7 +18,8 @@ class MenuAddOn extends Model
         'name',
         'menu_id',
         'inventory_id',
-        'is_dinein'
+        'is_dinein',
+        'qty'
     ];
 
     /**

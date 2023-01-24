@@ -2,6 +2,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Branch;
+use App\Models\BranchMenuInventory;
 use Carbon\Carbon;
 use App\Models\Cart;
 use App\Models\Menu;
@@ -75,7 +76,7 @@ class CartController extends Controller
                 $item_stock = $item->inventory->stock;
                 if ($quantity > $item_stock) {
                     return redirect()->route('order.show_add_cart')->with('error', "Item (name: {$item->name}) does not have enough stock.");
-                }       
+                }
             }
 
             // Order product price according to type
@@ -100,7 +101,7 @@ class CartController extends Controller
             // if ($current_cart) {
             //     return back()->with('warning', 'Item (name: '. $item->name .') is already in the cart.');
             // } else {
-  
+
             // }
 
             // Check if there are other products of different branch
@@ -109,7 +110,7 @@ class CartController extends Controller
                     // Check branch of current user
                     $q->where('branch_id', '!=', $item->branch_id);
                 })->count();
-        
+
             if($productOtherBranchFlag > 0) {
                 return redirect()->route('order.show_add_cart')->with('error', "Cannot add item (name: $item->name), cart can only have items from a single branch. Choose a different item or remove items in the cart.");
             }
@@ -125,15 +126,16 @@ class CartController extends Controller
             $data = [
                 'is_dinein' => $is_dinein,
                 'is_beans' => isset($item->is_beans) && $item->is_beans == 1 ? true : false,
-                'grind_type' => isset($request->grind_type) ? $request->grind_type : null
+                'grind_type' => isset($request->grind_type) ? $request->grind_type : null,
+                'has_addons' => $request->has('applyAddon')
             ];
-            
+
 
             //Save the item to the cart
             Cart::create([
                 'admin_id' => auth()->user()->id,
                 'menu_id' => $item->id,
-                'inventory_id' => isset($inventory) ? $inventory->id : null,
+                'inventory_id' => isset($item->inventory) ? $item->inventory->id : null,
                 // 'name' => $item->name,
                 'type' => $type,
                 // 'units' => $item->units,
@@ -246,23 +248,29 @@ class CartController extends Controller
                     $total_cart_units = $request->qty * $cart_units;
                     $cur_stock = $product_item->inventory->stock;
                     if ($cur_stock < $total_cart_units) {
-                        return redirect()->route('order.show_cart')->with('error', 'Product item (name: ' . $citem->name . ') does not have enough stock.');
+                        return redirect()->route('order.show_cart')->with('error', 'Product item (name: ' . $citem->menu->name . ') does not have enough stock.');
                     }
                 }
 
-                // Validate Add-on
-                // $AddonService = new AddonService;
-                // $response = $AddonService->validateAddon($request->cartAddon, $product_item);
+                // Dine in flag
+                $is_dinein = isset($request->isdinein) && $request->isdinein == 1 ? true : false;
 
-                // if (isset($response) && $response['status'] == 'fail') {
-                //     return back()->with('error', $response['message']);
-                // }
+                if ($request->has('applyAddon')) {
+                    // Validate Add-on
+                    $AddonService = new AddonService;
+                    $response = $AddonService->validateAddon($product_item, $is_dinein, $request->qty);
+
+                    if (isset($response) && $response['status'] == 'fail') {
+                        return back()->with('error', $response['message']);
+                    }
+                }
 
                 // Order type of item
                 $data = [
-                    'is_dinein' => isset($request->isdinein) && $request->isdinein == 1 ? true : false,
+                    'is_dinein' => $is_dinein,
                     'is_beans' => isset($product_item->is_beans) && $product_item->is_beans == 1 ? true : false,
-                    'grind_type' => isset($request->grind_type) ? $request->grind_type : null
+                    'grind_type' => isset($request->grind_type) ? $request->grind_type : null,
+                    'has_addons' => $request->has('applyAddon')
                 ];
 
                 $citem->update([
@@ -334,17 +342,6 @@ class CartController extends Controller
                 return redirect()->route('order.show_cart')->with('error', "Cart Item (name: {$citem->menu->name}) is not available for the branch.");
             }
 
-            if ($citem->menu->inventory) {
-                $orderService = new OrderService;
-                $checkStockResponse = $orderService->checkItemStock($citem->menu, $citem->menu->units, $citem->qty);
-    
-                if (isset($checkStockResponse)) {
-                    if ($checkStockResponse['status'] == 'fail') {
-                        return redirect()->route('order.show_cart')->with('error', "Cart Item (name: {$citem->menu->name}) does not have enough stock.");
-                    }
-                }
-            }
-
             $price = $citem->menu->getPrice($citem->type);
 
             // Tag as unavailable if price of type is null
@@ -356,15 +353,29 @@ class CartController extends Controller
 
             $citem['price'] = $price;
             $citem['total'] = number_format($price * $citem->qty, 2, '.', '');
+        }
 
-            // Validate Add-on
-            // $AddonService = new AddonService;
-            // $addOnResponse = $AddonService->validateAddon($citem->data, $citem->menu);
-            // if (isset($addOnResponse)) {
-            //     if ($addOnResponse['status'] == 'fail') {
-            //         return redirect()->route('order.show_cart')->with('error', $addOnResponse['message']);
-            //     }
-            // }
+        // Validate if items with inventory has enough stock after summing all menus with the same inventory id
+        $total_per_items = Cart::where('admin_id', auth()->user()->id)
+            ->whereHas('menu', function ($query) {
+                $query->whereHas('inventory');
+            })
+            ->select(DB::raw('carts.menu_id, carts.inventory_id, menus.units,  SUM(carts.qty) AS total_qty, SUM(carts.qty)*menus.units AS total_stocks'))
+            ->join('menus', 'menus.id', '=', 'carts.menu_id')
+            ->groupBy('carts.menu_id','carts.inventory_id')->orderBy('carts.inventory_id')->get();
+
+        $inventory_ids = array_unique($total_per_items->pluck('inventory_id')->toArray());
+        $ivt = BranchMenuInventory::whereIn('id', $inventory_ids)->first();
+
+        foreach($inventory_ids as $id) {
+            $items = $total_per_items->where('inventory_id', $id);
+            $overall_stocks = $items->sum('total_stocks');
+
+            $ivt1 = $ivt->where('id', $id)->first();
+
+            if ($ivt1->stock < $overall_stocks) {
+                return redirect()->route('order.show_cart')->with('error', "Inventory Item (name: {$ivt1->name}) does not have enough stock. Reduce quantity of a cart item.");
+            }
         }
 
         // Calculate fees, discounts and total amount
@@ -442,22 +453,6 @@ class CartController extends Controller
             $addon_item = [];
 
             foreach($cart_items as $citem) {
-
-                // // Deduct to inventory for cart items
-                // $deduct_inventory = $orderService->deductQtyToInventory($citem->menu->inventory, $citem->units, $citem->qty);
-
-                // if ($deduct_inventory['status'] == 'fail') {
-                //     return redirect()->back()->with('error', "Failed to generate order. Item $citem->name does not have enough stock.");
-                // }
-
-                // foreach ($citem->data as $addon) {
-                //     $addonModel = MenuAddOn::where('id', $addon['addon_id'])->first();
-                //     $deduct_addon = $orderService->deductQtyToInventory($addonModel->inventory, 1, $addon['qty']);
-
-                //     if ($deduct_addon['status'] == 'fail') {
-                //         return redirect()->back()->with('error', "Failed to generate order. Add-on Item $addon->name does not have enough stock.");
-                //     }
-                // }
                 $orderItemId = OrderItem::generateUniqueId();
 
                 $save_items[] = [
@@ -518,7 +513,7 @@ class CartController extends Controller
         } catch (\Exception $exception) {
             //catch $exception;
             DB::rollBack();
-                
+
             ErrorLog::create([
                 'location' => 'OrderController.generateOrder',
                 'message' => $exception->getMessage()

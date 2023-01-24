@@ -52,24 +52,24 @@ class Menu extends Model
      */
     public function addonItems()
     {
-        return $this->hasMany(MenuAddOn::class, 'id', 'menu_id');
+        return $this->hasMany(MenuAddOn::class, 'menu_id', 'id');
     }
 
     /**
-     * Get the order items associated with the menu item.
+     * Get the addons items according to order type
      */
-    public function orderItems()
+    public function getAddonItems($isdinein)
     {
-        return $this->hasMany(OrderItem::class, 'id', 'order_item_id');
+        return MenuAddOn::where('menu_id', $this->id)->where('is_dinein', $isdinein)->get();
     }
 
-    /**
-     * Get the cart items associated with the menu item.
-     */
-    public function cartItems()
-    {
-        return $this->hasMany(cartItems::class, 'id', 'menu_id');
-    }
+    // /**
+    //  * Get the cart items associated with the menu item.
+    //  */
+    // public function cartItems()
+    // {
+    //     return $this->hasMany(cartItems::class, 'menu_id', 'id');
+    // }
 
     public function getPrice($type)
     {
@@ -91,7 +91,7 @@ class Menu extends Model
 
         return null;
     }
-    
+
     /**
      * Get the branch associated with the menu item.
      */

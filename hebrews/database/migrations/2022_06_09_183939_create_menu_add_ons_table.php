@@ -17,6 +17,7 @@ class CreateMenuAddOnsTable extends Migration
             $table->id();
             $table->string('menu_id');
             $table->string('inventory_id')->nullable();
+            $table->string('qty');
             $table->boolean('is_dinein')->default(false);
             $table->timestamps();
         });

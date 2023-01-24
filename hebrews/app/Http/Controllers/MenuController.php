@@ -3,23 +3,26 @@
 namespace App\Http\Controllers;
 
 use App\Models\Menu;
-use Illuminate\Http\Request;
-use App\Models\MenuCategory;
-use App\Models\MenuInventory;
-use Illuminate\Support\Facades\DB;
-use App\Http\Requests\StoreMenuRequest;
-use App\Http\Requests\UpdateMenuRequest;
 use App\Models\Branch;
-use App\Models\BranchMenuInventory;
-use App\Imports\MenuImport;
-use Illuminate\Validation\ValidationException;
 use App\Models\ErrorLog;
 use App\Models\MenuAddOn;
+use App\Imports\MenuImport;
+use App\Models\MenuCategory;
+use Illuminate\Http\Request;
+use App\Models\MenuInventory;
+use App\Models\InventoryCategory;
+use Illuminate\Support\Facades\DB;
+use App\Models\BranchMenuInventory;
+use App\Http\Requests\StoreMenuRequest;
+use App\Http\Requests\UpdateMenuRequest;
+use Illuminate\Validation\ValidationException;
 
 class MenuController extends Controller
 {
     public function index(Request $request)
     {
+        $inventories = new BranchMenuInventory;
+
         if (auth()->user()->branch_id) {
             $menu = Menu::where(function ($q) {
                 // Check branch of current user
@@ -28,13 +31,14 @@ class MenuController extends Controller
                 }
             });
 
-            $inventory_items = BranchMenuInventory::where('branch_id', auth()->user()->branch_id)->get();
+            $inventories =$inventories->where('branch_id', auth()->user()->branch_id);
             $branches = Branch::where('id', auth()->user()->branch_id)->get();
         } else {
             $menu = Menu::with('category');
-            $inventory_items = BranchMenuInventory::all();
             $branches = Branch::all();
         }
+
+        $inventory_items = $inventories->orderBy('name', 'asc')->get();
 
         if ($request->except(['page'])) {
             $menu=$menu->where(function ($query) use ($request) {

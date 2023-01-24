@@ -43,6 +43,10 @@
                         <p class="text-xs text-yellow-500">note: unit per add-on will be defaulted to 1.</p>
                     </label>
 
+                    <label class="block mb-4 text-sm">
+                        <span class="text-gray-700">Quantity</span>
+                        <input class="styled-input" name="qty" type="number" min="1"  placeholder="Enter quantity" required>
+                    </label>
 
                     {{-- <label class="block mb-4 text-sm">
                         <span class="text-gray-700 dark:text-gray-400">Inventory</span>

@@ -21,6 +21,7 @@ class MenuCategorySeeder extends Seeder
                 'name' => 'Iced and Hot Coffee',
                 'sub'=> json_encode([
                     'Espresso Based - Hot',
+                    'Espresso Based - Iced'
                 ]),
                 'from' => 'kitchen'
             ],
