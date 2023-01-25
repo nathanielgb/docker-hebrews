@@ -110,9 +110,6 @@
                                         <th scope="col" class="text-sm font-bold text-gray-900 px-6 py-4 border-r">
                                             Item
                                         </th>
-                                        <th scope="col" class="text-sm font-bold text-gray-900 px-6 py-4 border-r">
-                                            Status
-                                        </th>
                                         <th scope="col" class="text-sm font-bold text-gray-900 px-6 py-4">
                                             Qty
                                         </th>
@@ -128,23 +125,6 @@
                                                 $_orderQty = !empty($orderQty) ? $orderQty : 0;
                                                 $total_qty = ($_orderQty * $addOn->qty);
                                             @endphp
-                                            <td class="text-sm text-gray-900 font-normal px-6 py-4 whitespace-nowrap border-r">
-                                                @if (isset($addOn->inventory))
-                                                    @if ($addOn->inventory->stock < $total_qty)
-                                                        <div class="inline-flex items-center px-3 py-1 text-xs font-bold text-white uppercase bg-red-600 rounded-full leading-sm">
-                                                            UNAVAILABLE
-                                                        </div>
-                                                    @else
-                                                        <div class="inline-flex items-center px-3 py-1 text-xs font-bold text-white uppercase bg-green-600 rounded-full leading-sm">
-                                                            AVAILABLE
-                                                        </div>
-                                                    @endif
-                                                @else
-                                                    <div class="inline-flex items-center px-3 py-1 text-xs font-bold text-white uppercase bg-red-600 rounded-full leading-sm">
-                                                        UNAVAILABLE
-                                                    </div>
-                                                @endif
-                                            </td>
                                             <td class="text-sm text-gray-900 font-normal px-6 py-4 whitespace-nowrap">
                                                 {{ $total_qty }}
                                             </td>

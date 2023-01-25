@@ -1,22 +1,24 @@
 <?php
 namespace App\Http\Controllers;
 
-use App\Models\Branch;
-use App\Models\BranchMenuInventory;
 use Carbon\Carbon;
 use App\Models\Cart;
 use App\Models\Menu;
 use App\Models\Order;
-use App\Models\MenuCategory;
-use App\Models\OrderDiscount;
-use App\Models\OrderItem;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
+use App\Models\Branch;
 use App\Models\Customer;
 use App\Models\ErrorLog;
 use App\Models\MenuAddOn;
+use App\Models\OrderItem;
+use App\Models\MenuCategory;
+use Illuminate\Http\Request;
+use App\Models\OrderDiscount;
+use App\Services\CartService;
 use App\Services\AddonService;
 use App\Services\OrderService;
+use App\Services\InventoryService;
+use Illuminate\Support\Facades\DB;
+use App\Models\BranchMenuInventory;
 
 class CartController extends Controller
 {
@@ -91,18 +93,16 @@ class CartController extends Controller
             $is_dinein =  isset($request->isdinein) && $request->isdinein == 1 ? true : false;
 
             // Check if the item is already in the cart
-            // $current_cart = Cart::where('admin_id', auth()->user()->id)
-            //     ->where('data->is_dinein', $is_dinein)
-            //     ->where('type', $request->type)
-            //     ->where('menu_id', $item->id)
-            //     ->first();
+            $current_cart = Cart::where('admin_id', auth()->user()->id)
+                ->where('data->is_dinein', $is_dinein)
+                ->where('type', $request->type)
+                ->where('menu_id', $item->id)
+                ->first();
 
             // if exist append the qty else create new item
-            // if ($current_cart) {
-            //     return back()->with('warning', 'Item (name: '. $item->name .') is already in the cart.');
-            // } else {
-
-            // }
+            if ($current_cart) {
+                return back()->with('warning', 'Item (name: '. $item->name .') is already in the cart.');
+            }
 
             // Check if there are other products of different branch
             $productOtherBranchFlag = Cart::where('admin_id', auth()->user()->id)
@@ -115,13 +115,6 @@ class CartController extends Controller
                 return redirect()->route('order.show_add_cart')->with('error', "Cannot add item (name: $item->name), cart can only have items from a single branch. Choose a different item or remove items in the cart.");
             }
 
-            // Validate Add-on
-            // $AddonService = new AddonService;
-            // $response = $AddonService->validateAddon($request->cartAddon, $item);
-
-            // if (isset($response) && $response['status'] == 'fail') {
-            //     return back()->with('error', $response['message']);
-            // }
             // Order type of item
             $data = [
                 'is_dinein' => $is_dinein,
@@ -147,7 +140,7 @@ class CartController extends Controller
 
             return back()->with('success', 'Item (name: '. $item->name .') has been successfully added.');
         }
-        return redirect()->route('order.show_add_cart')->with('error', 'Item does not exist.');
+        return redirect()->route('order.show_add_cart')->with('error', 'Item does not exist');
     }
 
     public function viewCart()
@@ -160,37 +153,78 @@ class CartController extends Controller
         }])->where('admin_id', auth()->user()->id)->get();
 
         $discounts = OrderDiscount::where('active', 1)->get();
-
         $customers = Customer::all();
 
+
+
+        // Validate if items with inventory has enough stock or available
+        $cart_items = Cart::where('admin_id', auth()->user()->id)
+            ->select(DB::raw('carts.*, carts.id AS cart_id, menus.units, carts.qty*menus.units AS total_stocks'))
+            ->join('menus', 'menus.id', '=', 'carts.menu_id')
+            ->groupBy('carts.id')
+            ->orderBy('carts.id', 'asc')
+            ->orderBy('carts.menu_id', 'asc')
+            ->get();
+
+        $InventoryService = new InventoryService;
         $cart_subtotal = 0;
 
-        // Check and tag the item if it is not available
-        foreach ($cart_items as $item) {
-            $item['available'] = true;
+        foreach($cart_items as $cart_item) {
+            $cart_item->available = true;
+            $cart_item['errors']= [];
+            $menu = $cart_item->menu;
 
-            // If the menu item does not exist tag available as false
-            $menu_item = Menu::where('id', $item->menu_id)->first();
-            // Tag as unavailable if no menu found
-            if (!$menu_item) {
-                $item['available'] = false;
+            if (!$menu) {
+                $cart_item->available = false;
+                $cart_item->errors = 'menu item does not exist.';
             } else {
-                $price = $menu_item->getPrice($item->type);
+                $price = $menu->getPrice($cart_item->type);
 
                 // Tag as unavailable if price of type is null
                 if (!isset($price)) {
-                    $item['available'] = false;
+                    $cart_item['errors'] = array_merge($cart_item['errors'], ['no menu price available']);
                 }
 
-                $cart_subtotal = $cart_subtotal + ($price * $item->qty);
+                $cart_subtotal = $cart_subtotal + ($price * $cart_item->qty);
 
                 // get product price base on type
-                $item['price'] = $price;
-                $item['total'] = number_format($price * $item->qty, 2, '.', '');
+                $cart_item['price'] = $price;
+                $cart_item['total'] = number_format($price * $cart_item->qty, 2, '.', '');
 
+                if ($menu->inventory) {
+                    // Append cart item for validating inventory ivailability
+                    $InventoryService->setItem($cart_item);
+                }
+
+                if (isset($cart_item->data['has_addons']) && $cart_item->data['has_addons'] == 1) {
+                    $is_dinein = isset($cart_item->data['is_dinein']) && $cart_item->data['is_dinein'] == 1 ? true : false;
+                    $_addons = $menu->getAddonItems($is_dinein);
+
+                    if (count($_addons) > 0) {
+                        $cart_qty = $cart_item->qty ?? 1;
+                        $cart_id = $cart_item->id;
+
+                        $modified_addons = $_addons->map(function ($addon) use ($InventoryService, $cart_id, $cart_qty) {
+                            $addon->total_stocks = $addon->qty * $cart_qty;
+                            $addon->cart_id = $cart_id;
+
+                            $InventoryService->setItem($addon);
+                        });
+                    }
+                }
             }
+
         }
 
+        $invalidCartItemsIds = $InventoryService->invalidCartItems();
+
+        $cart_items->whereIn('cart_id', $invalidCartItemsIds)->each(function ($cartItem) {
+            $cartItem->errors = array_merge($cartItem->errors, ['inventory stock is insufficient. check cart quantity or add-ons']);
+
+            return $cartItem;
+        });
+
+        $inventoriesUsed = $InventoryService->getInventoriesUsed();
 
         // unavailble item checker
         $unavailable_items = Cart::where('admin_id', auth()->user()->id)->doesnthave('menu')->count();
@@ -201,20 +235,14 @@ class CartController extends Controller
             $branches = Branch::all();
         }
 
-        // $addons = MenuAddOn::whereHas('inventory', function ($q) {
-        //     // Check branch of current user
-        //     if (auth()->user()->branch_id) {
-        //         $q->where('branch_id', auth()->user()->branch_id);
-        //     }
-        // })->get();
-
         return view('orders.sections.view_cart', compact(
             'cart_items',
             'unavailable_items',
             'discounts',
             'cart_subtotal',
             'customers',
-            'branches'
+            'branches',
+            'inventoriesUsed'
         ));
     }
 
@@ -222,6 +250,7 @@ class CartController extends Controller
     {
         $request->validate([
             'qty' => 'required|numeric|min:1',
+            'type' => 'required',
             'note' => 'nullable|min:5|max:200'
         ]);
 
@@ -331,6 +360,8 @@ class CartController extends Controller
         }
 
         $cart_subtotal = 0;
+        $temp_addons = collect();
+
         // Check each item if there is enough stock
         foreach ($cart_items as $citem) {
             if (!isset($citem->menu)) {
@@ -353,6 +384,43 @@ class CartController extends Controller
 
             $citem['price'] = $price;
             $citem['total'] = number_format($price * $citem->qty, 2, '.', '');
+            if (isset($citem->data['has_addons']) && $citem->data['has_addons'] == 1) {
+                $is_dinein = isset($citem->data['is_dinein']) && $citem->data['is_dinein'] == 1 ? true : false;
+                $_addons = $citem->menu->getAddonItems($is_dinein);
+
+                if (count($_addons) > 0) {
+                    $cart_qty = $citem->qty ?? 1;
+                    $cart_id = $citem->id;
+                    $modified_addons = $_addons->map(function ($addon) use ($cart_id, $cart_qty) {
+                        $addon->total_stocks = $addon->qty * $cart_qty;
+                        $addon->cart_id = $cart_id;
+                        return $addon;
+                    });
+
+                    $temp_addons = $temp_addons->merge($modified_addons);
+                }
+
+            }
+        }
+
+        // Validate addon of array
+        if (count($temp_addons) > 0) {
+            $inventory_ids = array_unique($temp_addons->pluck('inventory_id')->toArray());
+            $ivt = BranchMenuInventory::whereIn('id', $inventory_ids)->get();
+
+            foreach($inventory_ids as $id) {
+                $items = $temp_addons->where('inventory_id', $id);
+                $overall_stocks = $items->sum('total_stocks');
+
+                $ivt1 = $ivt->where('id', $id)->first();
+
+                info($ivt1->name);
+                info($overall_stocks);
+
+                if ($ivt1->stock < $overall_stocks) {
+                    return redirect()->route('order.show_cart')->with('error', "Add-on inventory item (name: {$ivt1->name}) does not have enough stock. Reduce quantity of a cart item.");
+                }
+            }
         }
 
         // Validate if items with inventory has enough stock after summing all menus with the same inventory id
@@ -360,12 +428,15 @@ class CartController extends Controller
             ->whereHas('menu', function ($query) {
                 $query->whereHas('inventory');
             })
-            ->select(DB::raw('carts.menu_id, carts.inventory_id, menus.units,  SUM(carts.qty) AS total_qty, SUM(carts.qty)*menus.units AS total_stocks'))
+            ->select(DB::raw('carts.menu_id, carts.inventory_id, carts.data, menus.units, (carts.qty) AS total_qty, (carts.qty)*menus.units AS total_stocks'))
             ->join('menus', 'menus.id', '=', 'carts.menu_id')
-            ->groupBy('carts.menu_id','carts.inventory_id')->orderBy('carts.inventory_id')->get();
+            ->groupBy('carts.id')
+            ->orderBy('carts.id', 'asc')
+            ->orderBy('carts.menu_id', 'asc')
+            ->get();
 
         $inventory_ids = array_unique($total_per_items->pluck('inventory_id')->toArray());
-        $ivt = BranchMenuInventory::whereIn('id', $inventory_ids)->first();
+        $ivt = BranchMenuInventory::whereIn('id', $inventory_ids)->get();
 
         foreach($inventory_ids as $id) {
             $items = $total_per_items->where('inventory_id', $id);

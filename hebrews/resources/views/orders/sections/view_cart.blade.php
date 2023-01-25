@@ -34,6 +34,16 @@
                 <span><i class="fa-solid fa-circle-arrow-left"></i> BACK</span>
             </a>
         </div>
+        <div>
+            <button
+                type="button"
+                class="inline-block px-6 py-2.5 bg-green-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-green-700 hover:shadow-lg focus:bg-green-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-green-800 active:shadow-lg transition duration-150 ease-in-out"
+                data-bs-toggle="modal"
+                data-bs-target="#inventorySummaryModal"
+                >
+                <i class="fa-solid fa-cubes"></i> INVENTORIES USED
+            </button>
+        </div>
     </div>
     <div class="p-4 overflow-hidden bg-white rounded-lg shadow-xs">
         <div class="w-full mb-8 overflow-hidden border rounded-lg shadow-xs">
@@ -46,10 +56,11 @@
                         <th class="px-4 py-4 text-center">Order Type</th>
                         <th class="px-4 py-4">Inventory</th>
                         <th class="px-4 py-3">Qty</th>
-                        <th class="px-4 py-4 text-center">Status</th>
+                        <th class="px-4 py-4 text-center">Addons</th>
                         <th class="px-4 py-4 text-center">Type</th>
                         <th class="px-4 py-4 text-center">Price</th>
                         <th class="px-4 py-3 text-center">Total</th>
+                        <th class="px-4 py-4 text-center">Status</th>
                         <th class="px-4 py-3 text-center">Action</th>
                     </tr>
                     </thead>
@@ -92,25 +103,45 @@
                                     </ul>
                                 </td>
                                 <td class="px-4 py-4 text-sm text-center">
-                                    @if ($item->available)
+                                    @if (isset($item->data['has_addons']) && $item->data['has_addons'])
                                         <div class="inline-flex items-center px-3 py-1 text-xs font-bold text-white uppercase bg-green-600 rounded-full leading-sm">
-                                            AVAILABLE
+                                            YES
                                         </div>
                                     @else
                                         <div class="inline-flex items-center px-3 py-1 text-xs font-bold text-white uppercase bg-red-600 rounded-full leading-sm">
-                                            UNAVAILABLE
+                                            NO
                                         </div>
                                     @endif
                                 </td>
                                 <td class="px-4 py-4 text-sm text-center">
                                     {{ $item->type }}
                                 </td>
-
                                 <td class="px-4 py-4 text-sm text-center">
                                     {{ $item->price }}
                                 </td>
                                 <td class="px-4 py-4 text-sm text-center">
                                     {{ $item->total }}
+                                </td>
+                                <td class="px-4 py-4 text-sm" style="max-width: 150px;">
+                                    @if ($item->available)
+                                        @if (isset($item->errors) && count($item->errors) > 0)
+                                            @foreach($item->errors as $error)
+                                                <li class="text-red-600">{{ $error }}</li>
+                                            @endforeach
+                                        @else
+                                            <div class="text-center">
+                                                <div class="inline-flex items-center px-3 py-1 text-xs font-bold text-white uppercase bg-green-600 rounded-full leading-sm">
+                                                    AVAILABLE
+                                                </div>
+                                            </div>
+                                        @endif
+                                    @else
+                                        <div class="text-center">
+                                            <div class="inline-flex items-center px-3 py-1 text-xs font-bold text-white uppercase bg-red-600 rounded-full leading-sm">
+                                                UNAVAILABLE
+                                            </div>
+                                        </div>
+                                    @endif
                                 </td>
                                 <td class="px-4 py-4 text-sm f">
                                     <div class="flex items-center justify-center space-x-4 text-sm">
@@ -162,6 +193,7 @@
     </div>
 
     @include('orders.modals.confirm_cart')
+    @include('orders.modals.inventory_summary')
     @include('orders.modals.update_cart_item')
     @include('orders.modals.delete_cart_item')
 
