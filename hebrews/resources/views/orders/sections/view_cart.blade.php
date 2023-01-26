@@ -45,19 +45,18 @@
             </button>
         </div>
     </div>
-    <div class="p-4 overflow-hidden bg-white rounded-lg shadow-xs">
+    <div class="p-6 overflow-hidden bg-white rounded-lg shadow-xs">
         <div class="w-full mb-8 overflow-hidden border rounded-lg shadow-xs">
             <div class="w-full overflow-x-auto">
                 <table class="w-full whitespace-no-wrap">
                     <thead>
                     <tr class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase border-b bg-gray-50">
-                        <th class="px-4 py-4 text-center">Menu Id</th>
+                        <th class="px-4 py-4 text-center">M.ID</th>
                         <th class="px-4 py-4">Name</th>
-                        <th class="px-4 py-4 text-center">Order Type</th>
+                        <th class="px-4 py-4 text-center">O.Type</th>
                         <th class="px-4 py-4">Inventory</th>
                         <th class="px-4 py-3">Qty</th>
                         <th class="px-4 py-4 text-center">Addons</th>
-                        <th class="px-4 py-4 text-center">Type</th>
                         <th class="px-4 py-4 text-center">Price</th>
                         <th class="px-4 py-3 text-center">Total</th>
                         <th class="px-4 py-4 text-center">Status</th>
@@ -114,10 +113,7 @@
                                     @endif
                                 </td>
                                 <td class="px-4 py-4 text-sm text-center">
-                                    {{ $item->type }}
-                                </td>
-                                <td class="px-4 py-4 text-sm text-center">
-                                    {{ $item->price }}
+                                    {{ $item->price }} ({{ $item->type ?? 'N/A' }})
                                 </td>
                                 <td class="px-4 py-4 text-sm text-center">
                                     {{ $item->total }}
@@ -143,8 +139,8 @@
                                         </div>
                                     @endif
                                 </td>
-                                <td class="px-4 py-4 text-sm f">
-                                    <div class="flex items-center justify-center space-x-4 text-sm">
+                                <td class="px-4 py-4 text-sm">
+                                    <div class="flex flex-col items-center justify-center space-y-4 text-sm">
                                         @if ($item->available)
                                             <button
                                                 class="btn-update-cart flex items-center inline-block px-6 py-2.5 bg-green-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-green-700 hover:shadow-lg focus:bg-green-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-green-800 active:shadow-lg transition duration-150 ease-in-out"
@@ -201,6 +197,8 @@
         <script src="https://cdn.jsdelivr.net/npm/tom-select/dist/js/tom-select.complete.min.js"></script>
         <script type="text/javascript">
             $('.custom-discount').hide();
+            $('#customer-name').hide();
+            $('#customer-account').show();
 
             var select = new TomSelect('#select-table', {
                 plugins: ['remove_button'],
@@ -286,6 +284,18 @@
                 $('#ord-fees').val(fees.toFixed(2));
                 $('#ord-total').val(total.toFixed(2));
             }
+
+            $('#noAccountBox').on("click", function() {
+                var noAccount = $(this).is(':checked');
+                if (noAccount) {
+                    $('#customer-name').show();
+                    $('#customer-account').hide();
+                } else {
+                    $('#customer-name').hide();
+                    $('#customer-account').show();
+                }
+            });
+
         </script>
     </x-slot>
 

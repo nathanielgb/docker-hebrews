@@ -69,6 +69,9 @@
                                             </span> <br>
                                             <span class="italic">
                                                 {{ $item->sub_category }}
+                                            </span><br>
+                                            <span class="italic">
+                                                ({{ $item->category->from }})
                                             </span>
                                         </td>
                                         <td class="px-4 py-3 text-sm text-center">

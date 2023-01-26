@@ -80,13 +80,20 @@
 
                         <label class="block mb-4 text-sm">
                             <span class="text-gray-700">Customer</span>
-                            <select class="styled-input" name="customer">
+                            <select class="styled-input" name="customer" id="customer-account">
                                 <option value="" selected disabled>Select an account</option>
                                 <option value="" >none</option>
                                 @foreach ($customers as $customer)
                                     <option value="{{ $customer->id }}" >{{ $customer->name }}</option>
                                 @endforeach
                             </select>
+                            <input id="customer-name" class="styled-input" name="customer_name"type="text" placeholder="Enter name">
+                            <div class="form-check">
+                                <input name="noAccount" class="float-left w-4 h-4 mt-1 mr-2 align-top transition duration-200 bg-white bg-center bg-no-repeat bg-contain border border-gray-300 rounded-sm appearance-none cursor-pointer form-check-input checked:bg-blue-600 checked:border-blue-600 focus:outline-none" type="checkbox" id="noAccountBox">
+                                <label class="inline-block text-gray-800 form-check-label" for="flexCheckChecked">
+                                    no account
+                                </label>
+                            </div>
                         </label>
                         <label class="block mb-4 text-sm">
                             <span class="text-gray-700">Fees</span>

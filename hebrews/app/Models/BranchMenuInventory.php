@@ -49,6 +49,6 @@ class BranchMenuInventory extends Model
      */
     public function category()
     {
-        return $this->belongsTo(InventoryCategory::class, 'category_id', 'id');
+        return $this->belongsTo(InventoryCategory::class, 'category_id');
     }
 }

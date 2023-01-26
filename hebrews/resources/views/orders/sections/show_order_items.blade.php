@@ -34,7 +34,7 @@
                     <th class="px-4 py-3 text-center">Qty</th>
                     <th class="px-4 py-3 text-center">Tot. Stock</th>
                     <th class="px-4 py-3 text-center">Total Amount</th>
-                    <th class="px-4 py-3 text-center">Note</th>
+                    <th class="px-4 py-3">Note</th>
                     <th class="px-4 py-3 text-center">Served by</th>
                 </tr>
                 </thead>
@@ -111,7 +111,7 @@
                                 {{ $item->price }} ({{ $item->type }})
                             </td>
                             <td class="px-4 py-3 text-sm text-center">
-                                {{ $item->units }} 
+                                {{ $item->units }}
                                 @if ($item->unit_label)
                                     ({{ $item->unit_label }})
                                 @endif
@@ -126,10 +126,10 @@
                                     -
                                 @endif
                             </td>
-                            <td class="px-4 py-3 text-sm text-center">
+                            <td class="px-4 py-3 text-sm text-justify">
                                 {{ $item->total_amount }}
                             </td>
-                            <td class="px-4 py-3 text-sm text-center">
+                            <td class="px-4 py-3 text-sm text-justify" style="max-width: 150px;">
                                 <p>
                                     {{ $item->note }}
                                 </p>

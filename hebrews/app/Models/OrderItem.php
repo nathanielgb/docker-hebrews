@@ -58,11 +58,35 @@ class OrderItem extends Model
     }
 
     /**
-     * Get the order related to the item.
+     * Get the menu related to the item.
      */
     public function menu()
     {
         return $this->belongsTo(Menu::class, 'menu_id', 'id');
+    }
+
+    /**
+     * Get the iventory related to the item.
+     */
+    public function inventory()
+    {
+        return $this->belongsTo(BranchMenuInventory::class, 'inventory_id', 'id');
+    }
+
+    /**
+     * Get the addons items according to order type
+     */
+    public function getAddonItems($isdinein)
+    {
+        return MenuAddOn::whereHas('inventory')->where('menu_id', $this->menu_id)->where('is_dinein', $isdinein)->get();
+    }
+
+    /**
+     * Get the addon item according to order type
+     */
+    public function getAddonItem($isdinein, $inventory_id)
+    {
+        return MenuAddOn::where('inventory_id', $inventory_id)->whereHas('inventory')->where('menu_id', $this->menu_id)->where('is_dinein', $isdinein)->first();
     }
 
     public function scopeGenerateUniqueId($query)

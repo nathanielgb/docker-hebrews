@@ -143,26 +143,32 @@
     <x-slot name="scripts">
         <script src="https://cdn.jsdelivr.net/npm/tom-select/dist/js/tom-select.complete.min.js"></script>
         <script type="text/javascript">
-            var categories = @json($categories);
             var inventories = @json($inventory_items);
-
-            var newCategories = categories.map(element => {
-                return {
-                    value: element.id,
-                    label: element.name
-                };
-            });
-
+            var newCategories = [];
 
             var newInventories = inventories.map(element => {
+                let category = {};
+                category.value = element.category_id;
+                category.label = element?.category?.name;
+                category.from = element?.category?.from;
+                newCategories.push(category);
+
                 return {
                     class: element.category_id,
+                    category: element?.category?.name,
                     value: element.id,
                     name: element.name
                 };
             });
 
             new TomSelect('#select-inventory',{
+                sortField: [{
+                    field: "category",
+                    direction: "asc",
+                },{
+                    field: "name",
+                    direction: "asc",
+                }],
                 options: newInventories,
                 optgroups: newCategories,
                 optgroupField: 'class',

@@ -26,15 +26,11 @@ class OrderService
      * @param String $type product type of menu item
      * @param String $grind_type grind type of menu item (if beans)
      * @param Boolean $isdinein if dine-in or take-out order
-     * @param Array $addons attached Add-ons for the menu item
+     * @param Boolean $hasAddons has addons
      * @return array|string
      */
-    public function addItem($order, $id, $qty, $type, $grind_type, $isdinein,  $addons)
+    public function addItem($order, $id, $qty, $type, $grind_type, $isdinein,  $hasAddons)
     {
-        // if ($order->confirmed) {
-        //     throw new \Exception('Cannot add item for confirmed orders.');
-        // }
-
         $item = Menu::where('id', $id)->first();
 
         // Check if item exist
@@ -47,22 +43,9 @@ class OrderService
             throw new \Exception('Item is not available for the branch of order.');
         }
 
-        // Check if item is already ordered
-        // $ord_item = OrderItem::where('order_id', $order->order_id)
-        //     ->where('menu_id', $item->id)
-        //     ->where('status', '!=', 'void')
-        //     ->first();
-
-        // if ($ord_item) {
-        //     return [
-        //         'status' => 'warning',
-        //         'message' => 'Item is already in the order.'
-        //     ];
-        // }
-
         if ($item->inventory) {
             // Check item for stocks in inventory
-            $checkStock = $this->checkItemStock($item, $item->units, $qty);
+            $checkStock = $this->checkItemStock($item->inventory, $item->units, $qty);
 
             if ($checkStock['status'] == 'fail') {
                 throw new \Exception("Item (name: $item->name) does not have enough stock.");
@@ -82,29 +65,24 @@ class OrderService
         $added_item_subtotal = floatval($product_price) * intval($qty);
 
         // Validate Add-on
-        // $AddonService = new AddonService;
-        // $response = $AddonService->validateAddon($addons, $item);
+        if ($hasAddons) {
+            // Validate Add-on
+            $AddonService = new AddonService;
+            $response = $AddonService->validateAddon($item, $isdinein, $qty);
 
-        // if (isset($response) && $response['status'] == 'fail') {
-        //     throw new \Exception($response['message']);
-        // }
+            if (isset($response) && $response['status'] == 'fail') {
+                throw new \Exception($response['message']);
+            }
+        }
 
         DB::beginTransaction();
 
         try {
-            // foreach ($response['data'] as $addon) {
-            //     $addonModel = MenuAddOn::where('id', $addon['addon_id'])->first();
-            //     $deduct_addon = $this->deductQtyToInventory($addonModel->inventory, 1, $addon['qty']);
-
-            //     if ($deduct_addon['status'] == 'fail') {
-            //         return redirect()->back()->with('error', "Failed to generate order. Add-on Item $addon->name does not have enough stock.");
-            //     }
-            // }
-
             $data = [
                 'is_dinein' => $isdinein ? true : false,
                 'is_beans' => isset($item->is_beans) && $item->is_beans == 1 ? true : false,
-                'grind_type' => isset($grind_type) ? $grind_type : null
+                'grind_type' => isset($grind_type) ? $grind_type : null,
+                'has_addons' => $hasAddons
             ];
 
             $orderItemId = OrderItem::generateUniqueId();
@@ -117,7 +95,7 @@ class OrderService
             $ord_item->inventory_name = isset($item->inventory) ? $item->inventory->name : null;
             $ord_item->inventory_code = isset($item->inventory) ? $item->inventory->inventory_code : null;
             $ord_item->name = $item->name;
-            $ord_item->from = $item->category->from;
+            $ord_item->from = isset($item->category) ? $item->category->from : null;
             $ord_item->price = $product_price;
             $ord_item->type = $type;
             $ord_item->unit_label =isset($item->inventory) ? $item->inventory->unit : null;
@@ -193,8 +171,6 @@ class OrderService
             $order->discount_amount = round($orderInvoice['discount'], 2);
             $order->save();
 
-
-
             DB::commit();
 
             return [
@@ -221,39 +197,76 @@ class OrderService
      * @param String $quantity quantity of order item
      * @param String $grind_type grind type of menu item (if beans)
      * @param Boolean $isdinein if dine-in or take-out order
-     * @param Array $addons attached Add-ons for the order item
+     * @param Boolean $hasAddons has addons
+     * @param String $note optional note
      * @return array|string
      */
-    public function updateItem($order, $item, $quantity=0, $grind_type, $isdinein, $addons)
+    public function updateItem($order, $item, $quantity=0, $grind_type, $isdinein, $hasAddons, $note)
     {
         $unit_price = $item->price;
-        $new_qty = $quantity;
 
-        if ($new_qty <= 0) {
+        if ($quantity <= 0) {
             throw new \Exception('Item quantity cannot be less than or equal to 0.');
         }
 
-        $inventory = BranchMenuInventory::where('id', $item->inventory_id)->first();
 
-        if ($inventory) {
+        $InventoryService = new InventoryService;
+        $inventoriesUsed = $InventoryService->getInventoriesUsedByOrder($order->items);
+
+        if (array_key_exists($item->inventory_id, $inventoriesUsed)) {
             // Check item for stocks in inventory
-            $checkStock = $this->checkItemStock($item->menu, $item->units, $new_qty);
+            $running_stock = $inventoriesUsed[$item->inventory_id]['running_stock'];
+            $original_order_qty = $item->qty * $item->units;
+            $inventory_used_less_current_item = $inventoriesUsed[$item->inventory_id]['total_used'] - $original_order_qty;
+            $new_inventory_qty = $quantity * $item->units;
 
-            if (isset($checkStock) &&  $checkStock['status'] == 'fail') {
-                throw new \Exception("Item (name: {$item->name}) does not have enough stock.");
+            $new_total = $inventory_used_less_current_item + $new_inventory_qty;
+            if ($running_stock < $new_total) {
+                throw new \Exception("Inventory item for (name: {$item->name}) does not have enough stock.");
             }
         }
 
-        // Validate Add-on
-        // $AddonService = new AddonService;
-        // $response = $AddonService->validateAddon($addons, $item->menu);
+        if ($hasAddons) {
+            // Validate Add-on
+            $addons = $item->getAddonItems($isdinein ? true : false);
 
-        // if (isset($response) && $response['status'] == 'fail') {
-        //     throw new \Exception($response['message']);
-        // }
+            if (count($addons) > 0) {
+                    $addons->map(function ($addon) use ($quantity, $inventoriesUsed) {
+
+                        if (array_key_exists($addon->inventory_id, $inventoriesUsed)) {
+                            // Check item for stocks in inventory
+                            if ($inventoriesUsed[$addon->inventory_id]['invalid']) {
+                                throw new \Exception("Addon item (name: {$addon->inventory->name}) does not have enough stock.");
+                            } else {
+                                $running_stock = $inventoriesUsed[$addon->inventory_id]['running_stock'];
+                                $original_order_qty = $addon->qty;
+                                $inventory_used_less_current_item = $inventoriesUsed[$addon->inventory_id]['total_used'] - $original_order_qty;
+                                $new_inventory_qty = $quantity;
+
+                                $new_total = $inventory_used_less_current_item + $new_inventory_qty;
+                                if ($running_stock < $new_total) {
+                                    throw new \Exception("Addon item (name: {$addon->inventory->name}) does not have enough stock.");
+                                }
+                            }
+                        } else {
+                            $ivt = BranchMenuInventory::where('id', $addon->inventory_id)->first();
+                            $adddon_qty = $addon->qty * $quantity;
+
+                            if ($ivt->stock < $adddon_qty) {
+                                throw new \Exception("Addon item (name: {$addon->inventory->name}) does not have enough stock.");
+                            }
+                        }
+                    });
+
+                if (isset($response) && $response['status'] == 'fail') {
+                    throw new \Exception($response['message']);
+                }
+            }
+        }
 
         $data = $item->data ?? [];
         $data['is_dinein'] = $isdinein ? true : false;
+        $data['has_addons'] = $hasAddons;
 
         if (isset($data['is_beans']) && $data['is_beans']) {
             $data['grind_type'] = $grind_type;
@@ -263,38 +276,11 @@ class OrderService
 
         try {
             // Update total amount of item
-            $item->total_amount = round(floatval($unit_price*$new_qty), 2);
-            $item->qty = $new_qty;
+            $item->total_amount = round(floatval($unit_price*$quantity), 2);
+            $item->qty = $quantity;
             $item->data = $data;
+            $item->note = $note;
             $item->save();
-
-            // Manage Addons - Delete Add ons that are not in the list
-            // $deleteAddons = AddonOrderItem::where('order_item_id', $item->order_item_id)
-            //     ->whereNotIn('addon_id', $response['ids'] ?? [])
-            //     ->delete();
-
-            // if (isset($response['data'])) {
-            //     foreach($response['data'] as $addon) {
-            //         $addonModel = MenuAddOn::where('id', $addon['addon_id'])->first();
-
-            //         // Update or create
-            //         $updateAddons = AddonOrderItem::updateOrCreate(
-            //             [
-            //                 'order_id'  => $item->order_id,
-            //                 'order_item_id'  => $item->order_item_id,
-            //                 'addon_id'  => $addon['addon_id'],
-            //             ],
-            //             [
-            //                 'inventory_id' => $addonModel->inventory_id,
-            //                 'inventory_name' => $addonModel->inventory->name,
-            //                 'name' => $addon['name'],
-            //                 'qty' => $addon['qty'],
-            //                 'created_at' => Carbon::now(),
-            //                 'updated_at' => Carbon::now(),
-            //             ]
-            //         );
-            //     }
-            // }
 
 
             // Re-calculate total order price

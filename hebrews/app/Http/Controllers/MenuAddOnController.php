@@ -17,16 +17,13 @@ class MenuAddOnController extends Controller
 
         if ($menu) {
             $addons = MenuAddOn::where('menu_id', $menu->id);
-            $inventory_items = BranchMenuInventory::where('branch_id', $menu->branch_id)->where('stock', '>', 0)->get();
-            $category_ids = BranchMenuInventory::where('branch_id', $menu->branch_id)->where('stock', '>', 0)->groupBy('category_id')->pluck('category_id');
-            $categories = InventoryCategory::whereIn('id', $category_ids)->get();
+            $inventory_items = BranchMenuInventory::with('category')->where('branch_id', $menu->branch_id)->where('stock', '>', 0)->get();
             $addons = $addons->orderBy('menu_id')->paginate(20);
 
             return view('menu.add_ons', compact(
                 'menu',
                 'addons',
-                'inventory_items',
-                'categories'
+                'inventory_items'
             ));
 
         }

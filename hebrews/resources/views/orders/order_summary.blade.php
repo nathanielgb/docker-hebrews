@@ -75,6 +75,14 @@
                             <span><i class="fa-solid fa-basket-shopping"></i> ITEMS</span>
                         </a>
                     @endif
+                    <button
+                        type="button"
+                        class="inline-block px-6 py-2.5 bg-green-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-green-700 hover:shadow-lg focus:bg-green-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-green-800 active:shadow-lg transition duration-150 ease-in-out"
+                        data-bs-toggle="modal"
+                        data-bs-target="#inventorySummaryModal"
+                        >
+                        <i class="fa-solid fa-cubes"></i> INVENTORIES USED
+                    </button>
                 </div>
             </div>
 
@@ -85,18 +93,16 @@
                         <thead>
                         <tr class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase border-b bg-gray-50">
                             <th class="px-4 py-3">Name</th>
-                            <th class="px-3 py-3 text-center">Order Type</th>
-                            <th class="px-4 py-4 text-center">Status</th>
-                            <th class="px-4 py-4 text-center">Units/Qty</th>
-                            <th class="px-4 py-4 text-center">Qty</th>
-                            <th class="px-4 py-4 text-center">Tot.Stock</th>
-                            <th class="px-4 py-4 text-center">Add-ons</th>
+                            <th class="px-3 py-3 text-center">O.Type</th>
+                            <th class="px-4 py-4">Qty</th>
+                            <th class="px-4 py-4 text-center">Addons</th>
                             <th class="px-4 py-3 text-center">Total Amount</th>
+                            <th class="px-4 py-4 text-center">Status</th>
                         </tr>
                         </thead>
                         <tbody class="bg-white divide-y">
 
-                                @forelse ($order->items as $item)
+                                @forelse ($items as $item)
                                     <tr class="text-gray-700">
                                         <td class="px-4 py-4 text-sm">
                                             <span>
@@ -113,57 +119,91 @@
                                                 <span class="text-xs inline-block py-1 px-2.5 leading-none text-center whitespace-nowrap align-baseline font-bold bg-blue-400 text-white rounded">Take-out</span>
                                             @endif
                                         </td>
+                                        <td class="px-4 py-3 text-sm">
+                                            <ul>
+                                                <li>
+                                                    @if ($item->inventory_code)
+                                                        <em class="font-bold">{{ $item->inventory_code }}</em>
+                                                    @endif
+                                                </li>
+                                                <li>qty: <span class="font-semibold"><em>{{ $item->qty }}</em></span></li>
+                                                <li>unit/qty:
+                                                    <em>
+                                                        <span class="font-semibold">
+                                                            {{ $item->units }}
+                                                            @if ($item->unit_label)
+                                                                ({{ $item->unit_label }})
+                                                            @endif
+                                                        </span>
+                                                    </em>
+                                                </li>
+                                                <li>tot.qty: <span class="font-semibold"><em>{{ $item->qty * $item->units  }}</em></span></li>
+                                            </ul>
+                                        </td>
                                         <td class="px-4 py-4 text-sm text-center">
-                                            @if ($item->status == 'pending')
-                                                <div class="inline-flex items-center px-3 py-1 text-xs font-bold text-white uppercase bg-yellow-400 rounded-full leading-sm">
-                                                    PENDING
+                                            @if (isset($item->data['has_addons']) && $item->data['has_addons'])
+                                                <div class="inline-flex items-center px-3 py-1 text-xs font-bold text-white uppercase bg-green-600 rounded-full leading-sm">
+                                                    YES
                                                 </div>
+                                            @else
+                                                <div class="inline-flex items-center px-3 py-1 text-xs font-bold text-white uppercase bg-red-600 rounded-full leading-sm">
+                                                    NO
+                                                </div>
+                                            @endif
+                                        </td>
+                                        <td class="px-4 py-4 text-sm text-center">
+                                            <span>{{ $item->total_amount }} ({{ $item->type }})</span>
+                                        </td>
+                                        <td class="px-4 py-4 text-sm" style="max-width: 100px;">
+                                            @if ($item->status == 'pending')
+                                                @if (array_key_exists($item->inventory_id, $inventoriesUsed))
+                                                    @if ($inventoriesUsed[$item->inventory_id]['invalid'])
+                                                        <li class="text-red-600">inventory stock is insufficient. check order quantity or add-ons</li>
+                                                    @else
+                                                        <div class="text-center">
+                                                            <div class="inline-flex items-center px-3 py-1 text-xs font-bold text-white uppercase bg-yellow-400 rounded-full leading-sm">
+                                                                PENDING
+                                                            </div>
+                                                        </div>
+                                                    @endif
+                                                @else
+                                                    <div class="text-center">
+                                                        <div class="inline-flex items-center px-3 py-1 text-xs font-bold text-white uppercase bg-yellow-400 rounded-full leading-sm">
+                                                            PENDING
+                                                        </div>
+                                                    </div>
+                                                @endif
                                             @elseif ($item->status == 'ordered')
-                                                <div class="inline-flex items-center px-3 py-1 text-xs font-bold text-blue-700 uppercase bg-blue-200 rounded-full leading-sm">
-                                                    ORDERED
+                                                <div class="text-center">
+                                                    <div class="inline-flex items-center px-3 py-1 text-xs font-bold text-blue-700 uppercase bg-blue-200 rounded-full leading-sm">
+                                                        ORDERED
+                                                    </div>
                                                 </div>
                                             @elseif ($item->status == 'preparing')
-                                                <div class="inline-flex items-center px-3 py-1 text-xs font-bold text-orange-700 uppercase bg-orange-200 rounded-full leading-sm">
-                                                    PREPARING
+                                                <div class="text-center">
+                                                    <div class="inline-flex items-center px-3 py-1 text-xs font-bold text-orange-700 uppercase bg-orange-200 rounded-full leading-sm">
+                                                        PREPARING
+                                                    </div>
                                                 </div>
                                             @elseif ($item->status == 'done')
-                                                <div class="inline-flex items-center px-3 py-1 text-xs font-bold text-green-700 uppercase bg-green-200 rounded-full leading-sm">
-                                                    DONE
+                                                <div class="text-center">
+                                                    <div class="inline-flex items-center px-3 py-1 text-xs font-bold text-green-700 uppercase bg-green-200 rounded-full leading-sm">
+                                                        DONE
+                                                    </div>
                                                 </div>
                                             @elseif ($item->status == 'served')
-                                                <div class="inline-flex items-center px-3 py-1 text-xs font-bold text-teal-700 uppercase bg-teal-200 rounded-full leading-sm">
-                                                    SERVED
+                                                <div class="text-center">
+                                                    <div class="inline-flex items-center px-3 py-1 text-xs font-bold text-teal-700 uppercase bg-teal-200 rounded-full leading-sm">
+                                                        SERVED
+                                                    </div>
                                                 </div>
                                             @elseif ($item->status == 'void')
-                                                <div class="inline-flex items-center px-3 py-1 text-xs font-bold text-white uppercase bg-red-600 rounded-full leading-sm">
-                                                    VOID
+                                                <div class="text-center">
+                                                    <div class="inline-flex items-center px-3 py-1 text-xs font-bold text-white uppercase bg-red-600 rounded-full leading-sm">
+                                                        VOID
+                                                    </div>
                                                 </div>
                                             @endif
-                                        </td>
-                                        <td class="px-4 py-4 text-sm text-center">
-                                            <span>
-                                                {{ $item->units }} 
-                                                @if ($item->unit_label)
-                                                    ({{ $item->unit_label }})
-                                                @endif
-                                            </span>
-                                        </td>
-                                        <td class="px-4 py-3 text-sm text-center">
-                                            {{ $item->qty }}
-                                        </td>
-                                        <td class="px-4 py-3 text-sm text-center">
-                                            @if ($item->inventory_id)
-                                                {{ $item->qty*$item->units }}
-                                            @else
-                                                -
-                                            @endif
-                                        </td>
-                                        <td class="px-4 py-4 text-sm text-center">
-                                            <!-- todo -->
-                                            -
-                                        </td>
-                                        <td class="px-4 py-4 text-sm text-center">
-                                            <span>{{ $item->total_amount }}</span>
                                         </td>
                                     </tr>
                                 @empty
@@ -176,7 +216,7 @@
                         </tbody>
                         @if (!empty($order->items))
                             <tr class="border-t border-gray-300">
-                                <td class="px-4 py-2 text-sm font-semibold text-right" colspan="7">
+                                <td class="px-4 py-2 text-sm font-semibold text-right" colspan="5">
                                     Subtotal
                                 </td>
                                 <td class="px-4 py-2 text-sm font-semibold text-center" colspan="1">
@@ -184,7 +224,7 @@
                                 </td>
                             </tr>
                             <tr>
-                                <td class="px-4 py-2 text-sm font-semibold text-right" colspan="7">
+                                <td class="px-4 py-2 text-sm font-semibold text-right" colspan="5">
                                     Other Fees
                                 </td>
                                 <td class="px-4 py-2 text-sm font-semibold text-center" colspan="1">
@@ -192,7 +232,7 @@
                                 </td>
                             </tr>
                             <tr>
-                                <td class="px-4 py-2 text-sm font-semibold text-right" colspan="7">
+                                <td class="px-4 py-2 text-sm font-semibold text-right" colspan="5">
                                     Discount Amount
                                 </td>
                                 <td class="px-4 py-2 text-sm font-semibold text-center" colspan="1">
@@ -204,7 +244,7 @@
                                 </td>
                             </tr>
                             <tr>
-                                <td class="px-4 py-2 text-sm font-semibold text-right" colspan="7">
+                                <td class="px-4 py-2 text-sm font-semibold text-right" colspan="5">
                                     Total Amount
                                 </td>
                                 <td class="px-4 py-2 text-sm font-semibold text-center" colspan="1">
@@ -458,7 +498,7 @@
     @include('orders.modals.edit_order')
     @include('orders.modals.confirm_orderNew')
     @include('orders.modals.complete_order')
-
+    @include('orders.modals.order_inventory_summary')
 
     <x-slot name="scripts">
         <script src="https://cdn.jsdelivr.net/npm/tom-select/dist/js/tom-select.complete.min.js"></script>

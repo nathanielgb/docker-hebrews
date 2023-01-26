@@ -351,11 +351,20 @@ class CartController extends Controller
             'fees' => 'required|numeric|between:0,9999999',
         ]);
 
-        if ($request->customer) {
-            $customer = Customer::where('id', $request->customer)->first();
+        $customer_id = null;
+        $customer_name = '';
 
-            if (!$customer) {
-                return redirect()->route('order.show_cart')->with('error', 'Customer account chosen does not exist or has been removed.');
+        if ($request->has('noAccount')) {
+            $customer_name = $request->customer_name;
+        } else {
+            if ($request->customer) {
+                $customer = Customer::where('id', $request->customer)->first();
+                $customer_id = $customer->id;
+                $customer_name = $customer->name;
+
+                if (!$customer) {
+                    return redirect()->route('order.show_cart')->with('error', 'Customer account chosen does not exist or has been removed.');
+                }
             }
         }
 
@@ -413,9 +422,6 @@ class CartController extends Controller
                 $overall_stocks = $items->sum('total_stocks');
 
                 $ivt1 = $ivt->where('id', $id)->first();
-
-                info($ivt1->name);
-                info($overall_stocks);
 
                 if ($ivt1->stock < $overall_stocks) {
                     return redirect()->route('order.show_cart')->with('error', "Add-on inventory item (name: {$ivt1->name}) does not have enough stock. Reduce quantity of a cart item.");
@@ -502,8 +508,8 @@ class CartController extends Controller
             $order = new Order;
             $order->order_id = $orderId;
             $order->branch_id = $request->branch;
-            $order->customer_id =isset($customer->id) ? $customer->id : '';
-            $order->customer_name = isset( $customer->name) ? $customer->name : '';
+            $order->customer_id = $customer_id;
+            $order->customer_name = $customer_name;
             $order->server_name = auth()->user()->name;
             $order->subtotal = $orderInvoice['subtotal'];
             $order->discount_amount = $orderInvoice['discount'];

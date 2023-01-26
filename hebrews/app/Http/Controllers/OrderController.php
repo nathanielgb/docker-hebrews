@@ -2,21 +2,22 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\BankAccount;
 use Carbon\Carbon;
 use App\Models\Menu;
-use App\Models\Order;
-use App\Models\MenuCategory;
-use App\Models\OrderItem;
 use App\Models\User;
+use App\Models\Order;
+use App\Models\ErrorLog;
+use App\Models\OrderItem;
+use App\Models\BankAccount;
+use App\Models\InventoryLog;
+use App\Models\MenuCategory;
 use Illuminate\Http\Request;
+use App\Models\AddonOrderItem;
+use App\Services\OrderService;
+use App\Models\BankTransaction;
+use App\Services\InventoryService;
 use Illuminate\Support\Facades\DB;
 use App\Http\Requests\PayOrderRequest;
-use App\Models\AddonOrderItem;
-use App\Models\BankTransaction;
-use App\Models\ErrorLog;
-use App\Models\InventoryLog;
-use App\Services\OrderService;
 
 class OrderController extends Controller
 {
@@ -102,12 +103,11 @@ class OrderController extends Controller
 
         if ($order) {
             $accounts = BankAccount::all();
+            $items = OrderItem::where('order_id', $order->order_id)->get();
+            $InventoryService = new InventoryService;
+            $inventoriesUsed = $InventoryService->getInventoriesUsedByOrder($items);
 
-            $onProgressItems = OrderItem::where('order_id', $order->order_id)
-            ->where('status', 'served')
-            ->count();
-
-            return view('orders.order_summary',compact('order','onProgressItems', 'accounts'));
+            return view('orders.order_summary',compact('order', 'items','accounts', 'inventoriesUsed'));
         }
         return redirect()->route('order.list')->with('error', 'Order does not exist.');
     }
@@ -179,26 +179,26 @@ class OrderController extends Controller
             $order = Order::where('order_id', $request->order_id)->first();
         }
 
-        $menus = Menu::where(function ($q1) use ($order) {
-            $q1->doesntHave('inventory');
-
-            // Check branch of current user
-            if (auth()->user()->branch_id) {
-                $q1->where('branch_id', $order->branch_id);
-            }
-        })->orWhereHas('inventory', function ($q2) use ($order) {
-            $q2->where('stock', '>', 0);
-
-            // Check branch of current user
-            if (auth()->user()->branch_id) {
-                $q2->where('branch_id', $order->branch_id);
-            }
-        });
-
         if ($order) {
             if ($order->paid) {
                 return redirect()->back()->with('error', 'Cannot add item for paid orders.');
             }
+
+            $menus = Menu::with('category')->where(function ($q1) use ($order) {
+                $q1->doesntHave('inventory');
+
+                // Check branch of current user
+                if (auth()->user()->branch_id) {
+                    $q1->where('branch_id', $order->branch_id);
+                }
+            })->orWhereHas('inventory', function ($q2) use ($order) {
+                $q2->where('stock', '>', 0);
+
+                // Check branch of current user
+                if (auth()->user()->branch_id) {
+                    $q2->where('branch_id', $order->branch_id);
+                }
+            })->get();
 
             return view('orders.sections.add_item',compact('order','menus'));
         }
@@ -221,7 +221,7 @@ class OrderController extends Controller
             ]);
 
             try {
-                $addItem = $orderService->addItem($order, $request->menuitem, $request->quantity, $request->type, $request->grind_type, (bool) $request->isdinein, $request->orderItemAddon);
+                $addItem = $orderService->addItem($order, $request->menuitem, $request->quantity, $request->type, $request->grind_type, (bool) $request->isdinein, $request->has('applyAddon'));
 
                 if ($addItem['status'] == 'warning') {
                     return redirect()->back()->with('warning', $addItem['message']);
@@ -258,10 +258,12 @@ class OrderController extends Controller
             $order = Order::where('order_id', $request->order_id)->first();
         }
 
-        $order_id = $request->order_id;
-        $order_items = OrderItem::where('order_id', $order_id)->get();
+        $order_items = OrderItem::where('order_id', $order->order_id)->get();
 
-        return view('orders.sections.edit_items', compact('order', 'order_items', 'order_id'));
+        $InventoryService = new InventoryService;
+        $inventoriesUsed = $InventoryService->getInventoriesUsedByOrder($order_items);
+
+        return view('orders.sections.edit_items', compact('order', 'order_items', 'inventoriesUsed'));
     }
 
     public function updateOrderItems (Request $request, OrderService $orderService)
@@ -284,7 +286,7 @@ class OrderController extends Controller
                 }
 
                 try {
-                    $response = $orderService->updateItem($order, $item, $request->quantity, $request->grind_type, (bool) $request->isdinein, $request->orderItemAddon);
+                    $response = $orderService->updateItem($order, $item, $request->quantity, $request->grind_type, (bool) $request->isdinein, $request->has('applyAddon'), $request->note);
 
                     return redirect()->back()->with('success', "Order Item  (name: $item->name) is updated successfully.");
                 } catch (\Exception $exception) {
@@ -400,7 +402,7 @@ class OrderController extends Controller
                 if ($invoice['discount'] > ($invoice['subtotal'] + $invoice['fees'])) {
                     return back()->with('error', "Discount amount cannot be greater than the order total.");
                 }
-    
+
                 $order->subtotal = round(floatval($subtotal), 2);
                 $order->total_amount = $invoice['total_amount'];
                 $order->discount_amount = $invoice['discount'];
@@ -637,7 +639,7 @@ class OrderController extends Controller
             //         'dispatcher_cleared' => true,
             //         'production_cleared' => true
             //     ]);
-            
+
             return redirect()->route('order.show_summary', $order->order_id)->with('success', 'Order is successfully cancelled.');
         }
         return redirect()->route('order.list')->with('error', 'Order does not exist.');
@@ -695,7 +697,7 @@ class OrderController extends Controller
             //         'dispatcher_cleared' => true,
             //         'production_cleared' => true
             //     ]);
-            
+
 
             // Save the transaction if there is bank account selected
             if ($request->account) {

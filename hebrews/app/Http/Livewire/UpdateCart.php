@@ -48,8 +48,6 @@ class UpdateCart extends Component
     public function updatedSelectedDineIn($value)
     {
         $_cart = json_decode($this->cart, true);
-        info($_cart);
-
         $this->addOns = MenuAddOn::where('menu_id', $_cart['menu_id'])->where('is_dinein', $value)->get();
     }
 

@@ -8,33 +8,37 @@ use App\Models\MenuAddOn;
 
 class AddOrderItem extends Component
 {
-    public $menus;
     public $menuid;
     public $menuitem;
+    public $addOns = [];
     public $order;
-
+    public $selectedDineIn = 1;
+    public $applyAddon = 1;
+    public $orderQty = 1;
 
     // Not user if used
     public function updatedMenuId ($id)
     {
         $this->menuitem = Menu::where('id', $id)->first();
+
+        $this->addOns = MenuAddOn::where('menu_id', $id)->where('is_dinein', $this->selectedDineIn)->get();
+        $this->applyAddon = 1;
+    }
+
+    public function updatedSelectedDineIn($value)
+    {
+        $menuitem = json_decode($this->menuitem, true);
+        $this->addOns = MenuAddOn::where('menu_id', $menuitem['id'])->where('is_dinein', $value)->get();
+    }
+
+    public function updatedOrderQty($value)
+    {
+        $this->orderQty = $value;
     }
 
     public function mount ()
     {
-        $branch_id = $this->order->branch_id;
-
-        $this->menus = Menu::where(function ($q1) use ($branch_id) {
-            $q1->doesntHave('inventory');
-            $q1->where('branch_id', $branch_id);
-
-        })->orWhereHas('inventory', function ($q2) use ($branch_id) {
-            $q2->where('stock', '>', 0);
-            $q2->where('branch_id', $branch_id);
-        })->orderBy('name')->get();
     }
-
-
 
     public function render()
     {
