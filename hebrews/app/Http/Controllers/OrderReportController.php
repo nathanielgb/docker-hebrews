@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\AddonOrderItem;
 use Carbon\Carbon;
 use App\Models\Order;
 use App\Models\User;
@@ -76,7 +77,7 @@ class OrderReportController extends Controller
             ->whereIn('order_id', $order_numbers)
             ->groupBy('menu_id')->get();
 
-        $addon_order_items = DB::table('addon_order_items')->select(DB::raw('order_id, addon_id, name, inventory_name, inventory_code, unit_label, SUM(qty) AS total_qty, SUM(qty*units) AS stock_used, SUM(total_amount) AS total_amount'))
+        $addon_order_items = AddonOrderItem::select(DB::raw('order_id, order_item_id, addon_id, inventory_id, inventory_name, inventory_code, unit_label, SUM(qty) AS stock_used'))
             ->whereIn('order_id', $order_numbers)
             ->groupBy('addon_id')->get();
 

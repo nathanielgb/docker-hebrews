@@ -30,18 +30,20 @@
         <div class="p-4 overflow-hidden bg-white rounded-lg shadow-xs">
             <div class="flex w-full" style="justify-content:end;">
                 <div class="flex mb-2 space-x-2 jusify-center">
-                    <a
-                        href="{{ route('order.kitchen.summary.print',['order_id'=>$order->order_id]) }}"
-                        class="flex items-center inline-block px-6 py-2.5 bg-green-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-green-700 hover:shadow-lg focus:bg-green-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-green-800 active:shadow-lg transition duration-150 ease-in-out"
-                        >
-                        <span><i class="fa-solid fa-print"></i> Kitchen</span>
-                    </a>
-                    <a
-                        href="{{ route('order.production.summary.print',['order_id'=>$order->order_id]) }}"
-                        class="flex items-center inline-block px-6 py-2.5 bg-green-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-green-700 hover:shadow-lg focus:bg-green-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-green-800 active:shadow-lg transition duration-150 ease-in-out"
-                        >
-                        <span><i class="fa-solid fa-print"></i> Production</span>
-                    </a>
+                    @if (!$order->pending)
+                        <a
+                            href="{{ route('order.kitchen.summary.print',['order_id'=>$order->order_id]) }}"
+                            class="flex items-center inline-block px-6 py-2.5 bg-green-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-green-700 hover:shadow-lg focus:bg-green-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-green-800 active:shadow-lg transition duration-150 ease-in-out"
+                            >
+                            <span><i class="fa-solid fa-print"></i> Kitchen</span>
+                        </a>
+                        <a
+                            href="{{ route('order.production.summary.print',['order_id'=>$order->order_id]) }}"
+                            class="flex items-center inline-block px-6 py-2.5 bg-green-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-green-700 hover:shadow-lg focus:bg-green-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-green-800 active:shadow-lg transition duration-150 ease-in-out"
+                            >
+                            <span><i class="fa-solid fa-print"></i> Production</span>
+                        </a>
+                    @endif
                     <!-- <a
                         href="{{ route('order.summary.print',['order_id'=>$order->order_id]) }}"
                         class="flex items-center inline-block px-6 py-2.5 bg-green-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-green-700 hover:shadow-lg focus:bg-green-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-green-800 active:shadow-lg transition duration-150 ease-in-out"
@@ -156,16 +158,10 @@
                                         </td>
                                         <td class="px-4 py-4 text-sm" style="max-width: 100px;">
                                             @if ($item->status == 'pending')
-                                                @if (array_key_exists($item->inventory_id, $inventoriesUsed))
-                                                    @if ($inventoriesUsed[$item->inventory_id]['invalid'])
-                                                        <li class="text-red-600">inventory stock is insufficient. check order quantity or add-ons</li>
-                                                    @else
-                                                        <div class="text-center">
-                                                            <div class="inline-flex items-center px-3 py-1 text-xs font-bold text-white uppercase bg-yellow-400 rounded-full leading-sm">
-                                                                PENDING
-                                                            </div>
-                                                        </div>
-                                                    @endif
+                                                @if (isset($item->errors) && count($item->errors) > 0)
+                                                    @foreach($item->errors as $error)
+                                                        <li class="text-red-600">{{ $error }}</li>
+                                                    @endforeach
                                                 @else
                                                     <div class="text-center">
                                                         <div class="inline-flex items-center px-3 py-1 text-xs font-bold text-white uppercase bg-yellow-400 rounded-full leading-sm">

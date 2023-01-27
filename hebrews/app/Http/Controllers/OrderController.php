@@ -17,6 +17,7 @@ use App\Services\OrderService;
 use App\Models\BankTransaction;
 use App\Services\InventoryService;
 use Illuminate\Support\Facades\DB;
+use App\Models\BranchMenuInventory;
 use App\Http\Requests\PayOrderRequest;
 
 class OrderController extends Controller
@@ -104,8 +105,66 @@ class OrderController extends Controller
         if ($order) {
             $accounts = BankAccount::all();
             $items = OrderItem::where('order_id', $order->order_id)->get();
+
             $InventoryService = new InventoryService;
-            $inventoriesUsed = $InventoryService->getInventoriesUsedByOrder($items);
+            if ($order->confirmed) {
+                $inventoriesUsed = $InventoryService->getConfirmedInventoriesUsedByOrder($items);
+
+            } else {
+                $inventoriesUsed = $InventoryService->getInventoriesUsedByOrder($items);
+            }
+
+            $items->each(function ($item) use ($order, $inventoriesUsed) {
+                $item->errors = [];
+
+                if ($order->pending) {
+                    $menu = $item->menu;
+
+                    if (!$menu) {
+                        $item->errors = array_merge($item->errors, ['menu is unavailable for this item, please remove the item']);
+                        return;
+                    }
+
+                    if ($item->inventory_id != null) {
+                        if (array_key_exists($item->inventory_id, $inventoriesUsed)) {
+                            $ivt = $inventoriesUsed[$item->inventory_id];
+
+                            if ($ivt['running_stock'] < $ivt['total_used']) {
+                                $item->errors = array_merge($item->errors, ["inventory item for (name: {$item->name}) does not have enough stock"]);
+                                return;
+                            }
+
+                        } else {
+                            $item->errors = array_merge($item->errors, ['inventory is unavailable for this item, please remove the item']);
+                            return;
+                        }
+                    }
+
+                    if (isset($item->data['has_addons']) && $item->data['has_addons'] == 1) {
+                        $is_dinein = isset($item->data['is_dinein']) && $item->data['is_dinein'] == 1 ? true : false;
+                        $addons = $item->getAddonItems($is_dinein);
+
+                        if (count($addons) > 0) {
+                            $addons->each(function ($addon) use (&$item, $inventoriesUsed) {
+                                if (array_key_exists($addon->inventory_id, $inventoriesUsed)) {
+                                    $addOnIvt = $inventoriesUsed[$addon->inventory_id];
+
+                                    if ($addOnIvt['running_stock'] < $addOnIvt['total_used']) {
+                                        $item->errors = array_merge($item->errors, ["addon item (name: {$addon->inventory->name}) does not have enough stock"]);
+                                        return;
+                                    }
+
+                                } else {
+                                    $item->errors = array_merge($item->errors, ['inventory is unavailable for an addon item, please delete the item or disable addon']);
+                                    return;
+                                }
+
+                            });
+                        }
+                    }
+                }
+
+            });
 
             return view('orders.order_summary',compact('order', 'items','accounts', 'inventoriesUsed'));
         }
@@ -261,7 +320,63 @@ class OrderController extends Controller
         $order_items = OrderItem::where('order_id', $order->order_id)->get();
 
         $InventoryService = new InventoryService;
-        $inventoriesUsed = $InventoryService->getInventoriesUsedByOrder($order_items);
+
+        if ($order->confirmed) {
+            $inventoriesUsed = $InventoryService->getConfirmedInventoriesUsedByOrder($order_items);
+
+        } else {
+            $inventoriesUsed = $InventoryService->getInventoriesUsedByOrder($order_items);
+        }
+
+        $order_items->each(function ($item) use ($order, $inventoriesUsed) {
+            $item->errors = [];
+
+            if ($order->pending) {
+                $menu = $item->menu;
+
+                if (!$menu) {
+                    $item->errors = array_merge($item->errors, ['menu is unavailable for this item please remove the item']);
+                    return;
+                }
+                if ($item->inventory_id != null) {
+                    if (array_key_exists($item->inventory_id, $inventoriesUsed)) {
+                        $ivt = $inventoriesUsed[$item->inventory_id];
+
+                        if ($ivt['running_stock'] < $ivt['total_used']) {
+                            $item->errors = array_merge($item->errors, ["inventory item for (name: {$item->name}) does not have enough stock"]);
+                            return;
+                        }
+
+                    } else {
+                        $item->errors = array_merge($item->errors, ['inventory is unavailable for this item please remove the item']);
+                        return;
+                    }
+                }
+
+                if (isset($item->data['has_addons']) && $item->data['has_addons'] == 1) {
+                    $is_dinein = isset($item->data['is_dinein']) && $item->data['is_dinein'] == 1 ? true : false;
+                    $addons = $item->getAddonItems($is_dinein);
+
+                    if (count($addons) > 0) {
+                        $addons->each(function ($addon) use (&$item, $inventoriesUsed) {
+                            if (array_key_exists($addon->inventory_id, $inventoriesUsed)) {
+                                $addOnIvt = $inventoriesUsed[$addon->inventory_id];
+
+                                if ($addOnIvt['running_stock'] < $addOnIvt['total_used']) {
+                                    $item->errors = array_merge($item->errors, ["addon item (name: {$addon->inventory->name}) does not have enough stock"]);
+                                    return;
+                                }
+
+                            } else {
+                                $item->errors = array_merge($item->errors, ['inventory is unavailable for an addon item']);
+                                return;
+                            }
+
+                        });
+                    }
+                }
+            }
+        });
 
         return view('orders.sections.edit_items', compact('order', 'order_items', 'inventoriesUsed'));
     }
@@ -509,78 +624,103 @@ class OrderController extends Controller
                 // Recheck stock of items
                 $ord_items = OrderItem::where('order_id', $order->order_id)->get();
 
+                $InventoryService = new InventoryService;
+                $inventoriesUsed = $InventoryService->getInventoriesUsedByOrder($ord_items);
+
                 foreach ($ord_items as $ord_item) {
                     $menu = $ord_item->menu;
 
-                    if ($menu->inventory) {
-                        // Deduct to inventory for order items
-                        $deduct_inventory = $orderService->deductQtyToInventory($menu->inventory, $ord_item->units, $ord_item->qty);
-
-                        if ($deduct_inventory['status'] == 'fail') {
-                            return redirect()->back()->with('error', "Order Item $ord_item->name does not have enough stock.");
-                        }
-
-                        InventoryLog::create([
-                            'title' => 'Order Confirmation',
-                            'data' => [
-                                'section' => "order-item",
-                                'type' => "deduct",
-                                'order_id' => $ord_item->order_id,
-                                'order_item_id' =>$ord_item->id,
-                                'order_item_name' => $ord_item->name,
-                                'inventory_id' => $ord_item->inventory_id,
-                                'inventory_code' => $ord_item->inventory_code,
-                                'units' => $ord_item->units,
-                                'order_qty' => $ord_item->qty,
-                                'stock_deducted' => $deduct_inventory['deducted_stock'],
-                                'stock_before_deduction' => $deduct_inventory['previous_stock'],
-                                'stock_after_deduction' => $deduct_inventory['stock']
-                            ]
-                        ]);
+                    if (!$menu) {
+                        return redirect()->back()->with('error', "Order Item (name: $ord_item->name) menu is unavailable, please remove the item.");
                     }
 
-                    // if (isset($ord_item->data)) {
-                    //     foreach ($ord_item->data as $addon) {
-                    //         $orderAddonItem = AddonOrderItem::where('order_item_id', $ord_item->order_item_id)
-                    //             ->where('addon_id', $addon['addon_id'])->first();
-                    //         $deduct_addon = $orderService->deductQtyToInventory($orderAddonItem->addon->inventory, 1, $addon['qty']);
+                    if ($ord_item->inventory_id != null) {
 
-                    //         if ($deduct_addon['status'] == 'fail') {
-                    //             return redirect()->back()->with('error', "Add-on Item $addon->name does not have enough stock.");
-                    //         }
+                        // Check if the order item inventory item exis in inventories used
+                        if (array_key_exists($ord_item->inventory_id, $inventoriesUsed)) {
+                            $ivt = $inventoriesUsed[$ord_item->inventory_id];
 
-                    //         InventoryLog::create([
-                    //             'title' => 'Order Confirmation',
-                    //             'data' => [
-                    //                 'section' => "addon-order-item",
-                    //                 'type' => "deduct",
-                    //                 'order_id' => $orderAddonItem->order_id,
-                    //                 'addon_order_item_id' =>$orderAddonItem->id,
-                    //                 'addon_name' => $orderAddonItem->name,
-                    //                 'addon_id' => $orderAddonItem->addon_id,
-                    //                 'inventory_id' => $orderAddonItem->inventory_id,
-                    //                 'inventory_code' => $orderAddonItem->inventory_code,
-                    //                 'units' => $orderAddonItem->units,
-                    //                 'order_qty' => $orderAddonItem->qty,
-                    //                 'stock_deducted' => $deduct_addon['deducted_stock'],
-                    //                 'stock_before_deduction' => $deduct_addon['previous_stock'],
-                    //                 'stock_after_deduction' => $deduct_addon['stock']
-                    //             ]
-                    //         ]);
-                    //     }
-                    // }
+                            if ($ivt['running_stock'] < $ivt['total_used']) {
+                                return redirect()->back()->with('error', "Order Item (name: $ord_item->name) does not have enough stock.");
+                            }
+                        } else {
+                            return redirect()->back()->with('error', "Order Item (name: $ord_item->name) inventory is unavailable, please remove the item.");
+                        }
 
-                    // if ($ord_item->from == 'storage') {
-                    //     $ord_item->status = 'done';
-                    // } else {
-                    //     $ord_item->status = 'ordered';
-                    // }
+                    }
+
+                    if (isset($ord_item->data['has_addons']) && $ord_item->data['has_addons'] == 1) {
+                        $is_dinein = isset($ord_item->data['is_dinein']) && $ord_item->data['is_dinein'] == 1 ? true : false;
+                        $addons = $ord_item->getAddonItems($is_dinein);
+
+                        if (count($addons) > 0) {
+                            foreach($addons as $addon) {
+                                if (array_key_exists($addon->inventory_id, $inventoriesUsed)) {
+                                    $addOnIvt = $inventoriesUsed[$addon->inventory_id];
+                                    if ($addOnIvt['running_stock'] < $addOnIvt['total_used']) {
+                                        $label = $addon->inventory->name;
+                                        return redirect()->back()->with('error', "Order Item Addon (name: $label) does not have enough stock.");
+
+                                    }
+                                } else {
+                                    return redirect()->back()->with('error', "Order Item (name: $ord_item->name) addon inventory is unavailable. Please remove the item.");
+                                }
+
+                                $createAddOn = new AddonOrderItem;
+                                $createAddOn->create([
+                                    'order_id' => $ord_item->order_id,
+                                    'order_item_id' => $ord_item->order_item_id,
+                                    'addon_id' => $addon->id,
+                                    'inventory_id' => $addon->inventory->id,
+                                    'inventory_name' => $addon->inventory->name,
+                                    'inventory_code'=> $addon->inventory->inventory_code,
+                                    'menu_id' => $addon->menu_id,
+                                    'unit' => 1,
+                                    'unit_label' => $addon->inventory->unit,
+                                    'qty' => $addon->qty * $ord_item->qty,
+                                    'is_dinein' => $addon->is_dinein
+                                ]);
+                            }
+                        }
+                    }
 
                     $ord_item->status = 'ordered';
                     $ord_item->save();
                 }
 
+                $recordedItems = [];
+                foreach ($inventoriesUsed as $usedIvt) {
+                    $_usedIvt = BranchMenuInventory::where('id', $usedIvt['inventory_id'])->first();
+                    $deduct_inventory = $orderService->deductQtyToInventory($_usedIvt, 1, $usedIvt['total_used']);
+
+                    // Deduct to inventory for order items
+                    if ($deduct_inventory['status'] == 'fail') {
+                        return redirect()->back()->with('error', "Order Item $ord_item->name does not have enough stock.");
+                    }
+
+                    $recordedItems[] = [
+                        'inventory_id' => $usedIvt['inventory_id'],
+                        'inventory_code' => $usedIvt['inventory_code'],
+                        'name' => $usedIvt['name'],
+                        'unit_label' => $_usedIvt->unit,
+                        'total_qty' => $usedIvt['total_used'],
+                        'stock_before_deduction' => $usedIvt['running_stock'],
+                        'stock_after_deduction' => floatval( $usedIvt['running_stock'] - $usedIvt['total_used'])
+                    ];
+                }
+
+                InventoryLog::create([
+                    'title' => 'Order Confirmation',
+                    'data' => [
+                        'module' => 'order',
+                        'section' => 'confirm-order',
+                        'order_id' => $order->order_id,
+                        'items' =>$recordedItems
+                    ]
+                ]);
+
                 // Tag order as confirmed
+                $order->pending = false;
                 $order->confirmed = true;
                 $order->confirmed_by = auth()->user()->name;
                 $order->save();
@@ -598,7 +738,7 @@ class OrderController extends Controller
                     'message' => $exception->getMessage()
                 ]);
 
-                return redirect()->back()->with('error', $exception->getMessage());
+                return redirect()->back()->with('error', "Something went wrong please recheck order.");
             }
 
 

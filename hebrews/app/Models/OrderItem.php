@@ -8,6 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class OrderItem extends Model
 {
+    public $total_stocks;
+
     use HasFactory;
     protected $table = 'order_items';
     /**
@@ -63,6 +65,14 @@ class OrderItem extends Model
     public function menu()
     {
         return $this->belongsTo(Menu::class, 'menu_id', 'id');
+    }
+
+    /**
+     * Get the addons of order.
+     */
+    public function addons()
+    {
+        return $this->hasMany(AddonOrderItem::class, 'order_item_id', 'order_item_id');
     }
 
     /**

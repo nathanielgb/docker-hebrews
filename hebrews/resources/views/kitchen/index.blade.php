@@ -15,11 +15,22 @@
             })
         </script>
     </x-slot>
-        @include('components.alert-message')
 
-        <livewire:kitchen-dashboard :orders="$orders" />
+    @include('components.alert-message')
 
-        @include('kitchen.modals.done')
-        @include('kitchen.modals.clear')
+    <livewire:kitchen-dashboard :orders="$orders" />
 
+    @include('kitchen.modals.done')
+    @include('kitchen.modals.clear')
+    @include('orders.modals.show_addons')
+
+    <x-slot name="scripts">
+        <script>
+            $('.btn-addons').on("click", function() {
+                var addons = JSON.stringify($(this).data('addons'));
+
+                Livewire.emit('setAddOnItem', addons);
+            });
+        </script>
+    </x-slot>
 </x-app-layout>

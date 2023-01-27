@@ -20,5 +20,15 @@
 
         @include('dispatch.modals.serve')
         @include('dispatch.modals.clear')
+        @include('orders.modals.show_addons')
 
+        <x-slot name="scripts">
+            <script>
+                $('.btn-addons').on("click", function() {
+                    var addons = JSON.stringify($(this).data('addons'));
+
+                    Livewire.emit('setAddOnItem', addons);
+                });
+            </script>
+        </x-slot>
 </x-app-layout>

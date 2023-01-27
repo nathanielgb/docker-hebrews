@@ -96,14 +96,35 @@
                                 </ul>
                             </td>
                             <td class="px-4 py-4 text-sm text-center">
-                                @if (isset($item->data['has_addons']) && $item->data['has_addons'])
-                                    <div class="inline-flex items-center px-3 py-1 text-xs font-bold text-white uppercase bg-green-600 rounded-full leading-sm">
-                                        YES
-                                    </div>
+                                @if ($order->confirmed)
+                                    @if (isset($item->data['has_addons']) && $item->data['has_addons'])
+                                        @php
+                                            $addons = json_encode($item->addons);
+                                        @endphp
+                                        <button
+                                            class="btn-addons inline-flex items-center px-3 py-1 text-xs font-bold text-white uppercase bg-green-600 rounded-full leading-sm"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#addOnItemsModal"
+                                            data-addons="{{ $addons }}"
+
+                                            >
+                                            <i class="fa-solid fa-eye"></i>&nbsp;YES
+                                        </button>
+                                    @else
+                                        <div class="inline-flex items-center px-3 py-1 text-xs font-bold text-white uppercase bg-red-600 rounded-full leading-sm">
+                                            NO
+                                        </div>
+                                @endif
                                 @else
-                                    <div class="inline-flex items-center px-3 py-1 text-xs font-bold text-white uppercase bg-red-600 rounded-full leading-sm">
-                                        NO
-                                    </div>
+                                    @if (isset($item->data['has_addons']) && $item->data['has_addons'])
+                                        <div class="inline-flex items-center px-3 py-1 text-xs font-bold text-white uppercase bg-green-600 rounded-full leading-sm">
+                                            YES
+                                        </div>
+                                    @else
+                                        <div class="inline-flex items-center px-3 py-1 text-xs font-bold text-white uppercase bg-red-600 rounded-full leading-sm">
+                                            NO
+                                        </div>
+                                    @endif
                                 @endif
                             </td>
                             <td class="px-4 py-3 text-sm text-center">
@@ -124,16 +145,10 @@
                             </td> --}}
                             <td class="px-4 py-4 text-sm" style="max-width: 100px;">
                                 @if ($item->status == 'pending')
-                                    @if (array_key_exists($item->inventory_id, $inventoriesUsed))
-                                        @if ($inventoriesUsed[$item->inventory_id]['invalid'])
-                                            <li class="text-red-600">inventory stock is insufficient. check order quantity or add-ons</li>
-                                        @else
-                                            <div class="text-center">
-                                                <div class="inline-flex items-center px-3 py-1 text-xs font-bold text-white uppercase bg-yellow-400 rounded-full leading-sm">
-                                                    PENDING
-                                                </div>
-                                            </div>
-                                        @endif
+                                    @if (isset($item->errors) && count($item->errors) > 0)
+                                        @foreach($item->errors as $error)
+                                            <li class="text-red-600">{{ $error }}</li>
+                                        @endforeach
                                     @else
                                         <div class="text-center">
                                             <div class="inline-flex items-center px-3 py-1 text-xs font-bold text-white uppercase bg-yellow-400 rounded-full leading-sm">
@@ -236,6 +251,7 @@
     @include('orders.modals.delete_item')
     @include('orders.modals.void_item')
     @include('orders.modals.order_inventory_summary')
+    @include('orders.modals.show_addons')
 
     <x-slot name="scripts">
         <script>
@@ -243,6 +259,11 @@
                 var orderItem = JSON.stringify($(this).data('orderitem'));
                 Livewire.emit('setItem', orderItem);
 
+            });
+            $('.btn-addons').on("click", function() {
+                var addons = JSON.stringify($(this).data('addons'));
+
+                Livewire.emit('setAddOnItem', addons);
             });
         </script>
     </x-slot>

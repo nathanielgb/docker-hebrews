@@ -70,9 +70,8 @@
 
         <label class="block mb-4 text-sm">
             <span class="text-gray-700">Quantity</span>
-            <input wire:model="orderQty" class="styled-input" name="qty" type="number" min="1"  placeholder="Enter quantity" required>
+            <input wire:model.lazy="orderQty" class="styled-input" name="qty" type="number" min="1"  placeholder="Enter quantity" required>
         </label>
-        @if (count($addOns) > 0)
             <div class="flex flex-col">
                 <span class="text-gray-700 dark:text-gray-400">Add-On Items</span>
                 <div class="form-check">
@@ -97,20 +96,28 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach ($addOns as $addOn)
+                                    @if (count($addOns) > 0)
+                                        @foreach ($addOns as $addOn)
+                                            <tr class="border-b">
+                                                <td class="text-sm text-gray-900 font-normal px-6 py-4 whitespace-nowrap border-r">
+                                                    {{isset($addOn->inventory) ?  $addOn->inventory->name: 'N/A' }}
+                                                </td>
+                                                <td class="text-sm text-gray-900 font-normal px-6 py-4 whitespace-nowrap">
+                                                    @php
+                                                        $_orderQty = !empty($orderQty) ? $orderQty : 0;
+                                                        $total_qty = $_orderQty * $addOn->qty;
+                                                    @endphp
+                                                    {{ $total_qty }}
+                                                </td>
+                                            </tr>
+                                        @endforeach
+                                    @else
                                         <tr class="border-b">
-                                            <td class="text-sm text-gray-900 font-normal px-6 py-4 whitespace-nowrap border-r">
-                                                {{isset($addOn->inventory) ?  $addOn->inventory->name: 'N/A' }}
-                                            </td>
-                                            <td class="text-sm text-gray-900 font-normal px-6 py-4 whitespace-nowrap">
-                                                @php
-                                                    $_orderQty = !empty($orderQty) ? $orderQty : 0;
-                                                    $total_qty = $_orderQty * $addOn->qty;
-                                                @endphp
-                                                {{ $total_qty }}
+                                            <td colspan="2" class="text-sm text-gray-900 font-normal px-6 py-4 whitespace-nowrap border-r">
+                                                No addons found.
                                             </td>
                                         </tr>
-                                    @endforeach
+                                    @endif
                                 </tbody>
                             </table>
                             </div>
@@ -118,6 +125,5 @@
                     </div>
                 @endif
             </div>
-        @endif
     </form>
 </div>

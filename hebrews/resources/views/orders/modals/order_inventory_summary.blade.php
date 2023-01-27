@@ -24,18 +24,22 @@
             <div class="relative p-4 modal-body">
                 <div class="w-full mb-8 overflow-hidden border rounded-lg shadow-xs">
                     <div class="w-full overflow-x-auto">
-                        <table class="w-full whitespace-no-wrap">
-                            <thead>
-                            <tr class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase border-b bg-gray-50">
-                                <th class="px-4 py-3">Name</th>
-                                <th class="px-4 py-3">Running Stock</th>
-                                <th class="px-4 py-3">Total Used</th>
-                            </tr>
-                            </thead>
-                            <tbody class="bg-white divide-y">
-                                @forelse ($inventoriesUsed as $iv)
-                                    @if ($iv['invalid'])
-                                        <tr class="text-red-700">
+                        @if (!$order->confirmed)
+                            <table class="w-full whitespace-no-wrap">
+                                <thead>
+                                <tr class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase border-b bg-gray-50">
+                                    <th class="px-4 py-3">Name</th>
+                                    <th class="px-4 py-3">Running Stock</th>
+                                    <th class="px-4 py-3">Total Used</th>
+                                </tr>
+                                </thead>
+                                <tbody class="bg-white divide-y">
+                                    @forelse ($inventoriesUsed as $iv)
+                                        @if ($iv['running_stock'] < $iv['total_used'])
+                                            <tr class="text-red-700">
+                                        @else
+                                            <tr class="text-gray-700">
+                                        @endif
                                             <td class="px-4 py-3 text-sm text-s">
                                                 {{ $iv['name'] }}<br>
                                                 <span class="text-small"><em>({{ $iv['inventory_code'] }})</em></span>
@@ -47,29 +51,44 @@
                                                 {{ $iv['total_used'] }}
                                             </td>
                                         </tr>
-                                    @else
+                                    @empty
+                                        <tr class="text-gray-700">
+                                            <td colspan="3" class="px-4 py-3 text-sm text-center">
+                                                No records found.
+                                            </td>
+                                        </tr>
+                                    @endforelse
+                                </tbody>
+                            </table>
+                        @else
+                            <table class="w-full whitespace-no-wrap">
+                                <thead>
+                                <tr class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase border-b bg-gray-50">
+                                    <th class="px-4 py-3">Name</th>
+                                    <th class="px-4 py-3">Total Used</th>
+                                </tr>
+                                </thead>
+                                <tbody class="bg-white divide-y">
+                                    @forelse ($inventoriesUsed as $iv)
                                         <tr class="text-gray-700">
                                             <td class="px-4 py-3 text-sm text-s">
                                                 {{ $iv['name'] }}<br>
                                                 <span class="text-small"><em>({{ $iv['inventory_code'] }})</em></span>
                                             </td>
                                             <td class="px-4 py-3 text-sm">
-                                                {{ $iv['running_stock'] }}
-                                            </td>
-                                            <td class="px-4 py-3 text-sm">
                                                 {{ $iv['total_used'] }}
                                             </td>
                                         </tr>
-                                    @endif
-                                @empty
-                                    <tr class="text-gray-700">
-                                        <td colspan="3" class="px-4 py-3 text-sm text-center">
-                                            No records found.
-                                        </td>
-                                    </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
+                                    @empty
+                                        <tr class="text-gray-700">
+                                            <td colspan="3" class="px-4 py-3 text-sm text-center">
+                                                No records found.
+                                            </td>
+                                        </tr>
+                                    @endforelse
+                                </tbody>
+                            </table>
+                        @endif
                     </div>
                 </div>
             </div>
