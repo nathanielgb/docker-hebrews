@@ -14,7 +14,7 @@ class KitchenController extends Controller
     public function index (Request $request)
     {
         $orders = Order::with(['items' => function ($query) {
-
+            $query->with('addons');
             $query->where('from', '=', 'kitchen');
             $query->where('kitchen_cleared', false);
 
@@ -26,7 +26,7 @@ class KitchenController extends Controller
         ->where('confirmed', true)
         ->where('cancelled', false)
         ->where('completed', false)
-        ->orderBy('created_at', 'ASC')
+        ->orderBy('created_at', 'desc')
         ->get();
 
         return view('kitchen.index', compact('orders'));

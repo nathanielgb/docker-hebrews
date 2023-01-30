@@ -19,7 +19,7 @@ class AddonService
     public function validateAddon($productitem, $is_dinein, $order_qty)
     {
         // Check if there is add ons
-        $addons = $productitem->getAddonItems($is_dinein);
+        $addons = MenuAddOn::where('menu_id', $productitem->id)->where('is_dinein', $is_dinein)->with('inventory')->get();
 
         if (count($addons) > 0) {
 

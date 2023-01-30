@@ -34,7 +34,7 @@ class MenuController extends Controller
             $inventories =$inventories->where('branch_id', auth()->user()->branch_id);
             $branches = Branch::where('id', auth()->user()->branch_id)->get();
         } else {
-            $menu = Menu::with('category');
+            $menu = Menu::with('category','inventory','branch', 'inventory.branch');
             $branches = Branch::all();
         }
 
@@ -214,7 +214,7 @@ class MenuController extends Controller
 
     public function viewCategories(Request $request)
     {
-        $categories = MenuCategory::OrderBy('name')->paginate(20);
+        $categories = MenuCategory::with('menus')->OrderBy('name')->paginate(20);
 
         return view('menu.categories', compact(
             'categories',

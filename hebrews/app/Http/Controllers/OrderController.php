@@ -19,6 +19,7 @@ use App\Services\InventoryService;
 use Illuminate\Support\Facades\DB;
 use App\Models\BranchMenuInventory;
 use App\Http\Requests\PayOrderRequest;
+use App\Models\MenuAddOn;
 
 class OrderController extends Controller
 {
@@ -104,7 +105,7 @@ class OrderController extends Controller
 
         if ($order) {
             $accounts = BankAccount::all();
-            $items = OrderItem::where('order_id', $order->order_id)->get();
+            $items = OrderItem::where('order_id', $order->order_id)->with('addons', 'menu')->get();
 
             $InventoryService = new InventoryService;
             if ($order->confirmed) {
@@ -114,7 +115,10 @@ class OrderController extends Controller
                 $inventoriesUsed = $InventoryService->getInventoriesUsedByOrder($items);
             }
 
-            $items->each(function ($item) use ($order, $inventoriesUsed) {
+            $menu_ids = $items->pluck('menu_id');
+            $_addons = MenuAddOn::whereIn('menu_id', $menu_ids)->get();
+
+            $items->each(function ($item) use ($order, $_addons, $inventoriesUsed) {
                 $item->errors = [];
 
                 if ($order->pending) {
@@ -142,7 +146,7 @@ class OrderController extends Controller
 
                     if (isset($item->data['has_addons']) && $item->data['has_addons'] == 1) {
                         $is_dinein = isset($item->data['is_dinein']) && $item->data['is_dinein'] == 1 ? true : false;
-                        $addons = $item->getAddonItems($is_dinein);
+                        $addons = $_addons->where('menu_id', $item->menu_id)->where('is_dinein', $is_dinein);
 
                         if (count($addons) > 0) {
                             $addons->each(function ($addon) use (&$item, $inventoriesUsed) {
@@ -192,11 +196,13 @@ class OrderController extends Controller
     {
         if (auth()->user()->branch_id) {
             $order = Order::where('branch_id', auth()->user()->branch_id)->where('order_id', $request->order_id)->with(['items' => function ($query) {
+                $query->with('addons');
                 $query->where('status', '!=', 'void');
                 $query->where('from', 'kitchen');
             }])->first();
         } else {
             $order = Order::where('order_id', $request->order_id)->with(['items' => function ($query) {
+                $query->with('addons');
                 $query->where('status', '!=', 'void');
                 $query->where('from', 'kitchen');
             }])->first();
@@ -303,8 +309,15 @@ class OrderController extends Controller
             $order = Order::where('order_id', $request->order_id)->first();
         }
 
+        if (!$order->confirmed) {
+            return redirect()->back();
+        }
+
         $order_id = $request->order_id;
-        $order_items = OrderItem::where('order_id', $order_id)->get();
+        $order_items = OrderItem::where('order_id', $order->order_id)->with('addons', 'menu')->get();
+
+        $InventoryService = new InventoryService;
+        $inventoriesUsed = $InventoryService->getConfirmedInventoriesUsedByOrder($order_items);
 
         return view('orders.sections.show_order_items', compact('order', 'order_items', 'order_id'));
     }
@@ -317,7 +330,7 @@ class OrderController extends Controller
             $order = Order::where('order_id', $request->order_id)->first();
         }
 
-        $order_items = OrderItem::where('order_id', $order->order_id)->get();
+        $order_items = OrderItem::where('order_id', $order->order_id)->with('addons','menu')->get();
 
         $InventoryService = new InventoryService;
 
@@ -328,7 +341,10 @@ class OrderController extends Controller
             $inventoriesUsed = $InventoryService->getInventoriesUsedByOrder($order_items);
         }
 
-        $order_items->each(function ($item) use ($order, $inventoriesUsed) {
+        $menu_ids = $order_items->pluck('menu_id');
+        $_addons = MenuAddOn::whereIn('menu_id', $menu_ids)->get();
+
+        $order_items->each(function ($item) use ($order, $_addons, $inventoriesUsed) {
             $item->errors = [];
 
             if ($order->pending) {
@@ -355,7 +371,7 @@ class OrderController extends Controller
 
                 if (isset($item->data['has_addons']) && $item->data['has_addons'] == 1) {
                     $is_dinein = isset($item->data['is_dinein']) && $item->data['is_dinein'] == 1 ? true : false;
-                    $addons = $item->getAddonItems($is_dinein);
+                    $addons = $_addons->where('menu_id', $item->menu_id)->where('is_dinein', $is_dinein);
 
                     if (count($addons) > 0) {
                         $addons->each(function ($addon) use (&$item, $inventoriesUsed) {
@@ -390,9 +406,9 @@ class OrderController extends Controller
 
         if ($item) {
             if (auth()->user()->branch_id) {
-                $order = Order::where('branch_id', auth()->user()->branch_id)->where('order_id', $item->order_id)->first();
+                $order = Order::where('branch_id', auth()->user()->branch_id)->where('order_id', $item->order_id)->with('items')->first();
             } else {
-                $order = Order::where('order_id', $item->order_id)->first();
+                $order = Order::where('order_id', $item->order_id)->with('items')->first();
             }
 
             if ($order) {
@@ -622,10 +638,13 @@ class OrderController extends Controller
             DB::beginTransaction();
             try {
                 // Recheck stock of items
-                $ord_items = OrderItem::where('order_id', $order->order_id)->get();
+                $ord_items = OrderItem::where('order_id', $order->order_id)->with('addons', 'menu')->get();
 
                 $InventoryService = new InventoryService;
                 $inventoriesUsed = $InventoryService->getInventoriesUsedByOrder($ord_items);
+
+                $menu_ids = $ord_items->pluck('menu_id');
+                $_addons = MenuAddOn::whereIn('menu_id', $menu_ids)->with('inventory')->get();
 
                 foreach ($ord_items as $ord_item) {
                     $menu = $ord_item->menu;
@@ -651,7 +670,7 @@ class OrderController extends Controller
 
                     if (isset($ord_item->data['has_addons']) && $ord_item->data['has_addons'] == 1) {
                         $is_dinein = isset($ord_item->data['is_dinein']) && $ord_item->data['is_dinein'] == 1 ? true : false;
-                        $addons = $ord_item->getAddonItems($is_dinein);
+                        $addons = $_addons->where('menu_id', $ord_item->menu_id)->where('is_dinein', $is_dinein);
 
                         if (count($addons) > 0) {
                             foreach($addons as $addon) {
@@ -689,8 +708,11 @@ class OrderController extends Controller
                 }
 
                 $recordedItems = [];
+                $_usedIvt_ids = array_keys($inventoriesUsed);
+                $_usedIvts = BranchMenuInventory::whereIn('id', $_usedIvt_ids)->with('branch')->get();
+
                 foreach ($inventoriesUsed as $usedIvt) {
-                    $_usedIvt = BranchMenuInventory::where('id', $usedIvt['inventory_id'])->first();
+                    $_usedIvt = $_usedIvts->where('id', $usedIvt['inventory_id'])->first();
                     $deduct_inventory = $orderService->deductQtyToInventory($_usedIvt, 1, $usedIvt['total_used']);
 
                     // Deduct to inventory for order items
@@ -698,26 +720,28 @@ class OrderController extends Controller
                         return redirect()->back()->with('error', "Order Item $ord_item->name does not have enough stock.");
                     }
 
-                    $recordedItems[] = [
+                    $recordedItems = [
+                        'branch_id' => $_usedIvt->branch_id,
+                        'branch_name' => $_usedIvt->branch->name,
                         'inventory_id' => $usedIvt['inventory_id'],
                         'inventory_code' => $usedIvt['inventory_code'],
                         'name' => $usedIvt['name'],
                         'unit_label' => $_usedIvt->unit,
-                        'total_qty' => $usedIvt['total_used'],
-                        'stock_before_deduction' => $usedIvt['running_stock'],
-                        'stock_after_deduction' => floatval( $usedIvt['running_stock'] - $usedIvt['total_used'])
+                        'total_qty' => -$usedIvt['total_used'],
+                        'stock_before' => $usedIvt['running_stock'],
+                        'stock_after' => floatval( $usedIvt['running_stock'] - $usedIvt['total_used'])
                     ];
-                }
 
-                InventoryLog::create([
-                    'title' => 'Order Confirmation',
-                    'data' => [
-                        'module' => 'order',
-                        'section' => 'confirm-order',
-                        'order_id' => $order->order_id,
-                        'items' =>$recordedItems
-                    ]
-                ]);
+                    InventoryLog::create([
+                        'title' => 'Order Confirmation',
+                        'data' => [
+                            'module' => 'order',
+                            'section' => 'confirm-order',
+                            'order_id' => $order->order_id,
+                            'inventory' => $recordedItems
+                        ]
+                    ]);
+                }
 
                 // Tag order as confirmed
                 $order->pending = false;

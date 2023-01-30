@@ -12,6 +12,7 @@ class ProductionDashboard extends Component
     public function updateData ()
     {
         $orders = Order::with(['items' => function ($query) {
+            $query->with('addons');
             $query->where('status', '!=', 'served');
             $query->where('production_cleared', false);
             $query->where('from', '=', 'storage');
@@ -24,9 +25,8 @@ class ProductionDashboard extends Component
         ->where('cancelled', false)
         ->where('completed', false)
         ->where('confirmed', true)
-        ->orderBy('created_at', 'ASC')
+        ->orderBy('created_at', 'desc')
         ->get();
-
         $this->orders = $orders;
     }
 

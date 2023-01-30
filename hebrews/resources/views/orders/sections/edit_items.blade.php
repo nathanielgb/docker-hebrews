@@ -77,8 +77,20 @@
                             <td class="px-4 py-3 text-sm">
                                 <ul>
                                     <li>
+                                        <em>
+                                            <span class="font-semibold">
+                                                menu: {{ $item->menu_id }} <br>
+                                            </span>
+                                        </em>
+                                    </li>
+                                    <li>
                                         @if ($item->inventory_code)
-                                            <em class="font-bold">{{ $item->inventory_code }}</em>
+                                            <em >
+                                                inventory:
+                                                <span class="font-bold">
+                                                    {{ $item->inventory_code }}
+                                                </span>
+                                            </em>
                                         @endif
                                     </li>
                                     <li>qty: <span class="font-semibold"><em>{{ $item->qty }}</em></span></li>

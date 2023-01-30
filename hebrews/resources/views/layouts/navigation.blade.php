@@ -276,6 +276,43 @@
                     </x-nav-link>
                 </li>
             @endif
+
+            @if(auth()->user()->can('access', 'view-logs'))
+                <li class="relative px-6 py-3">
+                    <x-nav-dropdown-link
+                        data-bs-target="#collapseLogs"
+                        aria-controls="collapseLogs"
+                        :active="request()->routeIs('expense.report.show') || request()->routeIs('logs.inventory.index')">
+                        <x-slot name="icon">
+                            <i class="fa-solid fa-gears"></i>
+                        </x-slot>
+                        {{ __('Logs') }}
+                    </x-nav-dropdown-link>
+                    <ul
+                        class="p-2 mt-2 space-y-2 overflow-hidden text-sm font-medium text-gray-500 rounded-md shadow-inner collapse bg-gray-50 dark:text-gray-400 dark:bg-gray-900"
+                        id="collapseLogs"
+                    >
+                        {{-- <li
+                            @if (request()->routeIs('expense.report.show'))
+                                class="px-2 py-1 text-green-700"
+                            @else
+                                class="px-2 py-1"
+                            @endif >
+                            <a class="w-full" href="{{ route('expense.report.show') }}">Admin Logs</a>
+                        </li> --}}
+                        <li
+                            @if (request()->routeIs('logs.inventory.index'))
+                                class="px-2 py-1 text-green-700"
+                            @else
+                                class="px-2 py-1"
+                            @endif >
+                            <a class="w-full" href="{{ route('logs.inventory.index') }}">
+                                Inventory Logs
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+            @endif
         </ul>
     </div>
 </aside>

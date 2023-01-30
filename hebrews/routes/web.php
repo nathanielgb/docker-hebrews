@@ -285,6 +285,16 @@ Route::middleware('auth')->group(function () {
         Route::get('generate-report', [\App\Http\Controllers\OrderReportController::class, 'generate'])->name('orders.report.generate');
     });
 
+    // Logs Section
+    Route::group(['middleware' => 'CheckAccessActions:view-logs'], function () {
+        Route::get('logs/inventory', [\App\Http\Controllers\LogController::class, 'showInventory'])->name('logs.inventory.index');
+
+        Route::group(['middleware' => 'CheckAccessActions:manage-customer-action'], function () {
+            Route::get('view/{id}', [\App\Http\Controllers\CustomerController::class, 'view'])->name('customers.view');
+            Route::post('add-customer', [\App\Http\Controllers\CustomerController::class, 'store'])->name('customers.store');
+            Route::post('delete-customer', [\App\Http\Controllers\CustomerController::class, 'delete'])->name('customers.delete');
+        });
+    });
 
 
 });

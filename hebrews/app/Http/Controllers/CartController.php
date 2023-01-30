@@ -53,7 +53,7 @@ class CartController extends Controller
             });
         }
 
-        $menu = $menu->orderBy('name')->paginate(20);
+        $menu = $menu->with('category','inventory')->orderBy('name')->paginate(20);
 
         return view('orders.add_cart', compact('menu', 'categories'));
     }

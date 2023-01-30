@@ -95,6 +95,10 @@ class UserAccessActionsSeeder extends Seeder
 
                     // Manager
                     'manage-order-process-action',
+
+                    // Logs
+                    'view-inventory-logs',
+                    'view-admin-logs'
                 ]),
                 'created_at' => Carbon::now(),
 				'updated_at' => Carbon::now()
@@ -176,6 +180,11 @@ class UserAccessActionsSeeder extends Seeder
 
                     // Manager
                     'manage-order-process-action',
+
+                    // Logs
+                    'view-logs',
+                    'view-inventory-logs',
+                    'view-admin-logs'
                 ]),
                 'created_at' => Carbon::now(),
 				'updated_at' => Carbon::now()

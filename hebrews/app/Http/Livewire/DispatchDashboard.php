@@ -12,6 +12,7 @@ class DispatchDashboard extends Component
     public function updateData ()
     {
         $orders = Order::with(['items' => function ($query) {
+            $query->with('addons');
             $query->where('dispatcher_cleared', false);
             $query->where('from', '=', 'kitchen');
 
@@ -22,7 +23,7 @@ class DispatchDashboard extends Component
         ->where('cancelled', false)
         ->where('completed', false)
         ->where('confirmed', true)
-        ->orderBy('created_at', 'ASC')
+        ->orderBy('created_at', 'desc')
         ->get();
 
         $this->orders = $orders;

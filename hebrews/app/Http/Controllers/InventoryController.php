@@ -35,7 +35,7 @@ class InventoryController extends Controller
             });
         }
 
-        $inventory_items = $inventory_items->orderBy('category_id', 'asc')->orderBy('name')->paginate(20);
+        $inventory_items = $inventory_items->with('category')->orderBy('category_id', 'asc')->orderBy('name')->paginate(20);
         $branches = Branch::all()->toArray();
         $categories = InventoryCategory::orderBy('name', 'asc')->get();
 
@@ -236,7 +236,7 @@ class InventoryController extends Controller
         }
 
         $categories = InventoryCategory::orderBy('name', 'asc')->get();
-        $inventory_items = $inventory_items->orderBy('category_id', 'asc')->orderBy('name')->paginate(20);
+        $inventory_items = $inventory_items->with('category', 'products', 'addons', 'branch')->orderBy('category_id', 'asc')->orderBy('name')->paginate(20);
 
         return view('menu.branches.inventory', compact(
             'inventory_items',

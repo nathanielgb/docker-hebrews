@@ -117,15 +117,27 @@ class OrderService
                         throw new \Exception("Failed to add order. Item (name: $item->name) does not have enough stock.");
                     }
 
-                    $recordedItems[] = [
+                    $recordedItems = [
+                        'branch_id' => $item->inventory->branch_id,
+                        'branch_name' => $item->inventory->branch->name,
                         'inventory_id' => $item->inventory->id,
                         'inventory_code' => $item->inventory->inventory_code,
                         'name' => $item->inventory->name,
                         'unit_label' => $item->inventory->unit,
-                        'total_qty' => $deduct_inventory['deducted_stock'],
-                        'stock_before_deduction' => $deduct_inventory['previous_stock'],
-                        'stock_after_deduction' => $deduct_inventory['stock']
+                        'total_qty' => -$deduct_inventory['deducted_stock'],
+                        'stock_before' => $deduct_inventory['previous_stock'],
+                        'stock_after' => $deduct_inventory['stock']
                     ];
+
+                    InventoryLog::create([
+                        'title' => 'Add Order Item',
+                        'data' => [
+                            'module' => 'order',
+                            'section' => 'add-order-item',
+                            'order_id' => $order->order_id,
+                            'inventory' =>$recordedItems
+                        ]
+                    ]);
                 }
 
                 if (isset($ord_item->data['has_addons']) && $ord_item->data['has_addons'] == 1) {
@@ -159,28 +171,30 @@ class OrderService
                                 'is_dinein' => $addon->is_dinein
                             ]);
 
-                            $recordedItems[] = [
+                            $recordedItems = [
+                                'branch_id' => $addon->inventory->branch_id,
+                                'branch_name' => $addon->inventory->branch->name,
                                 'inventory_id' => $addon->inventory->id,
                                 'inventory_code' => $addon->inventory->inventory_code,
                                 'name' => $addon->inventory->name,
                                 'unit_label' => $addon->inventory->unit,
-                                'total_qty' => $deduct_inventory['deducted_stock'],
-                                'stock_before_deduction' => $deduct_inventory['previous_stock'],
-                                'stock_after_deduction' => $deduct_inventory['stock']
+                                'total_qty' => -$deduct_inventory['deducted_stock'],
+                                'stock_before' => $deduct_inventory['previous_stock'],
+                                'stock_after' => $deduct_inventory['stock']
                             ];
+
+                            InventoryLog::create([
+                                'title' => 'Add Order Item',
+                                'data' => [
+                                    'module' => 'order',
+                                    'section' => 'add-item',
+                                    'order_id' => $order->order_id,
+                                    'inventory' =>$recordedItems
+                                ]
+                            ]);
                         }
                     }
                 }
-
-                InventoryLog::create([
-                    'title' => 'Add Order Item',
-                    'data' => [
-                        'module' => 'order',
-                        'section' => 'add-order-item',
-                        'order_id' => $order->order_id,
-                        'items' =>$recordedItems
-                    ]
-                ]);
             }
 
             // Re-calculate total order price
@@ -258,37 +272,28 @@ class OrderService
         }
 
         if ($hasAddons) {
+            $addons = MenuAddOn::where('menu_id', $item->menu_id)->where('is_dinein', $isdinein ? true : false)->get();
+
             // Validate Add-on
-            $addons = $item->getAddonItems($isdinein ? true : false);
-
             if (count($addons) > 0) {
-                $addons->map(function ($addon) use ($item, $quantity, $inventoriesUsed) {
-
+                foreach ($addons as $addon) {
                     if (array_key_exists($addon->inventory_id, $inventoriesUsed)) {
+
                         // Check item for stocks in inventory
                         $running_stock = $inventoriesUsed[$addon->inventory_id]['running_stock'];
                         $original_order_qty = $item->qty * $addon->qty;
                         $inventory_used_less_current_item = $inventoriesUsed[$addon->inventory_id]['total_used'] - $original_order_qty;
-                        $new_inventory_qty = $quantity;
+
+                        $new_inventory_qty = $quantity * $addon->qty;
                         $new_total = $inventory_used_less_current_item + $new_inventory_qty;
 
                         if ($running_stock < $new_total) {
                             throw new \Exception("Addon item (name: {$addon->inventory->name}) does not have enough stock.");
                         }
                     } else {
-                        $ivt = BranchMenuInventory::where('id', $addon->inventory_id)->first();
-
-                        if (!$ivt) {
-                            throw new \Exception("Item has an addon with invalid inventory. Please delete the item or disable addon.");
-                        }
-
-                        $adddon_qty = $addon->qty * $quantity;
-
-                        if ($ivt->stock < $adddon_qty) {
-                            throw new \Exception("Addon item (name: {$addon->inventory->name}) does not have enough stock.");
-                        }
+                        throw new \Exception("Item has an addon with invalid inventory. Please delete the item or disable addon.");
                     }
-                });
+                }
             }
         }
 

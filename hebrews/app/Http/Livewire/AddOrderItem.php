@@ -21,14 +21,14 @@ class AddOrderItem extends Component
     {
         $this->menuitem = Menu::where('id', $id)->first();
 
-        $this->addOns = MenuAddOn::where('menu_id', $id)->where('is_dinein', $this->selectedDineIn)->get();
+        $this->addOns = MenuAddOn::where('menu_id', $id)->where('is_dinein', $this->selectedDineIn)->with('inventory')->get();
         $this->applyAddon = 1;
     }
 
     public function updatedSelectedDineIn($value)
     {
         $menuitem = json_decode($this->menuitem, true);
-        $this->addOns = MenuAddOn::where('menu_id', $menuitem['id'])->where('is_dinein', $value)->get();
+        $this->addOns = MenuAddOn::where('menu_id', $menuitem['id'])->where('is_dinein', $value)->with('inventory')->get();
     }
 
     public function updatedOrderQty($value)

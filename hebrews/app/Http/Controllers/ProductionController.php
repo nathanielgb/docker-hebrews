@@ -13,6 +13,7 @@ class ProductionController extends Controller
     public function index (Request $request)
     {
         $orders = Order::with(['items' => function ($query) {
+            $query->with('addons');
             $query->where('status', '!=', 'served');
             $query->where('production_cleared', false);
             $query->where('from', '=', 'storage');
@@ -25,7 +26,7 @@ class ProductionController extends Controller
         ->where('cancelled', false)
         ->where('completed', false)
         ->where('confirmed', true)
-        ->orderBy('created_at', 'ASC')
+        ->orderBy('created_at', 'desc')
         ->get();
 
         return view('production.index', compact('orders'));

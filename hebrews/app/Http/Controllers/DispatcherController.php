@@ -14,6 +14,7 @@ class DispatcherController extends Controller
     {
 
         $orders = Order::with(['items' => function ($query) {
+            $query->with('addons');
             $query->where('dispatcher_cleared', false);
             $query->where('from', '=', 'kitchen');
 
@@ -24,7 +25,7 @@ class DispatcherController extends Controller
         ->where('cancelled', false)
         ->where('completed', false)
         ->where('confirmed', true)
-        ->orderBy('created_at', 'ASC')
+        ->orderBy('created_at', 'desc')
         ->get();
 
         return view('dispatch.index', compact('orders'));

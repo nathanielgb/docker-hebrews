@@ -60,6 +60,8 @@ class InventoryService
     {
         $oitems = $items;
         $used_items = [];
+        $menu_ids = $oitems->pluck('menu_id');
+        $_addons = MenuAddOn::whereIn('menu_id', $menu_ids)->get();
 
         // Validate addon of array
         if (count($oitems) > 0) {
@@ -72,8 +74,7 @@ class InventoryService
                 $is_dinein = isset($oitem->data['is_dinein']) && $oitem->data['is_dinein'] == 1 ? true : false;
 
                 if (isset($oitem->data['has_addons']) && $oitem->data['has_addons'] == 1) {
-
-                    $addons = $oitem->getAddonItems($is_dinein);
+                    $addons = $_addons->where('menu_id', $oitem->menu_id)->where('is_dinein', $is_dinein);
 
                     if (count($addons) > 0) {
                         $o_qty = $oitem->qty ?? 1;
@@ -121,6 +122,7 @@ class InventoryService
     {
         $oitems = $items;
         $used_items = [];
+        $menu_ids = $oitems->pluck('menu_id');
 
         // Validate addon of array
         if (count($oitems) > 0) {
@@ -132,6 +134,7 @@ class InventoryService
                 }
 
                 $addons = $oitem->addons;
+
                 if (count($addons) > 0) {
 
                     foreach ($addons as $addon) {

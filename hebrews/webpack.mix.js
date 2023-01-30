@@ -21,4 +21,6 @@ mix.js('resources/js/app.js', 'public/js')
         require('autoprefixer'),
     ])
     .sass('resources/scss/style.scss', 'public/css')
-    .version();;
+    .sass('resources/scss/pos.scss', 'public/css')
+    .sass('resources/scss/pos-full.scss', 'public/css')
+    .version();
