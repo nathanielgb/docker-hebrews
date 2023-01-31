@@ -29,6 +29,10 @@
                         <input class="styled-input" name="menu" type="text" placeholder="Cheeseburger">
                     </label>
                     <label class="block mb-4 text-sm">
+                        <span class="text-gray-700">Code</span>
+                        <input class="styled-input" name="code" type="text" placeholder="ch01">
+                    </label>
+                    <label class="block mb-4 text-sm">
                         <span class="text-gray-700">Category</span>
                         <select id="addCategory" class="styled-input" name="category">
                             <option value="" selected disabled>Select a category</option>
@@ -73,7 +77,7 @@
                             name="inventory"
                             placeholder="Enter Inventory..."
                             autocomplete="off"
-                            class="block w-full rounded-sm cursor-pointer focus:outline-none"
+                            class="block w-full rounded-sm cursor-pointer focus:outline-none mt-1"
                         >
                             <option value="" selected disabled>Select inventory</option>
                         </select>
@@ -82,7 +86,7 @@
 
                     <label class="block mb-4 text-sm">
                         <span class="text-gray-700">No. of Unit</span>
-                        <input class="styled-input" name="unit" type="number" step=".01" min="0"  placeholder="1">
+                        <input class="styled-input" name="unit" type="number" step=".001" min="0"  placeholder="1">
                         <p class="text-xs text-yellow-500">note: number of units to be deducted to the current stock of inventory for every quantity ordered</p>
                     </label>
                     <label class="block mb-4 text-sm">
@@ -105,6 +109,12 @@
                         <span class="text-gray-700">Rebranding Price</span>
                         <input class="styled-input" name="rebranding_price" type="number" min="0" step="0.01" placeholder="3.50">
                     </label>
+                    <div class="form-check">
+                        <input name="is_beans" class="float-left w-4 h-4 mt-1 mr-2 align-top transition duration-200 bg-white bg-center bg-no-repeat bg-contain border border-gray-300 rounded-sm appearance-none cursor-pointer form-check-input checked:bg-blue-600 checked:border-blue-600 focus:outline-none" type="checkbox" id="flexCheckChecked">
+                        <label class="inline-block text-gray-800 form-check-label" for="flexCheckChecked">
+                            Is Beans
+                        </label>
+                    </div>
                 </form>
             </div>
             <div

@@ -16,9 +16,11 @@ class CreateMenuInventoriesTable extends Migration
         Schema::create('menu_inventories', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->string('category_id')->nullable();
+            $table->string('inventory_code')->nullable();
             $table->string('unit');
-            $table->decimal('stock', 8, 2)->nullable();
-            $table->decimal('previous_stock', 8, 2)->nullable();
+            $table->decimal('stock', 8, 3)->nullable();
+            $table->decimal('previous_stock', 8, 3)->nullable();
             $table->string('modified_by');
             $table->timestamps();
         });

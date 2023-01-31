@@ -86,7 +86,7 @@
         <div class="flex flex-col flex-1 w-full">
             @include('layouts.top-menu')
             <main class="h-full overflow-y-auto">
-                <div class="container grid px-6 mx-auto">
+                <div class="container grid px-6 mx-auto" style="margin-bottom: 50px;">
                     <h2 class="my-6 text-2xl font-semibold text-gray-700">
                         {{ $header ?? null }}
                     </h2>

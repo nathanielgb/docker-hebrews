@@ -16,6 +16,7 @@ class Menu extends Model
      */
     protected $fillable = [
         'name',
+        'code',
         'units',
         'reg_price',
         'retail_price',
@@ -25,6 +26,9 @@ class Menu extends Model
         'category_id',
         'inventory_id',
         'sub_category',
+        'is_beans',
+        'data',
+        'branch_id',
     ];
 
     /**
@@ -44,20 +48,28 @@ class Menu extends Model
     }
 
     /**
-     * Get the order items associated with the menu item.
+     * Get the addons items associated with the menu item.
      */
-    public function orderItems()
+    public function addonItems()
     {
-        return $this->hasMany(OrderItem::class, 'id', 'order_item_id');
+        return $this->hasMany(MenuAddOn::class, 'menu_id', 'id');
     }
 
     /**
-     * Get the cart items associated with the menu item.
+     * Get the addons items according to order type
      */
-    public function cartItems()
+    public function getAddonItems($isdinein)
     {
-        return $this->hasMany(cartItems::class, 'id', 'menu_id');
+        return MenuAddOn::where('menu_id', $this->id)->where('is_dinein', $isdinein)->get();
     }
+
+    // /**
+    //  * Get the cart items associated with the menu item.
+    //  */
+    // public function cartItems()
+    // {
+    //     return $this->hasMany(cartItems::class, 'menu_id', 'id');
+    // }
 
     public function getPrice($type)
     {
@@ -78,5 +90,13 @@ class Menu extends Model
         }
 
         return null;
+    }
+
+    /**
+     * Get the branch associated with the menu item.
+     */
+    public function branch()
+    {
+        return $this->belongsTo(Branch::class, 'branch_id', 'id');
     }
 }

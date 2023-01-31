@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AddInventoryCodeInOrderItemsTable extends Migration
+class CreateAdminLogsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,9 +13,12 @@ class AddInventoryCodeInOrderItemsTable extends Migration
      */
     public function up()
     {
-        Schema::table('order_items', function (Blueprint $table) {
-            //
-            $table->string('inventory_code')->nullable();
+        Schema::create('admin_logs', function (Blueprint $table) {
+            $table->id();
+            $table->string('title');
+            $table->longText('desc')->nulllable();
+            $table->json('data');
+            $table->timestamps();
         });
     }
 
@@ -26,8 +29,6 @@ class AddInventoryCodeInOrderItemsTable extends Migration
      */
     public function down()
     {
-        Schema::table('order_items', function (Blueprint $table) {
-            //
-        });
+        Schema::dropIfExists('admin_logs');
     }
 }

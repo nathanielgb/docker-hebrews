@@ -44,7 +44,7 @@
                 >
                 <i class="fa-solid fa-magnifying-glass"></i> SEARCH
             </button>
-            @if (auth()->user()->can('access', 'add-inventory-action'))
+            @if (auth()->user()->can('access', 'add-branch-inventory-action'))
                 <button
                     type="button"
                     class="inline-block px-6 py-2.5 bg-green-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-green-700 hover:shadow-lg focus:bg-green-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-green-800 active:shadow-lg transition duration-150 ease-in-out"
@@ -64,8 +64,9 @@
                 <thead>
                 <tr class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase border-b bg-gray-50">
                     <th class="px-4 py-3 text-center">ID</th>
-                    <th class="px-4 py-3 text-center">Code</th>
-                    <th class="px-4 py-3 text-center">Branch</th>
+                    <th class="px-4 py-3">Code</th>
+                    <th class="px-4 py-3">Branch</th>
+                    <th class="px-4 py-3">Category</th>
                     <th class="px-4 py-3">Name</th>
                     <th class="px-4 py-3">Linked Products</th>
                     <th class="px-4 py-3">Stock</th>
@@ -80,11 +81,14 @@
                             <td class="px-4 py-3 text-center">
                                 {{ $item->id }}
                             </td>
-                            <td class="px-4 py-3 text-sm text-center">
+                            <td class="px-4 py-3 text-sm">
                                 {{ $item->inventory_code }}
                             </td>
-                            <td class="px-4 py-3 text-sm text-center">
+                            <td class="px-4 py-3 text-sm">
                                 {{ $item->branch->name }}
+                            </td>
+                            <td class="px-4 py-3 text-sm">
+                                {{ $item->category->name ?? '-' }}
                             </td>
                             <td class="px-4 py-3 text-sm">
                                 {{ $item->name }}

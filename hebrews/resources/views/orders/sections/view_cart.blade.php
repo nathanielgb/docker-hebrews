@@ -34,21 +34,32 @@
                 <span><i class="fa-solid fa-circle-arrow-left"></i> BACK</span>
             </a>
         </div>
+        <div>
+            <button
+                type="button"
+                class="inline-block px-6 py-2.5 bg-green-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-green-700 hover:shadow-lg focus:bg-green-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-green-800 active:shadow-lg transition duration-150 ease-in-out"
+                data-bs-toggle="modal"
+                data-bs-target="#inventorySummaryModal"
+                >
+                <i class="fa-solid fa-cubes"></i> INVENTORIES USED
+            </button>
+        </div>
     </div>
-    <div class="p-4 overflow-hidden bg-white rounded-lg shadow-xs">
+    <div class="p-6 overflow-hidden bg-white rounded-lg shadow-xs">
         <div class="w-full mb-8 overflow-hidden border rounded-lg shadow-xs">
             <div class="w-full overflow-x-auto">
                 <table class="w-full whitespace-no-wrap">
                     <thead>
                     <tr class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase border-b bg-gray-50">
-                        <th class="px-4 py-4 text-center">Menu Id</th>
+                        <th class="px-4 py-4 text-center">M.ID</th>
                         <th class="px-4 py-4">Name</th>
+                        <th class="px-4 py-4 text-center">O.Type</th>
                         <th class="px-4 py-4">Inventory</th>
-                        <th class="px-4 py-4 text-center">Status</th>
-                        <th class="px-4 py-4 text-center">Type</th>
-                        <th class="px-4 py-3 text-center">Qty</th>
+                        <th class="px-4 py-3">Qty</th>
+                        <th class="px-4 py-4 text-center">Addons</th>
                         <th class="px-4 py-4 text-center">Price</th>
                         <th class="px-4 py-3 text-center">Total</th>
+                        <th class="px-4 py-4 text-center">Status</th>
                         <th class="px-4 py-3 text-center">Action</th>
                     </tr>
                     </thead>
@@ -60,49 +71,76 @@
                                 </td>
                                 <td class="px-4 py-4 text-sm">
                                     {{ $item->menu->name ?? 'N/A' }}
+                                    @if (isset($item->data['grind_type']) && !empty($item->data['grind_type']))
+                                        ({{ $item->data['grind_type'] }})
+                                    @endif
+                                </td>
+                                <td class="px-4 py-4 text-sm text-center">
+                                    @if (isset($item->data['is_dinein']) && $item->data['is_dinein'])
+                                        <span class="text-xs inline-block py-1 px-2.5 leading-none text-center whitespace-nowrap align-baseline font-bold bg-blue-400 text-white rounded">Dine-in</span>
+                                    @else
+                                        <span class="text-xs inline-block py-1 px-2.5 leading-none text-center whitespace-nowrap align-baseline font-bold bg-blue-400 text-white rounded">Take-out</span>
+                                    @endif
+
                                 </td>
                                 <td class="px-4 py-4 text-sm">
-                                    @if (isset($item->inventory))
+                                    @if (isset($item->menu->inventory))
                                         <ul>
-                                            <li>Branch: <span class="font-bold">{{ $item->inventory->branch->name }}</span></li>
-                                            <li>Name: <span class="font-bold">{{ $item->inventory->name }}</span></li>
-                                            <li>Code: <span class="font-bold">{{ $item->inventory->inventory_code }}</span></li>
-                                            <li>Stock: <span class="font-bold">{{ $item->inventory->stock }}</span></li>
-                                            <li>Unit: <span class="font-bold">{{ $item->inventory->unit }}</span></li>
+                                            <li>Branch: <span class="font-bold">{{ $item->menu->inventory->branch->name }}</span></li>
+                                            <li>Name: <span class="font-bold">{{ $item->menu->inventory->name }}</span></li>
+                                            <li>Code: <span class="font-bold">{{ $item->menu->inventory->inventory_code }}</span></li>
+                                            <li>Stock: <span class="font-bold">{{ $item->menu->inventory->stock }}</span></li>
+                                            <li>Unit: <span class="font-bold">{{ $item->menu->inventory->unit }}</span></li>
                                         </ul>
                                     @endif
                                 </td>
+                                <td class="px-4 py-4 text-sm">
+                                    <ul>
+                                        <li>Qty: <span class="font-bold">{{ $item->qty }}</span></li>
+                                        <li>Unit/Qty: <span class="font-bold">{{ $item->menu->units }}</span></li>
+                                        <li>Tot.Qty: <span class="font-bold">{{ $item->qty * $item->menu->units  }}</span></li>
+                                    </ul>
+                                </td>
                                 <td class="px-4 py-4 text-sm text-center">
-                                    @if ($item->available)
-                                        <span class="text-xs inline-block py-1 px-2.5 leading-none text-center whitespace-nowrap align-baseline font-bold bg-green-500 text-white rounded-full">Available</span>
+                                    @if (isset($item->data['has_addons']) && $item->data['has_addons'])
+                                        <div class="inline-flex items-center px-3 py-1 text-xs font-bold text-white uppercase bg-green-600 rounded-full leading-sm">
+                                            YES
+                                        </div>
                                     @else
-                                        <span class="text-xs inline-block py-1 px-2.5 leading-none text-center whitespace-nowrap align-baseline font-bold bg-red-600 text-white rounded-full">Unavailable</span>
+                                        <div class="inline-flex items-center px-3 py-1 text-xs font-bold text-white uppercase bg-red-600 rounded-full leading-sm">
+                                            NO
+                                        </div>
                                     @endif
                                 </td>
                                 <td class="px-4 py-4 text-sm text-center">
-                                    {{ $item->type }}
-                                </td>
-                                <td class="px-4 py-4 text-sm text-center">
-                                    {{ $item->qty }}
-                                </td>
-
-                                <td class="px-4 py-4 text-sm text-center">
-                                    {{ $item->price }}
+                                    {{ $item->price }} ({{ $item->type ?? 'N/A' }})
                                 </td>
                                 <td class="px-4 py-4 text-sm text-center">
                                     {{ $item->total }}
                                 </td>
-                                {{-- <td class="px-4 py-4 text-sm">
-                                    @if ($item->data)
-                                        <ul>
-                                            @foreach ($item->data as $addon)
-                                                <li>{{ $addon['name'] }} - {{ $addon['qty'] }}</li>
+                                <td class="px-4 py-4 text-sm" style="max-width: 150px;">
+                                    @if ($item->available)
+                                        @if (isset($item->errors) && count($item->errors) > 0)
+                                            @foreach($item->errors as $error)
+                                                <li class="text-red-600">{{ $error }}</li>
                                             @endforeach
-                                        </ul>
+                                        @else
+                                            <div class="text-center">
+                                                <div class="inline-flex items-center px-3 py-1 text-xs font-bold text-white uppercase bg-green-600 rounded-full leading-sm">
+                                                    AVAILABLE
+                                                </div>
+                                            </div>
+                                        @endif
+                                    @else
+                                        <div class="text-center">
+                                            <div class="inline-flex items-center px-3 py-1 text-xs font-bold text-white uppercase bg-red-600 rounded-full leading-sm">
+                                                UNAVAILABLE
+                                            </div>
+                                        </div>
                                     @endif
-                                </td> --}}
-                                <td class="px-4 py-4 text-sm f">
-                                    <div class="flex items-center justify-center space-x-4 text-sm">
+                                </td>
+                                <td class="px-4 py-4 text-sm">
+                                    <div class="flex flex-col items-center justify-center space-y-4 text-sm">
                                         @if ($item->available)
                                             <button
                                                 class="btn-update-cart flex items-center inline-block px-6 py-2.5 bg-green-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-green-700 hover:shadow-lg focus:bg-green-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-green-800 active:shadow-lg transition duration-150 ease-in-out"
@@ -150,8 +188,8 @@
         </div>
     </div>
 
-    {{-- @include('orders.modals.confirm') --}}
     @include('orders.modals.confirm_cart')
+    @include('orders.modals.inventory_summary')
     @include('orders.modals.update_cart_item')
     @include('orders.modals.delete_cart_item')
 
@@ -159,6 +197,8 @@
         <script src="https://cdn.jsdelivr.net/npm/tom-select/dist/js/tom-select.complete.min.js"></script>
         <script type="text/javascript">
             $('.custom-discount').hide();
+            $('#customer-name').hide();
+            $('#customer-account').show();
 
             var select = new TomSelect('#select-table', {
                 plugins: ['remove_button'],
@@ -244,6 +284,18 @@
                 $('#ord-fees').val(fees.toFixed(2));
                 $('#ord-total').val(total.toFixed(2));
             }
+
+            $('#noAccountBox').on("click", function() {
+                var noAccount = $(this).is(':checked');
+                if (noAccount) {
+                    $('#customer-name').show();
+                    $('#customer-account').hide();
+                } else {
+                    $('#customer-name').hide();
+                    $('#customer-account').show();
+                }
+            });
+
         </script>
     </x-slot>
 

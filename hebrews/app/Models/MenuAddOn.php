@@ -16,7 +16,10 @@ class MenuAddOn extends Model
      */
     protected $fillable = [
         'name',
+        'menu_id',
         'inventory_id',
+        'is_dinein',
+        'qty'
     ];
 
     /**

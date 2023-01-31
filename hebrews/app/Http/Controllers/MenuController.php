@@ -3,37 +3,51 @@
 namespace App\Http\Controllers;
 
 use App\Models\Menu;
-use Illuminate\Http\Request;
+use App\Models\Branch;
+use App\Models\ErrorLog;
+use App\Models\MenuAddOn;
+use App\Imports\MenuImport;
 use App\Models\MenuCategory;
+use Illuminate\Http\Request;
 use App\Models\MenuInventory;
+use App\Models\InventoryCategory;
 use Illuminate\Support\Facades\DB;
+use App\Models\BranchMenuInventory;
 use App\Http\Requests\StoreMenuRequest;
 use App\Http\Requests\UpdateMenuRequest;
-use App\Models\Branch;
-use App\Models\BranchMenuInventory;
+use Illuminate\Validation\ValidationException;
 
 class MenuController extends Controller
 {
     public function index(Request $request)
     {
+        $inventories = new BranchMenuInventory;
+
         if (auth()->user()->branch_id) {
-            $menu = Menu::whereHas('inventory', function ($q) {
+            $menu = Menu::where(function ($q) {
                 // Check branch of current user
                 if (auth()->user()->branch_id) {
                     $q->where('branch_id', auth()->user()->branch_id);
                 }
             });
 
-            $inventory_items = BranchMenuInventory::where('branch_id', auth()->user()->branch_id)->get();
+            $inventories =$inventories->where('branch_id', auth()->user()->branch_id);
             $branches = Branch::where('id', auth()->user()->branch_id)->get();
         } else {
-            $menu = Menu::with('category');
-            $inventory_items = BranchMenuInventory::all();
+            $menu = Menu::with('category','inventory','branch', 'inventory.branch');
             $branches = Branch::all();
         }
 
+        $inventory_items = $inventories->orderBy('name', 'asc')->get();
+
         if ($request->except(['page'])) {
             $menu=$menu->where(function ($query) use ($request) {
+                if ($request->menu_id !== null) {
+                    $query->where('id',  $request->menu_id);
+                }
+                if ($request->code !== null) {
+                    $query->where('code', 'LIKE', '%' . $request->code . '%');
+                }
                 if ($request->menu !== null) {
                     $query->where('name', 'LIKE', '%' . $request->menu . '%');
                 }
@@ -54,9 +68,13 @@ class MenuController extends Controller
     }
     public function store(StoreMenuRequest $request)
     {
-        $inventory = BranchMenuInventory::where('id', $request->inventory)->first();
+        if (isset($request->inventory)) {
+            $inventory = BranchMenuInventory::where('id', $request->inventory)->first();
 
-        if ($inventory) {
+            if (!$inventory) {
+                return back()->with('error', 'Item Inventory does not exist.');
+            }
+
             // Check the minimum unit required
             if($inventory->unit == 'boxes' && $request->unit < 1) {
                 return back()->with('error', "The box must be at least 1.");
@@ -66,70 +84,101 @@ class MenuController extends Controller
                 return back()->with('error', "The unit must be at least 1.");
             }
 
-            if ($inventory->unit != 'pcs' && $request->unit < 0.01) {
-                return back()->with('error', "The unit must be at least 0.01.");
+            if ($inventory->unit != 'pcs' && $request->unit < 0.001) {
+                return back()->with('error', "The unit must be at least 0.001.");
             }
-
-            $menu = Menu::create([
-                'name' => $request->menu,
-                'units' => $request->unit,
-                'reg_price' => $request->reg_price,
-                'retail_price' => $request->retail_price,
-                'wholesale_price' => $request->wholesale_price,
-                'rebranding_price' => $request->rebranding_price,
-                'distributor_price' => $request->distributor_price,
-                'category_id' => $request->category,
-                'inventory_id' => $request->inventory,
-                'sub_category' => $request->sub_category,
-            ]);
-
-            return back()->with('success', 'Successfully added ' . $request->menu . ' to the menu.');
         }
-        return back()->with('error', 'Item Inventory does not exist.');
+
+        $menu = Menu::create([
+            'code' => $request->code,
+            'name' => $request->menu,
+            'units' => $request->unit,
+            'reg_price' => $request->reg_price,
+            'retail_price' => $request->retail_price,
+            'wholesale_price' => $request->wholesale_price,
+            'rebranding_price' => $request->rebranding_price,
+            'distributor_price' => $request->distributor_price,
+            'category_id' => $request->category,
+            'inventory_id' => $request->inventory ?? null,
+            'branch_id' => $request->branch ?? null,
+            'sub_category' => $request->sub_category,
+            'is_beans' => isset($request->is_beans) ? true : false
+        ]);
+
+        return back()->with('success', 'Successfully added ' . $request->menu . ' to the menu.');
     }
 
-    // public function viewUpdate(Request $request)
-    // {
-    //     $item = Menu::where('id', $request->menu_id)->first();
+    public function viewImport ()
+    {
+        return view('menu.import');
+    }
 
-    //     if ($item) {
-    //         $categories = MenuCategory::orderBy('name')->get();
-    //         $inventory_items = MenuInventory::all();
+    public function import (Request $request)
+    {
+        $request->validate([
+            'file' => 'required|file|mimes:csv,xlsx'
+        ]);
 
 
-    //         return view('menu.sections.update', compact(
-    //             'item',
-    //             'categories',
-    //             'inventory_items'
-    //         ));
-    //     }
-    // }
+        $file = $request->file('file');
+        $records = [];
+
+        try {
+            $import = new MenuImport;
+            $import->import($file);
+
+            $records = $import->records;
+
+        } catch (ValidationException $e) {
+            ErrorLog::create([
+                'location' => 'MenuController.import',
+                'message' => gettype($e->errors()) == 'string' ? $e->errors() : json_encode($e->errors())
+            ]);
+
+            return redirect()
+                ->back()
+                ->with('error', "Failed to import file. Please try again.");
+        }
+
+
+        return redirect()
+            ->back()
+            ->with('success', "Records are successfully imported successfully.")
+            ->with('records', $records);
+    }
 
     public function update(UpdateMenuRequest $request)
     {
         $menu = Menu::where('id', $request->menu_id)->first();
 
         if ($menu) {
-            if (!$menu->inventory) {
-                return back()->with('error', "Failed to update Item $request->menu. Inventory does not exist.");
+
+            if (isset($request->inventory)) {
+                $inventory = BranchMenuInventory::where('id', $request->inventory)->first();
+
+                if (!$inventory) {
+                    return back()->with('error', "Failed to update Item $request->menu. Inventory does not exist.");
+                }
+
+                if (fmod($request->unit, 1) != 0.0 && $inventory->unit == 'pcs') {
+                    return back()->with('error', "Item $request->menu cannot have a decimal stock.");
+                }
+
+                // Check the minimum unit required
+                if($inventory->unit == 'boxes' && $request->unit < 1) {
+                    return back()->with('error', "The box must be at least 1.");
+                }
+
+                if($inventory->unit == 'pcs' && $request->unit < 1) {
+                    return back()->with('error', "The unit must be at least 1.");
+                }
+
+                if ($inventory->unit != 'pcs' && $request->unit < 0.001) {
+                    return back()->with('error', "The unit must be at least 0.001.");
+                }
             }
 
-            if (fmod($request->unit, 1) != 0.0 && $menu->inventory->unit == 'pcs') {
-                return back()->with('error', "Item $request->menu cannot have a decimal stock.");
-            }
 
-            // Check the minimum unit required
-            if($menu->inventory->unit == 'boxes' && $request->unit < 1) {
-                return back()->with('error', "The box must be at least 1.");
-            }
-
-            if($menu->inventory->unit == 'pcs' && $request->unit < 1) {
-                return back()->with('error', "The unit must be at least 1.");
-            }
-
-            if ($menu->inventory->unit != 'pcs' && $request->unit < 0.01) {
-                return back()->with('error', "The unit must be at least 0.01.");
-            }
             $menu->update([
                 'name' => $request->menu,
                 'units' => $request->unit,
@@ -141,6 +190,7 @@ class MenuController extends Controller
                 'category_id' => $request->category,
                 'inventory_id' => $request->inventory,
                 'sub_category' => $request->sub_category,
+                'is_beans' => isset($request->is_beans) ? true : false
             ]);
             return redirect()->route('menu.index')->with('success', 'Item ' . $menu->name . ' updated successfully.');
         }
@@ -152,6 +202,7 @@ class MenuController extends Controller
         $menu = Menu::where('id', $request->id)->first();
 
         if ($menu) {
+            $addons = MenuAddOn::where('menu_id', $menu->id)->delete();
             $menu->delete();
             // Delete Inventory item
             // MenuCategory::where('id', $menu->id)->delete();
@@ -163,7 +214,7 @@ class MenuController extends Controller
 
     public function viewCategories(Request $request)
     {
-        $categories = MenuCategory::OrderBy('name')->paginate(20);
+        $categories = MenuCategory::with('menus')->OrderBy('name')->paginate(20);
 
         return view('menu.categories', compact(
             'categories',
@@ -225,7 +276,7 @@ class MenuController extends Controller
             }
 
             // Delete all menu item with the same category
-            $deleted_menu_items = DB::table('menus')->where('category_id', '=', $category->id)->delete();
+            // $deleted_menu_items = DB::table('menus')->where('category_id', '=', $category->id)->delete();
             $deleted_category = DB::table('menu_categories')->where('id', '=', $category->id)->delete();
 
             return back()->with('success', 'Category has been successfully removed.');

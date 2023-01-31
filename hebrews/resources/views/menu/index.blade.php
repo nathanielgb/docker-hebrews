@@ -50,7 +50,14 @@
                     >
                     <span>CATEGORIES</span>
                 </a>
-
+                @endif
+                @if(auth()->user()->can('access', 'import-menu-action'))
+                    <a
+                        href="{{ route('menu.import.view') }}"
+                        class="flex items-center inline-block px-6 py-2.5 bg-green-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-green-700 hover:shadow-lg focus:bg-green-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-green-800 active:shadow-lg transition duration-150 ease-in-out"
+                    >
+                    <span>IMPORT</span>
+                </a>
                 @endif
 
                 {{-- @if(auth()->user()->can('access', 'view-inventory-action'))
@@ -99,11 +106,14 @@
                     <thead>
                     <tr class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase border-b bg-gray-50">
                         <th class="px-4 py-3">Menu ID</th>
+                        <th class="px-4 py-3">Code</th>
+                        <th class="px-4 py-3">Branch</th>
                         <th class="px-4 py-3">Name</th>
                         <th class="px-4 py-3 text-center">No. of Unit</th>
                         <th class="px-4 py-3">Inventory</th>
                         <th class="px-4 py-3">Prices</th>
                         <th class="px-4 py-3">Category</th>
+                        <th class="px-4 py-3 text-center">Is Beans</th>
                         <th class="px-4 py-3 text-center">Action</th>
                     </tr>
                     </thead>
@@ -112,6 +122,12 @@
                             <tr class="text-gray-700">
                                 <td class="px-4 py-3 text-sm text-s">
                                     {{ $item->id }}
+                                </td>
+                                <td class="px-4 py-3 text-sm">
+                                    {{ $item->code }}
+                                </td>
+                                <td class="px-4 py-3 text-sm">
+                                    {{ $item->branch->name ?? '' }}
                                 </td>
                                 <td class="px-4 py-3 text-sm">
                                     {{ $item->name }}
@@ -176,17 +192,39 @@
                                     </span> <br>
                                     <span class="italic">
                                         {{ $item->sub_category }}
+                                    </span><br>
+                                    <span class="italic">
+                                        ({{ $item->category->from }})
                                     </span>
                                 </td>
+                            <td class="px-4 py-3 text-sm text-center">
+                                @if ($item->is_beans)
+                                    <div class="inline-flex items-center px-3 py-1 text-xs font-bold text-white uppercase bg-green-600 rounded-full leading-sm">
+                                        YES
+                                    </div>
+                                @else
+                                    <div class="inline-flex items-center px-3 py-1 text-xs font-bold text-white uppercase bg-red-600 rounded-full leading-sm">
+                                        NO
+                                    </div>
+                                @endif
+                            </td>
                                 <td class="px-4 py-3 text-center">
                                     <div class="flex items-center justify-center space-x-4 text-sm">
+                                        @if (auth()->user()->can('access', 'view-menu-addons-action'))
+                                            <a
+                                                class="flex items-center inline-block px-6 py-2.5 bg-blue-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-blue-700 hover:shadow-lg focus:bg-blue-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-blue-800 active:shadow-lg transition duration-150 ease-in-out"
+                                                href="{{ route('menu.addon.index', $item->id) }}"
+                                                >
+                                                <span><i class="fa-solid fa-cart-shopping"></i> Add-ons</span>
+                                            </a>
+                                        @endif
                                         @if(auth()->user()->can('access', 'update-menu-action'))
                                             <button
                                                 class="flex btn-update-menu items-center inline-block px-6 py-2.5 bg-green-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-green-700 hover:shadow-lg focus:bg-green-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-green-800 active:shadow-lg transition duration-150 ease-in-out"
                                                 type="button"
                                                 data-bs-toggle="modal"
                                                 data-bs-target="#updateMenuModal"
-                                                data-branch_id="{{ $item->inventory->branch_id }}"
+                                                data-branch_id="{{ $item->branch_id ?? '' }}"
                                                 @click="$store.menu.updateMenuData={{ json_encode($item) }}, $store.menu.setCategories({{ $categories }}) ,$store.menu.setSubCategories({{ json_encode( $item->category->sub) }})"
                                                 >
                                                 <span><i class="fa-solid fa-pen"></i> Update</span>
@@ -212,7 +250,7 @@
                             </tr>
                         @empty
                             <tr class="text-gray-700">
-                                <td colspan="7" class="px-4 py-3 text-sm text-center">
+                                <td colspan="10" class="px-4 py-3 text-sm text-center">
                                     No records found.
                                 </td>
                             </tr>

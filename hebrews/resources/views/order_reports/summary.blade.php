@@ -45,12 +45,23 @@
                                 Order/s
                             </td>
                             <td class="w-1/2 p-4 font-semibold text-left text-gray-900 border border-gray-300">
-                                {{ $order_numbers }}
+                                @php
+                                    $order_numbers = $order_numbers ?? [];
+                                @endphp
+                                <button
+                                    class="btn-details inline-flex items-center px-3 py-1 text-xs font-bold text-white uppercase bg-blue-600 rounded-lg leading-sm"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#showDetails"
+                                    data-details="{{ json_encode($order_numbers) }}"
+                                    data-field="Order/s"
+                                    >
+                                    <i class="fa-solid fa-eye"></i>&nbsp;SHOW
+                                </button>
                             </td>
                         </tr>
                         <tr>
                             <td class="w-1/2 p-4 font-semibold text-left text-gray-900 border border-gray-300">
-                                Customer name/s
+                                Customer
                             </td>
                             <td class="w-1/2 p-4 font-semibold text-left text-gray-900 border border-gray-300">
                                 {{ $customers }}
@@ -136,7 +147,7 @@
                             <table class="min-w-full text-center border">
                                 <thead class="border-b">
                                     <tr>
-                                        <th scope="col" colspan="5" class="px-6 py-4 text-gray-900 border-b ">Order Items Summary</th>
+                                        <th scope="col" colspan="6" class="px-6 py-4 text-gray-900 border-b ">Order Items Summary</th>
                                     </tr>
                                     <tr>
                                         <th scope="col" class="px-6 py-4 text-sm font-medium text-gray-900 border-r">
@@ -147,6 +158,9 @@
                                         </th>
                                         <th scope="col" class="px-6 py-4 text-sm font-medium text-gray-900 border-r">
                                             Order Qty
+                                        </th>
+                                        <th scope="col" class="px-6 py-4 text-sm font-medium text-gray-900 border-r">
+                                            Total Qty
                                         </th>
                                         <th scope="col" class="px-6 py-4 text-sm font-medium text-gray-900 border-r">
                                             Inventory
@@ -165,11 +179,19 @@
                                                 {{ $item->total_qty }}
                                             </td>
                                             <td class="px-6 py-4 text-sm text-gray-900 border-r whitespace-nowrap">
-                                                <ul>
-                                                    <li>Name: {{ $item->inventory_name }}</li>
-                                                    <li>Code: {{ $item->inventory_code }}</li>
-                                                    <li>Used: {{ $item->stock_used }}</li>
-                                                </ul>
+                                                {{ $item->stock_used }}
+                                                @if ($item->unit_label)
+                                                    ({{ $item->unit_label }})
+                                                @endif
+                                            </td>
+                                            <td class="px-6 py-4 text-sm text-gray-900 border-r whitespace-nowrap">
+                                                @if ($item->inventory_id)
+                                                    <ul>
+                                                        <li>Name: {{ $item->inventory_name }}</li>
+                                                        <li>Code: {{ $item->inventory_code }}</li>
+                                                        <li>Used: {{ $item->stock_used }}</li>
+                                                    </ul>
+                                                @endif
                                             </td>
                                             <td class="px-6 py-4 text-sm text-gray-900 whitespace-nowrap">
                                                 {{ $item->total_amount }}
@@ -178,17 +200,26 @@
                                     @endforeach
                                     @foreach ($addon_order_items as $addon)
                                         <tr class="border-b">
-                                            <td class="px-6 py-4 text-sm font-medium text-gray-900 border-r whitespace-nowrap">{{ $addon->name }}</td>
+                                            <td class="px-6 py-4 text-sm font-medium text-gray-900 border-r whitespace-nowrap">{{ $addon->inventory_name }}</td>
                                             <td class="px-6 py-4 text-sm font-medium text-gray-900 border-r whitespace-nowrap">Addon Item</td>
                                             <td class="px-6 py-4 text-sm text-gray-900 border-r whitespace-nowrap">
-                                                {{ $addon->total_qty }}
+                                                {{ $addon->orderItem->qty }}
                                             </td>
                                             <td class="px-6 py-4 text-sm text-gray-900 border-r whitespace-nowrap">
-                                                <ul>
-                                                    <li>Name: {{ $addon->inventory_name }}</li>
-                                                    <li>Code: {{ $item->inventory_code }}</li>
-                                                    <li>Used: {{ $addon->stock_used }}</li>
-                                                </ul>
+                                                {{ $addon->stock_used }}
+                                                @if ($addon->unit_label)
+                                                    ({{ $item->unit_label }})
+                                                @endif
+                                            </td>
+                                            <td class="px-6 py-4 text-sm text-gray-900 border-r whitespace-nowrap">
+                                                @if ($addon->inventory_id)
+
+                                                    <ul>
+                                                        <li>Name: {{ $addon->inventory_name }}</li>
+                                                        <li>Code: {{ $addon->inventory_code }}</li>
+                                                        <li>Used: {{ $addon->stock_used }}</li>
+                                                    </ul>
+                                                @endif
                                             </td>
                                             <td class="px-6 py-4 text-sm text-gray-900 whitespace-nowrap">
                                                 0.00
@@ -204,9 +235,18 @@
             </div>
         </div>
     </div>
+    @include('order_reports.partials.modals.details')
 
     <x-slot name="scripts">
-
+        <script>
+            $('.btn-details').on("click", function() {
+                var field = JSON.stringify($(this).data('field'));
+                var details = JSON.stringify($(this).data('details'));
+                console.log(details)
+                field = field.slice(1, -1);
+                Livewire.emit('setItem', field, details);
+            });
+        </script>
     </x-slot>
 
 </x-app-layout>

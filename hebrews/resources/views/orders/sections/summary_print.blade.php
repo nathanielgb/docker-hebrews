@@ -81,21 +81,16 @@
                                     <tr class="border-b">
                                         <td class="px-6 py-4 text-sm font-light text-gray-900 border-r whitespace-nowrap">
                                             {{ $item->name }}
+                                            @if (isset($item->data['grind_type']) && !empty($item->data['grind_type']))
+                                                ({{ $item->data['grind_type'] }})
+                                            @endif
                                         </td>
                                         <td class="px-6 py-4 text-sm font-light text-gray-900 border-r whitespace-nowrap">
                                             {{ $item->qty }}
                                         </td>
                                         <td class="px-6 py-4 text-sm font-light text-gray-900 border-r whitespace-nowrap">
-                                            @if ($item->data)
-                                                <ul>
-                                                    @foreach ($item->data as $addon)
-                                                        <li>{{ $addon['name'] }} - {{ $addon['qty'] }}</li>
-                                                    @endforeach
-
-                                                </ul>
-                                            @else
-                                                -
-                                            @endif
+                                            <!-- todo -->
+                                            -
                                         </td>
                                         <td class="px-6 py-4 text-sm font-light text-gray-900 whitespace-nowrap">
                                             {{ $item->total_amount }}

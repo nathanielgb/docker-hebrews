@@ -8,50 +8,36 @@ use App\Models\MenuAddOn;
 
 class AddOrderItem extends Component
 {
-    public $menus;
     public $menuid;
     public $menuitem;
-    public $orderItemAddons = [];
-    public $addons;
+    public $addOns = [];
     public $order;
-
+    public $selectedDineIn = 1;
+    public $applyAddon = 1;
+    public $orderQty = 1;
 
     // Not user if used
     public function updatedMenuId ($id)
     {
         $this->menuitem = Menu::where('id', $id)->first();
-        $this->orderItemAddons =[];
+
+        $this->addOns = MenuAddOn::where('menu_id', $id)->where('is_dinein', $this->selectedDineIn)->with('inventory')->get();
+        $this->applyAddon = 1;
+    }
+
+    public function updatedSelectedDineIn($value)
+    {
+        $menuitem = json_decode($this->menuitem, true);
+        $this->addOns = MenuAddOn::where('menu_id', $menuitem['id'])->where('is_dinein', $value)->with('inventory')->get();
+    }
+
+    public function updatedOrderQty($value)
+    {
+        $this->orderQty = $value;
     }
 
     public function mount ()
     {
-        $branch_id = $this->order->branch_id;
-
-        $this->menus = Menu::whereHas('inventory', function ($q) use ($branch_id) {
-            // Check branch of order
-            $q->where('branch_id', $branch_id);
-        })->get();
-
-        $this->addons = MenuAddOn::whereHas('inventory', function ($q) use ($branch_id) {
-            // Check branch of order
-            $q->where('branch_id', $branch_id);
-
-        })->get();
-
-    }
-
-    public function addAddon ()
-    {
-        $this->orderItemAddons[] = [
-            'addon_id' => '',
-            'qty' => 1
-        ];
-    }
-
-    public function removeAddon ($index)
-    {
-        unset($this->orderItemAddons[$index]);
-        $this->orderItemAddons = array_values($this->orderItemAddons);
     }
 
     public function render()

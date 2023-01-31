@@ -16,15 +16,33 @@
             href="https://cdn.jsdelivr.net/npm/tom-select/dist/css/tom-select.css"
             rel="stylesheet"
         />
+        <style>
+            .select-inventories .optgroup-header {
+                font-weight: 700;
+                font-style: italic;
+                opacity: 1;
+                margin: 0 0 0 2px;
+            }
+        </style>
     </x-slot>
 
-    <x-slot name="header">
-        {{ __('Menu - Add ons') }}
-    </x-slot>
+    <div class="flex justify-start">
+        <div>
+            <h2 class="my-3 text-2xl font-semibold text-gray-700">Menu (name: {{ $menu->name }}) - Add ons</h2>
+        </div>
+    </div>
 
     @include('components.alert-message')
 
-    <div class="flex justify-end my-3">
+    <div class="flex justify-between my-3">
+        <div class="flex space-x-2 jusify-center">
+            <a
+                href="{{ route('menu.index') }}"
+                class="flex items-center inline-block px-6 py-2.5 bg-green-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-green-700 hover:shadow-lg focus:bg-green-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-green-800 active:shadow-lg transition duration-150 ease-in-out"
+                >
+                <span><i class="fa-solid fa-circle-arrow-left"></i> BACK</span>
+            </a>
+        </div>
         <div class="flex space-x-2 jusify-center">
             <button
                 type="button"
@@ -35,7 +53,6 @@
                 <i class="fa-solid fa-circle-plus"></i> ADD
             </button>
         </div>
-
     </div>
 
     <div class="w-full mb-8 overflow-hidden border rounded-lg shadow-xs">
@@ -44,8 +61,9 @@
                 <thead>
                 <tr class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase border-b bg-gray-50">
                     <th class="px-4 py-3">ID</th>
-                    <th class="px-4 py-3">Name</th>
+                    <th class="px-4 py-3">Order Type</th>
                     <th class="px-4 py-3">Inventory</th>
+                    <th class="px-4 py-3 text-center">Quantity</th>
                     <th class="px-4 py-3 text-center">Action</th>
                 </tr>
                 </thead>
@@ -56,7 +74,11 @@
                                 {{ $item->id }}
                             </td>
                             <td class="px-4 py-3 text-sm">
-                                {{ $item->name }}
+                                @if ($item->is_dinein)
+                                    <span class="text-xs inline-block py-1 px-2.5 leading-none text-center whitespace-nowrap align-baseline font-bold bg-blue-400 text-white rounded">Dine-in</span>
+                                @else
+                                    <span class="text-xs inline-block py-1 px-2.5 leading-none text-center whitespace-nowrap align-baseline font-bold bg-blue-400 text-white rounded">Take-out</span>
+                                @endif
                             </td>
 
                             <td class="px-4 py-3 text-sm">
@@ -70,7 +92,9 @@
                                     </ul>
                                 @endif
                             </td>
-
+                            <td class="px-4 py-3 text-sm text-center">
+                                {{ $item->qty }}
+                            </td>
                             <td class="px-4 py-3 text-center">
                                 @if (auth()->user()->can('access', 'manage-inventory-action'))
                                     <div class="flex items-center justify-center space-x-4 text-sm">
@@ -88,7 +112,7 @@
                                             data-bs-target="#deleteModal"
                                             @click="$store.data.delete={{ json_encode([
                                                 'id' => $item->id,
-                                                'name' => $item->name,
+                                                'name' => $item->inventory->name,
                                             ]) }}"
                                             >
                                             <i class="fa-solid fa-trash"></i> Delete
@@ -99,7 +123,7 @@
                         </tr>
                     @empty
                         <tr class="text-gray-700">
-                            <td colspan="8" class="px-4 py-3 text-sm text-center">
+                            <td colspan="5" class="px-4 py-3 text-sm text-center">
                                 No records found.
                             </td>
                         </tr>
@@ -119,30 +143,43 @@
     <x-slot name="scripts">
         <script src="https://cdn.jsdelivr.net/npm/tom-select/dist/js/tom-select.complete.min.js"></script>
         <script type="text/javascript">
+            var inventories = @json($inventory_items);
+            var newCategories = [];
 
-            var addControl = new TomSelect("#select-inventory",{
-                valueField: 'id',
+            var newInventories = inventories.map(element => {
+                let category = {};
+                category.value = element.category_id;
+                category.label = element?.category?.name;
+                category.from = element?.category?.from;
+                newCategories.push(category);
+
+                return {
+                    class: element.category_id,
+                    category: element?.category?.name,
+                    value: element.id,
+                    name: element.name
+                };
+            });
+
+            new TomSelect('#select-inventory',{
+                sortField: [{
+                    field: "category",
+                    direction: "asc",
+                },{
+                    field: "name",
+                    direction: "asc",
+                }],
+                options: newInventories,
+                optgroups: newCategories,
+                optgroupField: 'class',
                 labelField: 'name',
-                searchField: 'name',
-                options: [],
+                searchField: ['name'],
+                render: {
+                    optgroup_header: function(data, escape) {
+                        return '<div class="optgroup-header">' + escape(data.label) + '</div>';
+                    }
+                }
             });
-
-
-            $("#addBranch").change(function() {
-                addControl.clear();
-                addControl.clearOptions();
-
-                var selectedItem = $(this).val();
-                var inventories = $('option:selected',this).data("inventories");
-
-                inventories.forEach(inventory => {
-                    addControl.addOption({
-                        id: inventory.id,
-                        name: inventory.name
-                    });
-                });
-            });
-
         </script>
     </x-slot>
 </x-app-layout>

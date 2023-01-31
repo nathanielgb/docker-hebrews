@@ -246,7 +246,6 @@ document.addEventListener('alpine:init', () => {
         serveKitchenItemId: null,
         serveKitchenItemName: '',
 
-
         //Pay order
         pay(key) {
             console.log(key)

@@ -8,6 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class OrderItem extends Model
 {
+    public $total_stocks;
+
     use HasFactory;
     protected $table = 'order_items';
     /**
@@ -17,6 +19,7 @@ class OrderItem extends Model
      *  PREPARING
      *  DONE
      *  SERVED
+     *  VOID
      *
      * @var array<int, string>
      */
@@ -39,6 +42,9 @@ class OrderItem extends Model
         'status',
         'note',
         'served_by',
+        'kitchen_cleared',
+        'dispatcher_cleared',
+        'production_cleared',
     ];
 
     protected $casts = [
@@ -54,11 +60,43 @@ class OrderItem extends Model
     }
 
     /**
-     * Get the order related to the item.
+     * Get the menu related to the item.
      */
     public function menu()
     {
         return $this->belongsTo(Menu::class, 'menu_id', 'id');
+    }
+
+    /**
+     * Get the addons of order.
+     */
+    public function addons()
+    {
+        return $this->hasMany(AddonOrderItem::class, 'order_item_id', 'order_item_id');
+    }
+
+    /**
+     * Get the iventory related to the item.
+     */
+    public function inventory()
+    {
+        return $this->belongsTo(BranchMenuInventory::class, 'inventory_id', 'id');
+    }
+
+    /**
+     * Get the addons items according to order type
+     */
+    public function getAddonItems($isdinein)
+    {
+        return MenuAddOn::whereHas('inventory')->where('menu_id', $this->menu_id)->where('is_dinein', $isdinein)->get();
+    }
+
+    /**
+     * Get the addon item according to order type
+     */
+    public function getAddonItem($isdinein, $inventory_id)
+    {
+        return MenuAddOn::where('inventory_id', $inventory_id)->whereHas('inventory')->where('menu_id', $this->menu_id)->where('is_dinein', $isdinein)->first();
     }
 
     public function scopeGenerateUniqueId($query)

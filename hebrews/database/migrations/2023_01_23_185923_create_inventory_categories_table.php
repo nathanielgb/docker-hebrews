@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AddInventoryCodeInAddonOrderItemsTable extends Migration
+class CreateInventoryCategoriesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,9 +13,10 @@ class AddInventoryCodeInAddonOrderItemsTable extends Migration
      */
     public function up()
     {
-        Schema::table('addon_order_items', function (Blueprint $table) {
-            //
-            $table->string('inventory_code')->nullable();
+        Schema::create('inventory_categories', function (Blueprint $table) {
+            $table->id();
+            $table->string('name');
+            $table->timestamps();
         });
     }
 
@@ -26,8 +27,6 @@ class AddInventoryCodeInAddonOrderItemsTable extends Migration
      */
     public function down()
     {
-        Schema::table('addon_order_items', function (Blueprint $table) {
-            //
-        });
+        Schema::dropIfExists('inventory_categories');
     }
 }

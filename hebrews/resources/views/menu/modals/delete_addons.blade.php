@@ -17,7 +17,7 @@
                 data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="relative p-4 modal-body">
-            <form id="delete-form" action="{{ route('menu.addon.destroy') }}" method="post">
+            <form id="delete-form" action="{{ route('menu.addon.destroy', request()->menu) }}" method="post">
                 @csrf
                 @method('DELETE')
                 <label class="block mb-4 text-sm">

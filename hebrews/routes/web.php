@@ -84,6 +84,11 @@ Route::middleware('auth')->group(function () {
             Route::post('add-menu', [\App\Http\Controllers\MenuController::class, 'store'])->name('menu.store');
         });
 
+        Route::group(['middleware' => 'CheckAccessActions:import-menu-action'], function () {
+            Route::get('import-menu', [\App\Http\Controllers\MenuController::class, 'viewImport'])->name('menu.import.view');
+            Route::post('import-menu', [\App\Http\Controllers\MenuController::class, 'import'])->name('menu.import');
+        });
+
 
         Route::group(['middleware' => 'CheckAccessActions:update-menu-action'], function () {
             Route::post('update-menu', [\App\Http\Controllers\MenuController::class, 'update'])->name('menu.update');
@@ -91,6 +96,26 @@ Route::middleware('auth')->group(function () {
 
         Route::group(['middleware' => 'CheckAccessActions:delete-menu-action'], function () {
             Route::post('delete-menu', [\App\Http\Controllers\MenuController::class, 'delete'])->name('menu.delete');
+        });
+
+        Route::group(['middleware' => 'CheckAccessActions:view-menu-addons-action'], function () {
+            Route::get('menu/{menu}/add-ons', [\App\Http\Controllers\MenuAddOnController::class, 'index'])->name('menu.addon.index');
+
+            Route::group(['middleware' => 'CheckAccessActions:manage-menu-addons-action'], function () {
+                Route::post('menu/{menu}/add-ons', [\App\Http\Controllers\MenuAddOnController::class, 'store'])->name('menu.addon.store');
+                Route::delete('menu/{menu}/add-ons', [\App\Http\Controllers\MenuAddOnController::class, 'destroy'])->name('menu.addon.destroy');
+            });
+        });
+    });
+
+    // Inventory - Categories
+    Route::group(['middleware' => 'CheckAccessActions:view-inventory-category-action'], function () {
+        Route::get('inventory-categories', [\App\Http\Controllers\InventoryCategoryController::class, 'index'])->name('menu.inventories.categories');
+
+
+        Route::group(['middleware' => 'CheckAccessActions:manage-inventory-category-action'], function () {
+            Route::post('inventory-categories/add-category', [\App\Http\Controllers\InventoryCategoryController::class, 'addCategory'])->name('menu.inventories.categories.add');
+            Route::post('inventory-categories/delete-category', [\App\Http\Controllers\InventoryCategoryController::class, 'deleteCategory'])->name('menu.inventories.categories.delete');
         });
     });
 
@@ -135,14 +160,6 @@ Route::middleware('auth')->group(function () {
         });
     });
 
-    Route::group(['middleware' => 'CheckAccessActions:view-menu-addons-action'], function () {
-        Route::get('menu/add-ons', [\App\Http\Controllers\MenuAddOnController::class, 'index'])->name('menu.addon.index');
-
-        Route::group(['middleware' => 'CheckAccessActions:manage-menu-addons-action'], function () {
-            Route::post('menu/add-ons', [\App\Http\Controllers\MenuAddOnController::class, 'store'])->name('menu.addon.store');
-            Route::delete('menu/add-ons', [\App\Http\Controllers\MenuAddOnController::class, 'destroy'])->name('menu.addon.destroy');
-        });
-    });
 
     // Categories Section (SUPERADMIN)
     Route::group(['middleware' => 'CheckAccessActions:view-categories-action'], function () {
@@ -182,10 +199,13 @@ Route::middleware('auth')->group(function () {
         Route::get('order-list', [\App\Http\Controllers\OrderController::class, 'showOrders'])->name('order.list');
 
         Route::get('order/summary/print', [\App\Http\Controllers\OrderController::class, 'printSummary'])->name('order.summary.print');
+        Route::get('order/kitchen-summary/print', [\App\Http\Controllers\OrderController::class, 'printKitchenSummary'])->name('order.kitchen.summary.print');
+        Route::get('order/production-summary/print', [\App\Http\Controllers\OrderController::class, 'printProductionSummary'])->name('order.production.summary.print');
         Route::get('show-order-items/{order_id}', [\App\Http\Controllers\OrderController::class, 'showOrderItems'])->name('order.show_items');
 
         Route::group(['middleware' => 'CheckAccessActions:manage-orders-action'], function () {
             Route::post('delete-order-item', [\App\Http\Controllers\OrderController::class, 'deleteOrderItem'])->name('order.delete_item');
+            Route::post('void-order-item', [\App\Http\Controllers\OrderController::class, 'voidOrderItem'])->name('order.void_item');
         });
 
         Route::group(['middleware' => 'CheckAccessActions:add-order-item-action'], function () {
@@ -205,10 +225,11 @@ Route::middleware('auth')->group(function () {
     });
 
     Route::group(['middleware' => 'CheckAccessActions:manage-cook-actions'], function () {
-        Route::get('prepare-order/{item_id}', [\App\Http\Controllers\KitchenController::class, 'prepare'])->name('kitchen.order.prepare');
-        Route::post('cancel-order', [\App\Http\Controllers\KitchenController::class, 'cancel'])->name('kitchen.order.cancel');
-        Route::post('done-order', [\App\Http\Controllers\KitchenController::class, 'done'])->name('kitchen.order.done');
-        Route::post('complete-order', [\App\Http\Controllers\KitchenController::class, 'complete'])->name('kitchen.order.complete');
+        Route::get('kitchen/prepare-order/{item_id}', [\App\Http\Controllers\KitchenController::class, 'prepare'])->name('kitchen.order.prepare');
+        Route::post('kitchen/cancel-order', [\App\Http\Controllers\KitchenController::class, 'cancel'])->name('kitchen.order.cancel');
+        Route::post('kitchen/done-order', [\App\Http\Controllers\KitchenController::class, 'done'])->name('kitchen.order.done');
+        Route::post('kitchen/complete-order', [\App\Http\Controllers\KitchenController::class, 'complete'])->name('kitchen.order.complete');
+        Route::post('kitchen/clear-order', [\App\Http\Controllers\KitchenController::class, 'clear'])->name('kitchen.order.clear');
     });
 
     // Dispatch section
@@ -217,7 +238,8 @@ Route::middleware('auth')->group(function () {
     });
 
     Route::group(['middleware' => 'CheckAccessActions:manage-dispatch-actions'], function () {
-        Route::post('serve-orders', [\App\Http\Controllers\DispatcherController::class, 'serve'])->name('dispatch.order.serve');
+        Route::post('dispatch/serve-orders', [\App\Http\Controllers\DispatcherController::class, 'serve'])->name('dispatch.order.serve');
+        Route::post('dispatch/clear-orders', [\App\Http\Controllers\DispatcherController::class, 'clear'])->name('dispatch.order.clear');
     });
 
     // Bar section
@@ -229,6 +251,18 @@ Route::middleware('auth')->group(function () {
         Route::get('bar/prepare-order/{item_id}', [\App\Http\Controllers\BarController::class, 'prepare'])->name('bar.order.prepare');
         Route::post('bar/done-order', [\App\Http\Controllers\BarController::class, 'done'])->name('bar.order.done');
         Route::post('bar/complete-order', [\App\Http\Controllers\BarController::class, 'complete'])->name('bar.order.complete');
+    });
+
+
+    // Production section
+    Route::group(['middleware' => 'CheckAccessActions:view-production-dashboard-action'], function () {
+        Route::get('production-orders', [\App\Http\Controllers\ProductionController::class, 'index'])->name('production.list');
+    });
+
+    Route::group(['middleware' => 'CheckAccessActions:manage-production-actions'], function () {
+        Route::get('production/prepare-order/{item_id}', [\App\Http\Controllers\ProductionController::class, 'prepare'])->name('production.order.prepare');
+        Route::post('production/done-order', [\App\Http\Controllers\ProductionController::class, 'done'])->name('production.order.complete');
+        Route::post('production/clear-order', [\App\Http\Controllers\ProductionController::class, 'clear'])->name('production.order.clear');
     });
 
     // Process payment and printing
@@ -251,6 +285,16 @@ Route::middleware('auth')->group(function () {
         Route::get('generate-report', [\App\Http\Controllers\OrderReportController::class, 'generate'])->name('orders.report.generate');
     });
 
+    // Logs Section
+    Route::group(['middleware' => 'CheckAccessActions:view-logs'], function () {
+        Route::get('logs/inventory', [\App\Http\Controllers\LogController::class, 'showInventory'])->name('logs.inventory.index');
+
+        Route::group(['middleware' => 'CheckAccessActions:manage-customer-action'], function () {
+            Route::get('view/{id}', [\App\Http\Controllers\CustomerController::class, 'view'])->name('customers.view');
+            Route::post('add-customer', [\App\Http\Controllers\CustomerController::class, 'store'])->name('customers.store');
+            Route::post('delete-customer', [\App\Http\Controllers\CustomerController::class, 'delete'])->name('customers.delete');
+        });
+    });
 
 
 });

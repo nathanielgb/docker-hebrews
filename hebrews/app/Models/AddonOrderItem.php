@@ -23,19 +23,11 @@ class AddonOrderItem extends Model
         'inventory_id',
         'inventory_name',
         'inventory_code',
-        'name',
-        'from',
-        'price',
-        'units',
+        'menu_id',
+        'unit',
         'unit_label',
-        'data',
         'qty',
-        'type',
-        'total_amount'
-    ];
-
-    protected $casts = [
-        'data' => 'array'
+        'is_dinein'
     ];
 
     /**

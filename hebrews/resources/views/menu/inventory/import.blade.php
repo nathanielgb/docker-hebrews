@@ -73,7 +73,8 @@
                                 <table class="w-full whitespace-no-wrap">
                                     <thead>
                                     <tr class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase border-b bg-gray-50">
-                                        <th class="px-4 py-3">Row Number</th>
+                                        <th class="px-4 py-3">Row #</th>
+                                        <th class="px-4 py-3">Category Id</th>
                                         <th class="px-4 py-3">Branch Id</th>
                                         <th class="px-4 py-3">Inventory Code</th>
                                         <th class="px-4 py-3">Name</th>
@@ -89,6 +90,9 @@
                                             <tr class="text-gray-700">
                                                 <td class="px-4 py-3 text-sm text-s">
                                                     {{ $record['row_number'] }}
+                                                </td>
+                                                <td class="px-4 py-3 text-sm text-s">
+                                                    {{ $record['category_id'] }}
                                                 </td>
                                                 <td class="px-4 py-3 text-sm text-s">
                                                     {{ $record['branch_id'] }}
@@ -110,9 +114,13 @@
                                                 </td>
                                                 <td class="px-4 py-3 text-sm text-center">
                                                     @if ($record['status'] == 'success')
-                                                        <span class="font-semibold text-green-600">Success</span>
+                                                        <div class="inline-flex items-center px-3 py-1 text-xs font-bold text-white uppercase bg-green-600 rounded-full leading-sm">
+                                                            SUCCESS
+                                                        </div>
                                                     @else
-                                                        <span class="font-semibold text-red-600">Failed</span>
+                                                        <div class="inline-flex items-center px-3 py-1 text-xs font-bold text-white uppercase bg-red-600 rounded-full leading-sm">
+                                                            FAILED
+                                                        </div>
                                                     @endif
                                                 </td>
                                                 <td class="px-4 py-3 text-sm">
@@ -128,7 +136,7 @@
                                         @empty
                                             <tr class="text-gray-700">
                                                 <td colspan="9" class="px-4 py-3 text-sm text-center">
-                                                    No records found.
+                                                    No records to import.
                                                 </td>
                                             </tr>
                                         @endforelse
@@ -154,6 +162,9 @@
                                         name
                                         </th>
                                         <th scope="col" class="text-sm font-semi-bold text-gray-900 px-6 py-4 border-r">
+                                        category_id
+                                        </th>
+                                        <th scope="col" class="text-sm font-semi-bold text-gray-900 px-6 py-4 border-r">
                                         unit
                                         </th>
                                         <th scope="col" class="text-sm font-semi-bold text-gray-900 px-6 py-4 border-r">
@@ -176,6 +187,9 @@
                                             specify name (for adding)
                                         </td>
                                         <td class="text-sm text-gray-900 font-normal px-6 py-4 whitespace-nowrap border-r break-all">
+                                            specify category ID
+                                        </td>
+                                        <td class="text-sm text-gray-900 font-normal px-6 py-4 whitespace-nowrap border-r break-all">
                                             specify unit (i.e. Kg, g, pcs., boxes) (for adding)
                                         </td>
                                         <td class="text-sm text-gray-900 font-normal px-6 py-4 whitespace-nowrap border-r break-all">
@@ -192,6 +206,9 @@
                         </div>
                         <div class="py-2 px-6 mb-4 text-base text-blue-700 mb-3" role="alert">
                             <span class="font-bold text-blue-800">Inventory Code</span> - this field is <b><em>required</em></b> and may have lowercase alpha-numeric characters, as well as dashes and underscores.
+                        </div>
+                        <div class="py-2 px-6 mb-4 text-base text-blue-700 mb-3" role="alert">
+                            <span class="font-bold text-blue-800">Category ID</span> - this field is <b><em>required</em></b> and should exist in  Inventory Categories table.
                         </div>
                         <div class="py-2 px-6 mb-4 text-base text-blue-700 mb-3" role="alert">
                             <span class="font-bold text-blue-800">Branch ID</span> - this field is <b><em>required</em></b>, <b><em>numeric</em></b> and should <b><em>exist in the branches</em></b> table in user section. <br> Branch ID with a value of <b>w</b> will be saved in the Warehouse section otherwise it will be save in the inventory of the branch specified.

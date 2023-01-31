@@ -23,6 +23,15 @@
                     <input class="styled-input" name="inventory_code" type="text" placeholder="Enter Code">
                 </label>
                 <label class="block mb-4 text-sm">
+                    <span class="text-gray-700 dark:text-gray-400">Category</span>
+                    <select class="styled-input" name="category">
+                        <option value="" selected disabled>Select a category</option>
+                        @foreach ($categories as $category)
+                            <option value="{{ $category->id }}" >{{ $category->name }}</option>
+                        @endforeach
+                    </select>
+                </label>
+                <label class="block mb-4 text-sm">
                     <span class="text-gray-700">Name</span>
                     <input class="styled-input" name="name" type="text" placeholder="Enter name">
                 </label>

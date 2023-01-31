@@ -39,6 +39,7 @@ class UserAccessActionsSeeder extends Seeder
                     //Menu
                     'view-menus-action',
                     'add-menu-action',
+                    'import-menu-action',
                     'update-menu-action',
                     'delete-menu-action',
 
@@ -55,6 +56,8 @@ class UserAccessActionsSeeder extends Seeder
                     'manage-inventory-action',
                     'transfer-inventory-action',
                     'import-inventory-action',
+                    'view-inventory-category-action',
+                    'manage-inventory-category-action',
 
                     // Branch Inventory
                     'view-branch-inventory-action',
@@ -86,8 +89,16 @@ class UserAccessActionsSeeder extends Seeder
                     'view-dispatch-dashboard-action',
                     'manage-dispatch-actions',
 
+                    // Production
+                    'view-production-dashboard-action',
+                    'manage-production-actions',
+
                     // Manager
                     'manage-order-process-action',
+
+                    // Logs
+                    'view-inventory-logs',
+                    'view-admin-logs'
                 ]),
                 'created_at' => Carbon::now(),
 				'updated_at' => Carbon::now()
@@ -112,6 +123,7 @@ class UserAccessActionsSeeder extends Seeder
                     //Menu
                     'view-menus-action',
                     'add-menu-action',
+                    'import-menu-action',
                     'update-menu-action',
                     'delete-menu-action',
 
@@ -128,6 +140,9 @@ class UserAccessActionsSeeder extends Seeder
                     'manage-inventory-action',
                     'transfer-inventory-action',
                     'import-inventory-action',
+                    'view-inventory-category-action',
+                    'manage-inventory-category-action',
+
 
                     // Branch Inventory
                     'view-branch-inventory-action',
@@ -159,8 +174,17 @@ class UserAccessActionsSeeder extends Seeder
                     'view-dispatch-dashboard-action',
                     'manage-dispatch-actions',
 
+                    // Production
+                    'view-production-dashboard-action',
+                    'manage-production-actions',
+
                     // Manager
                     'manage-order-process-action',
+
+                    // Logs
+                    'view-logs',
+                    'view-inventory-logs',
+                    'view-admin-logs'
                 ]),
                 'created_at' => Carbon::now(),
 				'updated_at' => Carbon::now()
@@ -194,6 +218,7 @@ class UserAccessActionsSeeder extends Seeder
                     'transfer-branch-inventory-action',
 
                     // Orders
+                    'take-orders-action',
                     'view-order-list-action',
                     'add-order-item-action',
                     'manage-order-item-action',
@@ -208,9 +233,6 @@ class UserAccessActionsSeeder extends Seeder
             [
                 'name' => 'TEAMLEADER',
                 'access' => json_encode([
-                    // User
-                    'view-users-action',
-
                     //Menu
                     'view-menus-action',
                     'add-menu-action',
@@ -219,16 +241,19 @@ class UserAccessActionsSeeder extends Seeder
                     'view-menu-addons-action',
                     'manage-menu-addons-action',
 
-                    // Inventory
-                    'view-inventory-action',
-                    'add-inventory-action',
-
                     // Branch Inventory
                     'view-branch-inventory-action',
                     'add-branch-inventory-action',
 
                     // Orders
-                    'view-order-list-action'
+                    'take-orders-action',
+                    'view-order-list-action',
+                    'add-order-item-action',
+                    'manage-order-item-action',
+                    'manage-orders-action',
+                    'generate-order-report-action',
+                    'manage-order-process-action',
+
                 ]),
                 'created_at' => Carbon::now(),
 				'updated_at' => Carbon::now()
@@ -238,19 +263,11 @@ class UserAccessActionsSeeder extends Seeder
                 'access' => json_encode([
                     //Menu
                     'view-menus-action',
-                    'add-menu-action',
-                    'update-menu-action',
 
                     'view-menu-addons-action',
-                    'manage-menu-addons-action',
-
-                    // Inventory
-                    'view-inventory-action',
-                    'add-inventory-action',
 
                     // Branch Inventory
                     'view-branch-inventory-action',
-                    'add-branch-inventory-action',
 
                     // Orders
                     'view-order-list-action'
@@ -263,13 +280,11 @@ class UserAccessActionsSeeder extends Seeder
                 'access' => json_encode([
                     //Menu
                     'view-menus-action',
+                    'view-menu-addons-action',
 
                     // Orders
                     'take-orders-action',
-                    'view-order-list-action',
-                    'add-order-item-action',
-                    'manage-order-item-action',
-
+                    'view-order-list-action'
                 ]),
                 'created_at' => Carbon::now(),
 				'updated_at' => Carbon::now()
@@ -282,6 +297,8 @@ class UserAccessActionsSeeder extends Seeder
                     'view-menus-action',
                     'add-menu-action',
                     'update-menu-action',
+                    'view-menu-addons-action',
+                    'manage-menu-addons-action',
 
                     // Branch Inventory
                     'view-branch-inventory-action',
@@ -323,6 +340,7 @@ class UserAccessActionsSeeder extends Seeder
                 'access' => json_encode([
                     //Menu
                     'view-menus-action',
+                    'view-menu-addons-action',
 
                     // Branch Inventory
                     'view-branch-inventory-action',

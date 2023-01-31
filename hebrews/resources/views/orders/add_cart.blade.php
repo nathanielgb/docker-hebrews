@@ -51,6 +51,7 @@
                             <thead>
                             <tr class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase border-b bg-gray-50">
                                 <th class="px-4 py-3">Name</th>
+                                <th class="px-4 py-3">Category</th>
                                 <th class="px-4 py-3 text-center">No. of Units</th>
                                 <th class="px-4 py-3">Inventory</th>
                                 <th class="px-4 py-3 text-center">Action</th>
@@ -62,17 +63,30 @@
                                         <td class="px-4 py-3 text-sm">
                                             {{ $item->name }}
                                         </td>
+                                        <td class="px-4 py-3 text-sm">
+                                            <span>
+                                                {{ $item->category->name }}
+                                            </span> <br>
+                                            <span class="italic">
+                                                {{ $item->sub_category }}
+                                            </span><br>
+                                            <span class="italic">
+                                                ({{ $item->category->from }})
+                                            </span>
+                                        </td>
                                         <td class="px-4 py-3 text-sm text-center">
                                             {{ $item->units }}
                                         </td>
                                         <td class="px-4 py-3 text-sm">
-                                            <ul>
-                                                <li>Branch: <span class="font-bold">{{ $item->inventory->branch->name }}</span></li>
-                                                <li>Name: <span class="font-bold">{{ $item->inventory->name }}</span></li>
-                                                <li>Code: <span class="font-bold">{{ $item->inventory->inventory_code }}</span></li>
-                                                <li>Stock: <span class="font-bold">{{ $item->inventory->stock }}</span></li>
-                                                <li>Unit: <span class="font-bold">{{ $item->inventory->unit }}</span></li>
-                                            </ul>
+                                            @if (isset($item->inventory))
+                                                <ul>
+                                                    <li>Branch: <span class="font-bold">{{ $item->inventory->branch->name }}</span></li>
+                                                    <li>Name: <span class="font-bold">{{ $item->inventory->name }}</span></li>
+                                                    <li>Code: <span class="font-bold">{{ $item->inventory->inventory_code }}</span></li>
+                                                    <li>Stock: <span class="font-bold">{{ $item->inventory->stock }}</span></li>
+                                                    <li>Unit: <span class="font-bold">{{ $item->inventory->unit }}</span></li>
+                                                </ul>
+                                            @endif
                                         </td>
                                         <td class="px-4 py-3 text-center">
                                             <div class="flex items-center justify-center text-sm">
@@ -123,10 +137,10 @@
                 $('.cart-submit').prop('disabled', true);
             });
 
-            $('.addon-active').on("click", function() {
-                var state = $(this).is(":checked");
-                $( ".menu-addons" ).toggle(state);
-            });
+            // $('.addon-active').on("click", function() {
+            //     var state = $(this).is(":checked");
+            //     $( ".menu-addons" ).toggle(state);
+            // });
         </script>
     </x-slot>
 </x-app-layout>

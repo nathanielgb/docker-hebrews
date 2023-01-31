@@ -11,78 +11,40 @@ class AddonService
     /**
      * Check if add-ons exist or inventory is enough to cover the quantity
      *
-     * @param Array $addons attached add-ons to the cart item
+     * @param Model $productitem Menu item model
+     * @param Boolean $is_dinein dine-in or takeout
+     * @param Int $order_qty quantity of order
      * @return array
      */
-    public function validateAddon($addons, $productitem)
+    public function validateAddon($productitem, $is_dinein, $order_qty)
     {
         // Check if there is add ons
-        if ($addons) {
-            $addOnData = $addons;
-            $finalData = [];
-            foreach ($addons as $index => $value) {
-                if (!array_key_exists('addon_id', $value)) {
-                    unset($addOnData[$index]);
-                    $addOnData = array_values($addOnData);
-                } else {
-                    $addon = MenuAddOn::where('id', $value['addon_id'])->first();
+        $addons = MenuAddOn::where('menu_id', $productitem->id)->where('is_dinein', $is_dinein)->with('inventory')->get();
 
-                    if (!$addon) {
-                        return [
-                            'status' => 'fail',
-                            'message' => "An Add-on item in $productitem->name does not exist."
-                        ];
-                        break;
-                    }
+        if (count($addons) > 0) {
 
-                    // Check if the menu addon is for the correct branch
-                    if ($addon->inventory->branch_id != $productitem->inventory->branch_id) {
-                        return [
-                            'status' => 'fail',
-                            'message' => "Add-on (name: $addon->name) is not compatible with the item."
-                        ];
-                        break;
-                    }
-
-                    // Check if quantity is negative or enough stock
-                    if ($value['qty'] <= 0) {
-                        return [
-                            'status' => 'fail',
-                            'message' => "Add-on (name: $addon->name) quantity is invalid."
-                        ];
-                        break;
-                    }
-                    if ($addon->inventory->stock < $value['qty']) {
-                        return [
-                            'status' => 'fail',
-                            'message' => 'Add-on (name: ' . $addon->name . ') does not have enough stock.'
-                        ];
-                        break;
-                    }
-
-                    $finalData[] = [
-                        'addon_id' => $addon->id,
-                        'name' => $addon->name,
-                        'qty' => $value['qty']
+            foreach ($addons as $addon) {
+                if (!$addon->inventory) {
+                    return [
+                        'status' => 'fail',
+                        'message' => "An Add-on item is invalid."
                     ];
+                    break;
                 }
-            }
 
-            // remove duplicates
-            $record = array();
-            $ids = array();
-            foreach($finalData as $key=>$value){
-                if (!in_array($value['addon_id'], $ids)) {
-                    $ids[] = $value['addon_id'];
-                    $record[$key] = $value;
+                $total_qty = $order_qty * intval($addon->qty);
+
+                if ($addon->inventory->stock < $total_qty) {
+                    return [
+                        'status' => 'fail',
+                        'message' => "An Add-on item (name: {$addon->inventory->name}) does not have enough stock."
+                    ];
+                    break;
                 }
             }
-            $record = array_values($record);
 
             return [
-                'status' => 'success',
-                'data' => $record,
-                'ids' => $ids
+                'status' => 'success'
             ];
         }
     }

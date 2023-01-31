@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Branch;
 use Illuminate\Http\Request;
 use App\Models\MenuInventory;
+use App\Models\InventoryCategory;
 use App\Imports\InventoryImport;
 use App\Models\BranchMenuInventory;
 use Maatwebsite\Excel\Facades\Excel;
@@ -28,15 +29,20 @@ class InventoryController extends Controller
                     $name = strtolower($request->name);
                     $query->whereRaw('name LIKE ?', ["%$name%"]);
                 }
+                if ($request->category !== null) {
+                    $query->where('category_id', $request->category);
+                }
             });
         }
 
-        $inventory_items = $inventory_items->orderBy('name')->paginate(20);
+        $inventory_items = $inventory_items->with('category')->orderBy('category_id', 'asc')->orderBy('name')->paginate(20);
         $branches = Branch::all()->toArray();
+        $categories = InventoryCategory::orderBy('name', 'asc')->get();
 
         return view('menu.inventory', compact(
             'inventory_items',
-            'branches'
+            'branches',
+            'categories'
         ));
     }
 
@@ -57,6 +63,7 @@ class InventoryController extends Controller
         }
 
         MenuInventory::create([
+            'category_id' => $request->category,
             'inventory_code' => $inventory_code,
             'name' => $request->name,
             'unit' => $request->unit,
@@ -221,14 +228,20 @@ class InventoryController extends Controller
                 if ($request->branch_id !== null) {
                     $query->where('branch_id', $request->branch_id);
                 }
+
+                if ($request->category !== null) {
+                    $query->where('category_id', $request->category);
+                }
             });
         }
 
-        $inventory_items = $inventory_items->orderBy('name')->paginate(20);
+        $categories = InventoryCategory::orderBy('name', 'asc')->get();
+        $inventory_items = $inventory_items->with('category', 'products', 'addons', 'branch')->orderBy('category_id', 'asc')->orderBy('name')->paginate(20);
 
         return view('menu.branches.inventory', compact(
             'inventory_items',
-            'branches'
+            'branches',
+            'categories'
         ));
     }
 
@@ -253,6 +266,7 @@ class InventoryController extends Controller
         }
 
         BranchMenuInventory::create([
+            'category_id' => $request->category,
             'inventory_code' => $inventory_code,
             'branch_id' => $request->branch_id,
             'name' => $request->name,

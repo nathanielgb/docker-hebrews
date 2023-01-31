@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Requests;
-
+use Illuminate\Validation\Rule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateMenuRequest extends FormRequest
@@ -24,16 +24,16 @@ class UpdateMenuRequest extends FormRequest
     public function rules()
     {
         return [
-            'menu' => 'required|max:255',
+            'menu' => ['required', 'max:255', Rule::unique('menus', 'name')->ignore($this->menu_id)],
             'unit' => 'required|numeric',
             'regular_price' => 'nullable|numeric|between:0,999999.99',
             'retail_price' => 'nullable|numeric|between:0,999999.99',
             'wholesale_price' => 'nullable|numeric|between:0,999999.99',
             'distributor_price' => 'nullable|numeric|between:0,999999.99',
             'rebranding_price' => 'nullable|numeric|between:0,999999.99',
-            'category' => 'required',
+            'category' => ['required', Rule::exists('menu_categories', 'id')],
             'sub_category' => 'nullable',
-            ];
+        ];
     }
 
     /**

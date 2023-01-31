@@ -9,7 +9,7 @@
     class="z-20 flex-shrink-0 w-64 overflow-y-auto bg-white">
     <div class="py-4 text-gray-500">
         <a class="ml-6 text-lg font-bold text-gray-800" href="{{ route('dashboard') }}">
-            Hebrews
+            Hebrews Kape
         </a>
 
         {{-- <div class="container-fluid">
@@ -87,18 +87,6 @@
                                 <a class="w-full" href="{{ route('menu.index') }}">Menu</a>
                             </li>
                         @endif
-                        @if (auth()->user()->can('access', 'view-menu-addons-action'))
-                            <li
-                                @if (request()->routeIs('menu.addon.index'))
-                                    class="px-2 py-1 text-green-700"
-                                @else
-                                    class="px-2 py-1"
-                                @endif >
-                                <a class="w-full" href="{{ route('menu.addon.index') }}">
-                                    Add-ons
-                                </a>
-                            </li>
-                        @endif
                     </ul>
                 </li>
             @endif
@@ -148,6 +136,18 @@
                                 @endif >
                                 <a class="w-full" href="{{ route('branch.inventory.import.show') }}">
                                     Import
+                                </a>
+                            </li>
+                        @endif
+                        @if (auth()->user()->can('access', 'view-inventory-category-action'))
+                            <li
+                                @if (request()->routeIs('branch.inventory.import.show'))
+                                    class="px-2 py-1 text-green-700"
+                                @else
+                                    class="px-2 py-1"
+                                @endif >
+                                <a class="w-full" href="{{ route('menu.inventories.categories') }}">
+                                    Categories
                                 </a>
                             </li>
                         @endif
@@ -263,6 +263,54 @@
                         </x-slot>
                         {{ __('Dispatch Orders') }}
                     </x-nav-link>
+                </li>
+            @endif
+
+            @if(auth()->user()->can('access', 'view-production-dashboard-action'))
+                <li class="relative px-6 py-3">
+                    <x-nav-link href="{{ route('production.list') }}" :active="request()->routeIs('production.list')">
+                        <x-slot name="icon">
+                            <i class="fa-solid fa-box"></i>
+                        </x-slot>
+                        {{ __('Production Orders') }}
+                    </x-nav-link>
+                </li>
+            @endif
+
+            @if(auth()->user()->can('access', 'view-logs'))
+                <li class="relative px-6 py-3">
+                    <x-nav-dropdown-link
+                        data-bs-target="#collapseLogs"
+                        aria-controls="collapseLogs"
+                        :active="request()->routeIs('expense.report.show') || request()->routeIs('logs.inventory.index')">
+                        <x-slot name="icon">
+                            <i class="fa-solid fa-gears"></i>
+                        </x-slot>
+                        {{ __('Logs') }}
+                    </x-nav-dropdown-link>
+                    <ul
+                        class="p-2 mt-2 space-y-2 overflow-hidden text-sm font-medium text-gray-500 rounded-md shadow-inner collapse bg-gray-50 dark:text-gray-400 dark:bg-gray-900"
+                        id="collapseLogs"
+                    >
+                        {{-- <li
+                            @if (request()->routeIs('expense.report.show'))
+                                class="px-2 py-1 text-green-700"
+                            @else
+                                class="px-2 py-1"
+                            @endif >
+                            <a class="w-full" href="{{ route('expense.report.show') }}">Admin Logs</a>
+                        </li> --}}
+                        <li
+                            @if (request()->routeIs('logs.inventory.index'))
+                                class="px-2 py-1 text-green-700"
+                            @else
+                                class="px-2 py-1"
+                            @endif >
+                            <a class="w-full" href="{{ route('logs.inventory.index') }}">
+                                Inventory Logs
+                            </a>
+                        </li>
+                    </ul>
                 </li>
             @endif
         </ul>

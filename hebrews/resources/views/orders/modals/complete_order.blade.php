@@ -25,8 +25,17 @@
                 <form id="complete-order-form" action="{{ route('order.complete', $order->order_id) }}" method="post">
                     @csrf
                     <div>
-                        <p class="text-center text-tiny">Payment and cancellation of order will be disabled upon completion of order. Do you want to complete the order?</p>
+                        <p class="text-center text-tiny">Payment and cancellation of order will be disabled upon completion of order. Do you want to complete the order? Choose a bank account to credit the order.</p>
                         <br>
+                        <label class="block mb-4 text-sm">
+                            <span class="text-gray-700 dark:text-gray-400">Credit to Bank Account</span>
+                            <select class="styled-input" name="account">
+                                <option value="" selected disabled>Select account</option>
+                                    @foreach ($accounts as $account)
+                                        <option value="{{ $account->id }}" >{{ $account->bank }} - {{ $account->account_name }} @if ($account->account_number) ({{ $account->account_number }}) @endif</option>
+                                    @endforeach
+                            </select>
+                        </label>
                     </div>
                 </form>
             </div>
