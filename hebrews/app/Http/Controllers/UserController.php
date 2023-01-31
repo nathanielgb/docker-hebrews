@@ -18,7 +18,7 @@ class UserController extends Controller
         $admin_types = [];
 
         if (Auth::user()->type == 'SUPERADMIN') {
-            $users = User::where('id', '!=', Auth::user()->id)->paginate(20);
+            $users = User::where('id', '!=', Auth::user()->id);
         } else if (Auth::user()->type == 'ADMIN') {
             $users = User::where('id', '!=', Auth::user()->id)
                 ->where('type', '!=', 'SUPERADMIN');
