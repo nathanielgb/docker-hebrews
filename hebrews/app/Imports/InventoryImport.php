@@ -39,7 +39,6 @@ class InventoryImport implements ToCollection, WithHeadingRow, SkipsEmptyRows
 
             // make code lowercase
             $row['inventory_code'] = strtolower(str_replace(' ', '',  $row['inventory_code']));
-
             $action = strtoupper($row['action']);
 
             switch ($action) {
@@ -163,7 +162,7 @@ class InventoryImport implements ToCollection, WithHeadingRow, SkipsEmptyRows
                             } else {
                                 $record['status'] = 'success';
                                 $old_stock = $item->stock;
-                                $item->stock = number_format($row['stock'], 3);
+                                $item->stock = number_format($row['stock'], 3, '.', '');
                                 $item->category_id = $row['category_id'];
 
                                 if ($item->isDirty()) {
@@ -197,7 +196,7 @@ class InventoryImport implements ToCollection, WithHeadingRow, SkipsEmptyRows
                             } else {
                                 $record['status'] = 'success';
                                 $old_stock = $item->stock;
-                                $item->stock = number_format($row['stock'], 3);
+                                $item->stock = number_format($row['stock'], 3, '.', '');
                                 $item->category_id = $row['category_id'];
 
                                 if($item->isDirty()){

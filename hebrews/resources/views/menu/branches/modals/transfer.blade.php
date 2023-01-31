@@ -66,8 +66,9 @@
                     <label class="block mb-4 text-sm">
                         <span class="text-gray-700">Branch to transfer</span>
                         <select class="styled-input" name="transfer_branch">
+                            <option value="" selected>Select Branch</option>
                             @foreach ($branches as $branch)
-                                <option value="{{ $branch['id'] }}">{{ $branch['name'] }}</option>
+                                <option value="{{ $branch['id'] }}" :hidden="$store.inventory.updateInventoryData?.branch_id == {{ $branch['id'] }}">{{ $branch['name'] }}</option>
                             @endforeach
                             <option value="dispose">Dispose (Delete)</option>
                             <option value="warehouse">Warehouse</option>

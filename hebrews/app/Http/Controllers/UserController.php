@@ -21,13 +21,18 @@ class UserController extends Controller
             $users = User::where('id', '!=', Auth::user()->id)->paginate(20);
         } else if (Auth::user()->type == 'ADMIN') {
             $users = User::where('id', '!=', Auth::user()->id)
-                ->where('type', '!=', 'SUPERADMIN')
-                ->paginate(20);
+                ->where('type', '!=', 'SUPERADMIN');
         } else {
             $users = User::where('id', '!=', Auth::user()->id)
             ->where('type', '!=', 'SUPERADMIN')
-            ->where('type', '!=', 'ADMIN')
-            ->paginate(20);
+            ->where('type', '!=', 'ADMIN');
+        }
+
+        $branches = Branch::all('id','name')->toArray();
+
+        if (Auth::user()->branch_id != null) {
+            $users = $users->where('branch_id', Auth::user()->branch_id);
+            $branches = Branch::where('id', Auth::user()->branch_id)->get()->toArray();
         }
 
         $auth_user = Auth::user();
@@ -48,7 +53,8 @@ class UserController extends Controller
                 ->get();
         }
 
-        $branches = Branch::all('id','name')->toArray();
+        $users = $users->paginate(20);
+
 
         return view('users.index', compact('users','admin_types','branches'));
     }

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\AddonOrderItem;
+use App\Models\Branch;
 use Carbon\Carbon;
 use App\Models\Order;
 use App\Models\User;
@@ -17,8 +18,9 @@ class OrderReportController extends Controller
     {
         $admins = User::where('type', '!=', 'SUPERADMIN')->pluck('name');
         $customers = Customer::all()->pluck('name');
+        $branches = Branch::all();
 
-        return view('order_reports.generate', compact('admins', 'customers'));
+        return view('order_reports.generate', compact('admins', 'customers', 'branches'));
     }
 
     public function generate (Request $request)

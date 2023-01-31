@@ -41,6 +41,9 @@ class InventoryCategorySeeder extends Seeder
             [
                 'name' => 'Cups',
             ],
+            [
+                'name' => 'Condiments',
+            ],
         ];
         DB::table('inventory_categories')->insert($data);
         $this->command->info('Seeder completed successfully');

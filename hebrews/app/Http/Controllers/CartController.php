@@ -348,7 +348,7 @@ class CartController extends Controller
 
         $request->validate([
             'order_type' => 'required|string',
-            'fees' => 'required|numeric|between:0,9999999',
+            'fees' => 'nullable|numeric|between:0,9999999',
         ]);
 
         $customer_id = null;
@@ -483,7 +483,7 @@ class CartController extends Controller
             }
         }
 
-        $fees = $request->fees >= 0 ? $request->fees : 0;
+        $fees = $request->fees >= 0 && $request->fees != null  ? $request->fees : 0;
         $total_cart = $cart_subtotal + $fees;
 
         if ($discount_amt > $total_cart) {

@@ -43,7 +43,7 @@ class MenuImport implements ToCollection, WithHeadingRow, SkipsEmptyRows
 
             switch ($action) {
                 case 'A':
-                    $exist = Menu::where('code', $row['code'])->exists();
+                    $exist = Menu::where('code', $row['code'])->where('branch_id', $row['branch_id'])->exists();
 
                     // Add only if item does not exist
                     if (!$exist) {
@@ -73,10 +73,10 @@ class MenuImport implements ToCollection, WithHeadingRow, SkipsEmptyRows
                             }
                         } else {
                             $record['status'] = 'success';
-                            
+
                             $inventory = BranchMenuInventory::where('branch_id', '=', $row['branch_id'])->where('inventory_code', '=', $row['inventory_code'] ?? null)->first();
                             $category = MenuCategory::where('name', $row['category'])->first();
-    
+
                             $menu = Menu::create([
                                 'branch_id' => $row['branch_id'],
                                 'code' => $row['code'],
@@ -92,10 +92,10 @@ class MenuImport implements ToCollection, WithHeadingRow, SkipsEmptyRows
                                 'inventory_id' => isset($inventory) ? (string) $inventory->id : null,
                                 'is_beans' => $row['is_beans'] ? true : false,
                             ]);
-    
+
                             $record['menu_id'] = $menu->id;
                         }
-    
+
                         $records[] = $record;
                     }
                     break;
@@ -119,7 +119,7 @@ class MenuImport implements ToCollection, WithHeadingRow, SkipsEmptyRows
                         'error' => []
                     ];
 
-                    $item = Menu::where('code', $row['code'])->first();
+                    $item = Menu::where('code', $row['code'])->where('branch_id', $row['branch_id'])->first();
 
                     if (!$item) {
                         $record['status'] = 'failed';
@@ -199,8 +199,12 @@ class MenuImport implements ToCollection, WithHeadingRow, SkipsEmptyRows
             //     $query->where('name', '=', $data['category']);
             //     $query->whereJsonContains('sub', $data['sub_category']);
             // })],
-            'code' => ['required', 'max:255', 'alpha_dash', Rule::unique('menus')],
-            'name' => ['required', 'max:255', Rule::unique('menus')],
+            'code' => ['required', 'max:255', 'alpha_dash', Rule::unique('menus')->where(function ($query) use ($data) {
+                $query->where('branch_id', $data['branch_id']);
+            })],
+            'name' => ['required', 'max:255', Rule::unique('menus')->where(function ($query) use ($data) {
+                $query->where('branch_id', $data['branch_id']);
+            })],
             'units' => ['required', 'numeric', 'gt:0'],
             'regular_price' => 'nullable|numeric|between:0,999999.99',
             'retail_price' => 'nullable|numeric|between:0,999999.99',
@@ -212,7 +216,7 @@ class MenuImport implements ToCollection, WithHeadingRow, SkipsEmptyRows
 
         // Validate if category exist
         $errors = $validator->errors()->messages();
-        
+
         return [
             'errors' => $errors
         ];
@@ -243,8 +247,12 @@ class MenuImport implements ToCollection, WithHeadingRow, SkipsEmptyRows
             //     $query->where('name', '=', $data['category']);
             //     $query->whereJsonContains('sub', $data['sub_category']);
             // })],
-            'name' => ['required', 'max:255', Rule::unique('menus', 'name')->ignore($menu_id)],
-            'code' => ['required', 'max:255', 'alpha_dash', Rule::unique('menus', 'code')->ignore($menu_id)],
+            'name' => ['required', 'max:255', Rule::unique('menus', 'name')->where(function ($query) use ($data) {
+                $query->where('branch_id', $data['branch_id']);
+            })->ignore($menu_id)],
+            'code' => ['required', 'max:255', 'alpha_dash', Rule::unique('menus', 'code')->where(function ($query) use ($data) {
+                $query->where('branch_id', $data['branch_id']);
+            })->ignore($menu_id)],
             'units' => ['required', 'numeric', 'gt:0'],
             'regular_price' => 'nullable|numeric|between:0,999999.99',
             'retail_price' => 'nullable|numeric|between:0,999999.99',

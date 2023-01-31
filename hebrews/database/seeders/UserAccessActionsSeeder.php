@@ -263,14 +263,17 @@ class UserAccessActionsSeeder extends Seeder
                 'access' => json_encode([
                     //Menu
                     'view-menus-action',
-
                     'view-menu-addons-action',
-
                     // Branch Inventory
                     'view-branch-inventory-action',
 
                     // Orders
-                    'view-order-list-action'
+                    'view-order-list-action',
+
+                    // Production
+                    'view-production-dashboard-action',
+                    'manage-production-actions',
+
                 ]),
                 'created_at' => Carbon::now(),
 				'updated_at' => Carbon::now()
@@ -313,28 +316,28 @@ class UserAccessActionsSeeder extends Seeder
                 'created_at' => Carbon::now(),
 				'updated_at' => Carbon::now()
             ],
-            [
-                'name' => 'BAR',
-                'access' => json_encode([
+            // [
+            //     'name' => 'BAR',
+            //     'access' => json_encode([
 
-                    //Menu
-                    'view-menus-action',
-                    'add-menu-action',
-                    'update-menu-action',
+            //         //Menu
+            //         'view-menus-action',
+            //         'add-menu-action',
+            //         'update-menu-action',
 
-                    // Branch Inventory
-                    'view-branch-inventory-action',
+            //         // Branch Inventory
+            //         'view-branch-inventory-action',
 
-                    // Orders
-                    'view-order-list-action',
+            //         // Orders
+            //         'view-order-list-action',
 
-                    // Bar
-                    'view-bar-dashboard-action',
-                    'manage-bar-actions',
-                ]),
-                'created_at' => Carbon::now(),
-				'updated_at' => Carbon::now()
-            ],
+            //         // Bar
+            //         'view-bar-dashboard-action',
+            //         'manage-bar-actions',
+            //     ]),
+            //     'created_at' => Carbon::now(),
+			// 	'updated_at' => Carbon::now()
+            // ],
             [
                 'name' => 'DISPATCHER',
                 'access' => json_encode([

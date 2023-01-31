@@ -51,7 +51,7 @@ class OrderController extends Controller
 
         if ($request->except(['page'])) {
 
-            $orders = Order::where(function ($query) use ($request) {
+            $orders = $orders->where(function ($query) use ($request) {
                 if ($request->order_id) {
                     $query->where('order_id', 'LIKE', "%$request->order_id%");
                 }
@@ -251,18 +251,10 @@ class OrderController extends Controller
 
             $menus = Menu::with('category')->where(function ($q1) use ($order) {
                 $q1->doesntHave('inventory');
-
-                // Check branch of current user
-                if (auth()->user()->branch_id) {
-                    $q1->where('branch_id', $order->branch_id);
-                }
+                $q1->where('branch_id', $order->branch_id);
             })->orWhereHas('inventory', function ($q2) use ($order) {
                 $q2->where('stock', '>', 0);
-
-                // Check branch of current user
-                if (auth()->user()->branch_id) {
-                    $q2->where('branch_id', $order->branch_id);
-                }
+                $q2->where('branch_id', $order->branch_id);
             })->get();
 
             return view('orders.sections.add_item',compact('order','menus'));

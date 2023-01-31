@@ -21,10 +21,12 @@ class DispatchDashboard extends Component
             $query->where('from', '=', 'kitchen');
         })
         ->where('cancelled', false)
-        ->where('completed', false)
-        ->where('confirmed', true)
-        ->orderBy('created_at', 'desc')
-        ->get();
+        ->where('confirmed', true);
+
+        if (auth()->user()->branch_id != null) {
+            $orders = $orders->where('branch_id', auth()->user()->branch_id);
+        }
+        $orders = $orders->orderBy('created_at', 'desc')->get();
 
         $this->orders = $orders;
     }

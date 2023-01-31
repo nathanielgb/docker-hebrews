@@ -24,10 +24,12 @@ class KitchenController extends Controller
 
         })
         ->where('confirmed', true)
-        ->where('cancelled', false)
-        ->where('completed', false)
-        ->orderBy('created_at', 'desc')
-        ->get();
+        ->where('cancelled', false);
+
+        if (auth()->user()->branch_id != null) {
+            $orders = $orders->where('branch_id', auth()->user()->branch_id);
+        }
+        $orders = $orders->orderBy('created_at', 'desc')->get();
 
         return view('kitchen.index', compact('orders'));
     }

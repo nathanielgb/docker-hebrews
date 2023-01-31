@@ -83,7 +83,8 @@
                 <tr class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase border-b bg-gray-50">
                     <th class="px-4 py-3">ID</th>
                     <th class="px-4 py-3">Name</th>
-                    <th class="px-4 py-3 text-center">Linked Inventories</th>
+                    <th class="px-4 py-3 text-center">Linked Warehouse Inventories</th>
+                    <th class="px-4 py-3 text-center">Linked Branch Inventories</th>
                     <th class="px-4 py-3 text-center">Action</th>
                 </tr>
                 </thead>
@@ -97,25 +98,30 @@
                                 {{ $category->name }}
                             </td>
                             <td class="px-4 py-3 text-sm text-center">
-                                {{-- {{ count($category->branchInventories) }} --}}
+                                {{ count($category->wareHouseInventories) }}
+                            </td>
+                            <td class="px-4 py-3 text-sm text-center">
+                                {{ count($category->branchInventories) }}
                             </td>
                             <td class="px-4 py-3 text-center">
 
                                 @if(auth()->user()->can('access', 'manage-categories-action'))
-                                    <div class="flex items-center justify-center space-x-4 text-sm">
-                                        <button
-                                            type="button"
-                                            class="inline-block px-6 py-2.5 bg-red-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-red-700 hover:shadow-lg focus:bg-red-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-red-800 active:shadow-lg transition duration-150 ease-in-out"
-                                            aria-label="Delete"
-                                            data-bs-toggle="modal"
-                                            data-bs-target="#deleteModal"
-                                            @click="$store.data.delete={{ json_encode([
-                                                'id' => $category->id,
-                                                'name' => $category->name,
-                                            ]) }}">
-                                            <i class="fa-solid fa-trash"></i> Delete
-                                        </button>
-                                    </div>
+                                    @if (count($category->wareHouseInventories) <= 0 && count($category->branchInventories) <= 0)
+                                        <div class="flex items-center justify-center space-x-4 text-sm">
+                                            <button
+                                                type="button"
+                                                class="inline-block px-6 py-2.5 bg-red-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-red-700 hover:shadow-lg focus:bg-red-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-red-800 active:shadow-lg transition duration-150 ease-in-out"
+                                                aria-label="Delete"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#deleteModal"
+                                                @click="$store.data.delete={{ json_encode([
+                                                    'id' => $category->id,
+                                                    'name' => $category->name,
+                                                ]) }}">
+                                                <i class="fa-solid fa-trash"></i> Delete
+                                            </button>
+                                        </div>
+                                    @endif
                                 @endif
                             </td>
                         </tr>

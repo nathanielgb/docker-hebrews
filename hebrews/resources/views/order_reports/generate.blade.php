@@ -35,7 +35,12 @@
                 </label>
                 <label class="block mb-4 text-sm">
                     <span class="text-gray-700 dark:text-gray-400">Branch</span>
-                    <input class="styled-input" name="branch_id" type="text" placeholder="Enter Branch ID">
+                    <select class="styled-input" name="branch_id">
+                        <option value="" selected disabled>Select a branch</option>
+                        @foreach ($branches as $branch)
+                            <option value="{{ $branch->id }}" >{{ $branch->name }}</option>
+                        @endforeach
+                    </select>
                 </label>
                 <label class="block mb-4 text-sm">
                     <span class="text-gray-700">Server name</span>

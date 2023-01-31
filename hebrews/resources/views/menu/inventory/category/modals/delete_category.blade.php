@@ -17,7 +17,7 @@
                 data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="relative p-4 modal-body">
-            <form id="delete-form" action="{{ route('menu.delete_category') }}" method="post">
+            <form id="delete-form" action="{{ route('menu.inventories.categories.delete') }}" method="post">
                 @csrf
                 <label class="block mb-4 text-sm">
                     <p>Are you sure you want to delete this category (name: <span x-text="$store.data.delete?.name" class="font-bold"></span>)?</p>

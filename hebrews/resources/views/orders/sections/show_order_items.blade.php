@@ -26,15 +26,13 @@
                 <thead>
                 <tr class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase border-b bg-gray-50">
                     <th class="px-4 py-3">Name</th>
-                    <th class="px-4 py-3 text-center">Order Type</th>
-                    <th class="px-4 py-3 text-center">Status</th>
-                    <th class="px-4 py-3">data</th>
+                    <th class="px-4 py-3 text-center">O.Type</th>
+                    <th class="px-4 py-3 r">Qty</th>
+                    <th class="px-4 py-4 text-center">Addons</th>
                     <th class="px-4 py-3 text-center">Price</th>
-                    <th class="px-4 py-3 text-center">Unit/Qty</th>
-                    <th class="px-4 py-3 text-center">Qty</th>
-                    <th class="px-4 py-3 text-center">Tot. Stock</th>
                     <th class="px-4 py-3 text-center">Total Amount</th>
                     <th class="px-4 py-3">Note</th>
+                    <th class="px-4 py-3 text-center">Status</th>
                     <th class="px-4 py-3 text-center">Served by</th>
                 </tr>
                 </thead>
@@ -53,6 +51,82 @@
                                 @else
                                     <span class="text-xs inline-block py-1 px-2.5 leading-none text-center whitespace-nowrap align-baseline font-bold bg-blue-400 text-white rounded">Take-out</span>
                                 @endif
+                            </td>
+                            <td class="px-4 py-3 text-sm">
+                                <ul>
+                                    <li>
+                                        <em>
+                                            <span class="font-semibold">
+                                                menu: {{ $item->menu_id }} ({{ $item->from }}) <br>
+                                            </span>
+                                        </em>
+                                    </li>
+                                    <li>
+                                        @if ($item->inventory_code)
+                                            <em >
+                                                inventory:
+                                                <span class="font-bold">
+                                                    {{ $item->inventory_code }}
+                                                </span>
+                                            </em>
+                                        @endif
+                                    </li>
+                                    <li>qty: <span class="font-semibold"><em>{{ $item->qty }}</em></span></li>
+                                    <li>unit/qty:
+                                        <em>
+                                            <span class="font-semibold">
+                                                {{ $item->units }}
+                                                @if ($item->unit_label)
+                                                    ({{ $item->unit_label }})
+                                                @endif
+                                            </span>
+                                        </em>
+                                    </li>
+                                    <li>tot.qty: <span class="font-semibold"><em>{{ $item->qty * $item->units  }}</em></span></li>
+                                </ul>
+                            </td>
+                            <td class="px-4 py-4 text-sm text-center">
+                                @if ($order->confirmed)
+                                    @if (isset($item->data['has_addons']) && $item->data['has_addons'])
+                                        @php
+                                            $addons = json_encode($item->addons);
+                                        @endphp
+                                        <button
+                                            class="btn-addons inline-flex items-center px-3 py-1 text-xs font-bold text-white uppercase bg-green-600 rounded-full leading-sm"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#addOnItemsModal"
+                                            data-addons="{{ $addons }}"
+
+                                            >
+                                            <i class="fa-solid fa-eye"></i>&nbsp;YES
+                                        </button>
+                                    @else
+                                        <div class="inline-flex items-center px-3 py-1 text-xs font-bold text-white uppercase bg-red-600 rounded-full leading-sm">
+                                            NO
+                                        </div>
+                                @endif
+                                @else
+                                    @if (isset($item->data['has_addons']) && $item->data['has_addons'])
+                                        <div class="inline-flex items-center px-3 py-1 text-xs font-bold text-white uppercase bg-green-600 rounded-full leading-sm">
+                                            YES
+                                        </div>
+                                    @else
+                                        <div class="inline-flex items-center px-3 py-1 text-xs font-bold text-white uppercase bg-red-600 rounded-full leading-sm">
+                                            NO
+                                        </div>
+                                    @endif
+                                @endif
+                            </td>
+                            <td class="px-4 py-3 text-sm text-center">
+                                {{ $item->price }} ({{ $item->type }})
+                            </td>
+                            <td class="px-4 py-3 text-sm text-center">
+                                {{ $item->total_amount }}
+                            </td>
+                            <td class="px-4 py-3 text-sm text-justify" style="max-width: 150px;">
+                                <p>
+                                    {{ $item->note }}
+                                </p>
                             </td>
                             <td class="px-4 py-3 text-sm text-center">
                                 @if ($item->status == 'pending')
@@ -81,59 +155,6 @@
                                     </div>
                                 @endif
                             </td>
-                            <td class="px-4 py-3 text-sm" style="width: 10%;">
-                                @if (isset($item->menu->inventory))
-                                    <ul>
-                                        <li>Menu:
-                                            <span class="font-bold">
-                                                {{ $item->menu_id }}
-                                            </span>
-                                        </li>
-                                        <li>Code:
-                                            <span class="font-bold">
-                                                {{ $item->inventory_code }}
-                                            </span>
-                                        </li>
-                                        <li>Unit:
-                                            <span class="font-bold">
-                                                {{ $item->unit_label }}
-                                            </span>
-                                        </li>
-                                        <li>From:
-                                            <span class="font-bold">
-                                                {{ $item->from }}
-                                            </span>
-                                        </li>
-                                    </ul>
-                                @endif
-                            </td>
-                            <td class="px-4 py-3 text-sm text-center">
-                                {{ $item->price }} ({{ $item->type }})
-                            </td>
-                            <td class="px-4 py-3 text-sm text-center">
-                                {{ $item->units }}
-                                @if ($item->unit_label)
-                                    ({{ $item->unit_label }})
-                                @endif
-                            </td>
-                            <td class="px-4 py-3 text-sm text-center">
-                                {{ $item->qty }}
-                            </td>
-                            <td class="px-4 py-3 text-sm text-center">
-                                @if ($item->inventory_id)
-                                    {{ $item->qty*$item->units }}
-                                @else
-                                    -
-                                @endif
-                            </td>
-                            <td class="px-4 py-3 text-sm text-justify">
-                                {{ $item->total_amount }}
-                            </td>
-                            <td class="px-4 py-3 text-sm text-justify" style="max-width: 150px;">
-                                <p>
-                                    {{ $item->note }}
-                                </p>
-                            </td>
                             <td class="px-4 py-3 text-sm text-center">
                                 <p>
                                     {{ $item->served_by }}
@@ -152,8 +173,15 @@
         </div>
     </div>
 
+    @include('orders.modals.show_addons')
+
     <x-slot name="scripts">
+        <script>
+            $('.btn-addons').on("click", function() {
+                var addons = JSON.stringify($(this).data('addons'));
 
+                Livewire.emit('setAddOnItem', addons);
+            });
+        </script>
     </x-slot>
-
 </x-app-layout>

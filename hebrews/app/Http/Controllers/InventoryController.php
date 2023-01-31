@@ -208,7 +208,8 @@ class InventoryController extends Controller
     {
         if (auth()->user()->branch_id) {
             $inventory_items = BranchMenuInventory::where('branch_id', auth()->user()->branch_id);
-            $branches = Branch::where('id', auth()->user()->branch_id)->get();
+            // $branches = Branch::where('id', auth()->user()->branch_id)->get();
+            $branches = Branch::all();
         } else {
             $inventory_items = new BranchMenuInventory;
             $branches = Branch::all();
@@ -391,12 +392,18 @@ class InventoryController extends Controller
                     return redirect()->back()->with('error', 'Failed to tranfer inventory item. Branch does not exist.');
                 }
 
+                if ($request->transfer_branch == $inventory_item->branch_id) {
+                    return redirect()->back()->with('error', 'Failed to tranfer inventory item. Cannot transfer to own branch.');
+                }
+
                 $branch_name = $branch->name;
 
                 // Transfer stock to new branch - Check if the item is in the branch and update otherwise create a new inventory item for that branch
                 $branch_item = BranchMenuInventory::where('branch_id', $request->transfer_branch)
                     ->where('inventory_code', $inventory_item->inventory_code)
                     ->first();
+
+
 
                 if ($branch_item) {
                     $current_branch_stock = $branch_item->stock;

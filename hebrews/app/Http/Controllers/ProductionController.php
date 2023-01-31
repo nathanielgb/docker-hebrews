@@ -24,10 +24,13 @@ class ProductionController extends Controller
             $query->where('from', '=', 'storage');
         })
         ->where('cancelled', false)
-        ->where('completed', false)
-        ->where('confirmed', true)
-        ->orderBy('created_at', 'desc')
-        ->get();
+        ->where('confirmed', true);
+
+
+        if (auth()->user()->branch_id != null) {
+            $orders = $orders->where('branch_id', auth()->user()->branch_id);
+        }
+        $orders = $orders->orderBy('created_at', 'desc')->get();
 
         return view('production.index', compact('orders'));
     }

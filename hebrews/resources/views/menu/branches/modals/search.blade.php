@@ -19,6 +19,15 @@
         <div class="relative p-4 modal-body">
             <form id="search-menu-form" action="{{ route('branch.inventory.index') }}" method="get" autocomplete="off">
                 <label class="block mb-4 text-sm">
+                    <span class="text-gray-700 dark:text-gray-400">Branch</span>
+                    <select class="styled-input" name="branch_id">
+                        <option value="" selected disabled>Select a branch</option>
+                        @foreach ($branches as $branch)
+                            <option value="{{ $branch->id }}" >{{ $branch->name }}</option>
+                        @endforeach
+                    </select>
+                </label>
+                <label class="block mb-4 text-sm">
                     <span class="text-gray-700">Inventory Code</span>
                     <input class="styled-input" name="inventory_code" type="text" placeholder="Enter Code">
                 </label>
@@ -34,10 +43,6 @@
                 <label class="block mb-4 text-sm">
                     <span class="text-gray-700">Name</span>
                     <input class="styled-input" name="name" type="text" placeholder="Enter name">
-                </label>
-                <label class="block mb-4 text-sm">
-                    <span class="text-gray-700">Branch ID</span>
-                    <input class="styled-input" name="branch_id" type="number" placeholder="Enter Branch ID">
                 </label>
             </form>
         </div>

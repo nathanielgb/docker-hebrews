@@ -25,8 +25,12 @@ class StoreMenuRequest extends FormRequest
     public function rules()
     {
         return [
-        'menu' => ['required', 'max:255', Rule::unique('menus', 'name')],
-        'code' => ['required', 'max:255', 'alpha_dash', Rule::unique('menus', 'code')],
+        'menu' => ['required', 'max:255', Rule::unique('menus', 'name')->where(function ($query) {
+            $query->where('branch_id', $this->branch);
+        })],
+        'code' => ['required', 'max:255', 'alpha_dash', Rule::unique('menus', 'code')->where(function ($query) {
+            $query->where('branch_id', $this->branch);
+        })],
         'unit' => 'required|numeric|min:1',
         'regular_price' => 'nullable|numeric|between:0,999999.99',
         'retail_price' => 'nullable|numeric|between:0,999999.99',

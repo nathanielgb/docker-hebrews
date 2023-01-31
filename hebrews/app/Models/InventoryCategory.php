@@ -25,4 +25,12 @@ class InventoryCategory extends Model
     {
         return $this->hasMany(BranchMenuInventory::class, 'category_id', 'id');
     }
+
+    /**
+     * Get the warehouse inventories for the Inventory Category.
+     */
+    public function wareHouseInventories()
+    {
+        return $this->hasMany(MenuInventory::class, 'category_id', 'id');
+    }
 }

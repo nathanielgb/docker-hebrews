@@ -83,11 +83,9 @@
                     @if ($order->table != null)
                         <span class="flex flex-row">
                             Table/s:&nbsp;
-                            <p>
-                                @foreach ($order->table as $table)
-                                    {{ $table }}@if(!$loop->last),@endif
-                                @endforeach
-                            </p>
+                            @foreach ($order->table as $table)
+                                {{ $table }}@if(!$loop->last),@endif
+                            @endforeach
                         </span> <br>
                     @endif
             @else

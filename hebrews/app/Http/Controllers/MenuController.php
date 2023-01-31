@@ -42,6 +42,9 @@ class MenuController extends Controller
 
         if ($request->except(['page'])) {
             $menu=$menu->where(function ($query) use ($request) {
+                if ($request->branch_id !== null) {
+                    $query->where('branch_id',  $request->branch_id);
+                }
                 if ($request->menu_id !== null) {
                     $query->where('id',  $request->menu_id);
                 }
@@ -240,7 +243,6 @@ class MenuController extends Controller
     public function updateCategory(Request $request)
     {
         $category = MenuCategory::where('id', $request->category_id)->first();
-
         if ($category) {
             // Prevent deletion if there is still linked products
             if (count($category->menus) >= 1) {
@@ -252,11 +254,10 @@ class MenuController extends Controller
                 'from' => 'required|max:255',
             ]);
 
-
             $category->update([
                 'name' => strtoupper($request->name),
                 'from' => $request->from,
-                'sub' => $request->subcat,
+                'sub' => $request->sub,
             ]);
 
             return back()->with('success', "Category $category->name updated successfully.");
