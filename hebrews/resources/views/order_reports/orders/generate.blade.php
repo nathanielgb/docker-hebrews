@@ -9,12 +9,12 @@
     </x-slot>
 
     <div class="container grid px-6 mx-auto md:px-28" style="max-width: 850px;">
-        <h2 class="text-2xl font-semibold text-gray-700 mb-0">Orders (Summation)</h2>
-        <small class="text-gray-400 mb-3">this will generate report of orders with summation of inventories used</small>
+        <h2 class="text-2xl font-semibold text-gray-700">Filter Orders</h2>
+        <small class="text-gray-400 mb-3">this will generate report of orders according to filters specified</small>
         @include('components.alert-message')
 
         <div class="p-4 bg-white rounded-lg shadow-xs">
-            <form action="{{ route('orders.summation.report.generate') }}" method="get" autocomplete="off">
+            <form action="{{ route('orders.report.generate') }}" method="get" autocomplete="off">
                 <label class="block mb-4 text-sm">
                     <span class="text-gray-700">Date</span>
                     <input name="date" class="styled-input" type="text" placeholder="Enter date range">
@@ -28,8 +28,6 @@
                     <span class="text-gray-700 dark:text-gray-400">Order status</span>
                     <select class="styled-input" name="status">
                         <option value="" selected disabled>Select status</option>
-                        <option value="pending">Pending</option>
-                        <option value="confirmed">Confirmed</option>
                         <option value="completed">Completed</option>
                         <option value="cancelled">Cancelled</option>
                     </select>
@@ -52,7 +50,7 @@
                         @endforeach
                     </select>
                 </label>
-                <label class="block mb-4 text-sm">
+                {{-- <label class="block mb-4 text-sm">
                     <span class="text-gray-700">Customer name</span>
                     <select class="styled-input" name="customer_name">
                         <option value="" selected disabled>Select a customer</option>
@@ -60,6 +58,10 @@
                             <option value="{{ $customer }}">{{ $customer }}</option>
                         @endforeach
                     </select>
+                </label> --}}
+                <label class="block mb-4 text-sm">
+                    <span class="text-gray-700 dark:text-gray-400">Customer name</span>
+                    <input class="styled-input" name="customer_name" type="text" placeholder="Enter customer name">
                 </label>
                 <div class="flex justify-center space-x-4">
                     <button

@@ -201,7 +201,7 @@
                     <x-nav-dropdown-link
                         data-bs-target="#collapsReport"
                         aria-controls="collapsReport"
-                        :active="request()->routeIs('expense.report.show') || request()->routeIs('orders.report.show')">
+                        :active="request()->routeIs('expense.report.show') || request()->routeIs('orders.summation.report.show') || request()->routeIs('orders.report.show')">
                         <x-slot name="icon">
                             <i class="fa-solid fa-file-invoice"></i>
                         </x-slot>
@@ -217,7 +217,17 @@
                             @else
                                 class="px-2 py-1"
                             @endif >
-                            <a class="w-full" href="{{ route('expense.report.show') }}">Expense Report</a>
+                            <a class="w-full" href="{{ route('expense.report.show') }}">Expense</a>
+                        </li>
+                        <li
+                            @if (request()->routeIs('orders.summation.report.show'))
+                                class="px-2 py-1 text-green-700"
+                            @else
+                                class="px-2 py-1"
+                            @endif >
+                            <a class="w-full" href="{{ route('orders.summation.report.show') }}">
+                                Order (Summation)
+                            </a>
                         </li>
                         <li
                             @if (request()->routeIs('orders.report.show'))
@@ -226,7 +236,7 @@
                                 class="px-2 py-1"
                             @endif >
                             <a class="w-full" href="{{ route('orders.report.show') }}">
-                                Order Report
+                                Order
                             </a>
                         </li>
                     </ul>

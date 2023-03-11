@@ -2,19 +2,21 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\AddonOrderItem;
-use App\Models\Branch;
 use Carbon\Carbon;
-use App\Models\Order;
 use App\Models\User;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;;
-use App\Models\Customer;
+use App\Models\Order;
+use App\Models\Branch;
 use App\Models\Expense;
+use App\Models\Customer;
+use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\OrdersExport;
+use App\Models\AddonOrderItem;
+use Illuminate\Support\Facades\DB;;
 
 class OrderReportController extends Controller
 {
-    public function showGenerateReport (Request $request)
+    public function showGenerateSummationReport (Request $request)
     {
         $admins = User::where('type', '!=', 'SUPERADMIN')->pluck('name');
         $customers = Customer::all()->pluck('name');
@@ -23,7 +25,7 @@ class OrderReportController extends Controller
         return view('order_reports.generate', compact('admins', 'customers', 'branches'));
     }
 
-    public function generate (Request $request)
+    public function generateSummation (Request $request)
     {
         $orders = Order::with('items')->where(function ($query) use ($request) {
 
@@ -168,5 +170,102 @@ class OrderReportController extends Controller
             return back()->with('success', 'Successfully deleted expense.');
         }
         return back()->with('error', 'Record does not exist.');
+    }
+
+    public function showGenerateOrderReport (Request $request)
+    {
+        $admins = User::where('type', '!=', 'SUPERADMIN')->pluck('name');
+        $customers = Customer::all()->pluck('name');
+        $branches = Branch::all();
+
+        return view('order_reports.orders.generate', compact('admins', 'customers', 'branches'));
+    }
+
+    public function generateOrders (Request $request)
+    {
+        $orders = Order::with('items')->where(function ($query) use ($request) {
+
+            if ($request->date !== null) {
+                $date_range = explode('-', str_replace(' ', '', $request->date));
+                $start_date = Carbon::parse($date_range[0])->startOfDay();
+                $end_date = Carbon::parse($date_range[1])->endOfDay();
+                $query->whereBetween('updated_at', [$start_date, $end_date]);
+            }
+            if ($request->order_id !== null) {
+                $_ord_numbers = str_replace(' ', '', $request->order_id);
+                $ord_numbers = explode(',', $_ord_numbers);
+                $query->whereIn('order_id', $ord_numbers);
+            }
+            if ($request->status !== null) {
+                if ($request->status == 'pending') {
+                    $query->where('pending', 1);
+                } else if ($request->status == 'confirmed') {
+                    $query->where('confirmed', 1);
+                } else if ($request->status == 'completed') {
+                    $query->where('completed', 1);
+                } else if ($request->status == 'cancelled') {
+                    $query->where('cancelled', 1);
+                }
+            }
+            if ($request->branch_id !== null) {
+                $query->where('branch_id', $request->branch_id);
+            }
+            if ($request->servername !== null) {
+                $query->where('server_name', 'LIKE', '%' . $request->servername . '%');
+            }
+            if ($request->customer_name !== null) {
+                $query->where('customer_name', 'LIKE', '%' . $request->customer_name . '%');
+            }
+        });
+
+        $orders = $orders->orderBy('created_at', 'desc')->paginate(20);
+
+        return view('order_reports.orders.summary',compact(
+            'orders'
+        ));
+    }
+
+    public function exportOrders (Request $request)
+    {
+        // $orders = Order::with('items')->where(function ($query) use ($request) {
+
+        //     if ($request->date !== null) {
+        //         $date_range = explode('-', str_replace(' ', '', $request->date));
+        //         $start_date = Carbon::parse($date_range[0])->startOfDay();
+        //         $end_date = Carbon::parse($date_range[1])->endOfDay();
+        //         $query->whereBetween('updated_at', [$start_date, $end_date]);
+        //     }
+        //     if ($request->order_id !== null) {
+        //         $_ord_numbers = str_replace(' ', '', $request->order_id);
+        //         $ord_numbers = explode(',', $_ord_numbers);
+        //         $query->whereIn('order_id', $ord_numbers);
+        //     }
+        //     if ($request->status !== null) {
+        //         if ($request->status == 'pending') {
+        //             $query->where('pending', 1);
+        //         } else if ($request->status == 'confirmed') {
+        //             $query->where('confirmed', 1);
+        //         } else if ($request->status == 'completed') {
+        //             $query->where('completed', 1);
+        //         } else if ($request->status == 'cancelled') {
+        //             $query->where('cancelled', 1);
+        //         }
+        //     }
+        //     if ($request->branch_id !== null) {
+        //         $query->where('branch_id', $request->branch_id);
+        //     }
+        //     if ($request->servername !== null) {
+        //         $query->where('server_name', 'LIKE', '%' . $request->servername . '%');
+        //     }
+        //     if ($request->customer_name !== null) {
+        //         $query->where('customer_name', 'LIKE', '%' . $request->customer_name . '%');
+        //     }
+        // });
+
+        // $orders = $orders->orderBy('created_at', 'desc')->get();
+
+        return Excel::download(new OrdersExport($request->all()), 'order_report.xlsx');
+
+
     }
 }

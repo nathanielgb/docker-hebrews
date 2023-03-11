@@ -1,6 +1,7 @@
 <?php
 
 namespace Database\Seeders;
+use App\Models\Branch;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
@@ -12,6 +13,8 @@ class MainBranchSeeder extends Seeder
      * @return void
      */
     public function run() {
+        Branch::truncate();
+
         $data = [
             [
                 'id'=> 1,

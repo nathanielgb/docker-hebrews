@@ -141,11 +141,11 @@
                 </li>
 
                 <li class="relative px-6 py-3">
-                    <x-nav-link href="{{ route('orders.report.show') }}" :active="request()->routeIs('orders.report.show')">
+                    <x-nav-link href="{{ route('orders.summation.report.show') }}" :active="request()->routeIs('orders.summation.report.show')">
                         <x-slot name="icon">
                             <i class="fa-solid fa-file-invoice"></i>
                         </x-slot>
-                        {{ __('Order Report') }}
+                        {{ __('Order Report (Summation)') }}
                     </x-nav-link>
                 </li>
             @endif

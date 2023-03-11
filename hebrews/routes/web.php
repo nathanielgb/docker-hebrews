@@ -281,8 +281,11 @@ Route::middleware('auth')->group(function () {
         Route::get('expense-report', [\App\Http\Controllers\OrderReportController::class, 'showExpenseReport'])->name('expense.report.show');
         Route::post('expense-report', [\App\Http\Controllers\OrderReportController::class, 'addExpense'])->name('expense.report.add');
         Route::delete('expense-report', [\App\Http\Controllers\OrderReportController::class, 'deleteExpense'])->name('expense.report.delete');
-        Route::get('orders-report', [\App\Http\Controllers\OrderReportController::class, 'showGenerateReport'])->name('orders.report.show');
-        Route::get('generate-report', [\App\Http\Controllers\OrderReportController::class, 'generate'])->name('orders.report.generate');
+        Route::get('orders-summation-report', [\App\Http\Controllers\OrderReportController::class, 'showGenerateSummationReport'])->name('orders.summation.report.show');
+        Route::get('generate-summation-report', [\App\Http\Controllers\OrderReportController::class, 'generateSummation'])->name('orders.summation.report.generate');
+        Route::get('orders-report', [\App\Http\Controllers\OrderReportController::class, 'showGenerateOrderReport'])->name('orders.report.show');
+        Route::get('generate-report', [\App\Http\Controllers\OrderReportController::class, 'generateOrders'])->name('orders.report.generate');
+        Route::get('export-report', [\App\Http\Controllers\OrderReportController::class, 'exportOrders'])->name('orders.report.export');
     });
 
     // Logs Section

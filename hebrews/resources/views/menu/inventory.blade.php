@@ -180,7 +180,7 @@
                         </tr>
                     @empty
                         <tr class="text-gray-700">
-                            <td colspan="7" class="px-4 py-3 text-sm text-center">
+                            <td colspan="8" class="px-4 py-3 text-sm text-center">
                                 No records found.
                             </td>
                         </tr>
