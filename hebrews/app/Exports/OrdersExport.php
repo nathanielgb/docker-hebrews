@@ -67,14 +67,47 @@ class OrdersExport implements FromCollection, ShouldAutoSize, WithMapping, WithH
     public function map($order): array
     {
         return [
-            $order->order_id
+            $order->branch_id,
+            $order->order_id,
+            $order->customer_name,
+            $order->order_type,
+            floatval($order->subtotal),
+            floatval($order->fees),
+            floatval($order->discount_amount),
+            floatval($order->total_amount),
+            floatval($order->deposit_bal),
+            floatval($order->amount_given),
+            floatval($order->confirmed_amount),
+            // number_format($order->subtotal, 2),
+            // number_format($order->fees, 2),
+            // number_format($order->discount_amount, 2),
+            // number_format($order->total_amount, 2),
+            // number_format($order->deposit_bal, 2),
+            // number_format($order->amount_given, 2),
+            // number_format($order->confirmed_amount, 2),
+            $order->server_name,
+            $order->confirmed_by,
+            $order->created_at
         ];
     }
 
     public function headings(): array
     {
         return [
-            'Order ID'
+            'Branch ID',
+            'Order ID',
+            'Customer Name',
+            'Order Type',
+            'Subtotal',
+            'Fees',
+            'Discount',
+            'Total',
+            'Initial Deposit',
+            'Cash Given',
+            'Total Given',
+            'Served by',
+            'Confirmed by',
+            'Transaction Date'
         ];
     }
 }

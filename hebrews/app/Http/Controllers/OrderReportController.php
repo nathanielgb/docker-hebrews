@@ -227,45 +227,6 @@ class OrderReportController extends Controller
 
     public function exportOrders (Request $request)
     {
-        // $orders = Order::with('items')->where(function ($query) use ($request) {
-
-        //     if ($request->date !== null) {
-        //         $date_range = explode('-', str_replace(' ', '', $request->date));
-        //         $start_date = Carbon::parse($date_range[0])->startOfDay();
-        //         $end_date = Carbon::parse($date_range[1])->endOfDay();
-        //         $query->whereBetween('updated_at', [$start_date, $end_date]);
-        //     }
-        //     if ($request->order_id !== null) {
-        //         $_ord_numbers = str_replace(' ', '', $request->order_id);
-        //         $ord_numbers = explode(',', $_ord_numbers);
-        //         $query->whereIn('order_id', $ord_numbers);
-        //     }
-        //     if ($request->status !== null) {
-        //         if ($request->status == 'pending') {
-        //             $query->where('pending', 1);
-        //         } else if ($request->status == 'confirmed') {
-        //             $query->where('confirmed', 1);
-        //         } else if ($request->status == 'completed') {
-        //             $query->where('completed', 1);
-        //         } else if ($request->status == 'cancelled') {
-        //             $query->where('cancelled', 1);
-        //         }
-        //     }
-        //     if ($request->branch_id !== null) {
-        //         $query->where('branch_id', $request->branch_id);
-        //     }
-        //     if ($request->servername !== null) {
-        //         $query->where('server_name', 'LIKE', '%' . $request->servername . '%');
-        //     }
-        //     if ($request->customer_name !== null) {
-        //         $query->where('customer_name', 'LIKE', '%' . $request->customer_name . '%');
-        //     }
-        // });
-
-        // $orders = $orders->orderBy('created_at', 'desc')->get();
-
         return Excel::download(new OrdersExport($request->all()), 'order_report.xlsx');
-
-
     }
 }

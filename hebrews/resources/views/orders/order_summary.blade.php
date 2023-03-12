@@ -50,7 +50,7 @@
                         >
                         <span><i class="fa-solid fa-print"></i> PRINT</span>
                     </a> -->
-                    @if (!$order->paid && !$order->cancelled)
+                    @if (!$order->completed && !$order->cancelled)
                         @if(auth()->user()->can('access', 'add-order-item-action'))
                             <a
                                 href="{{ route('order.show_add_item',['order_id'=>$order->order_id]) }}"
@@ -266,7 +266,7 @@
 
             <div class="flex w-full" style="justify-content:end;">
                 <div class="flex mb-2 space-x-2 jusify-center">
-                    @if (!$order->paid && !$order->cancelled)
+                    @if (!$order->completed && !$order->cancelled)
                         @if(auth()->user()->can('access', 'manage-order-item-action'))
                             <button
                                 data-url="{{ route('order.edit', $order->order_id) }}"

@@ -245,8 +245,12 @@ class OrderController extends Controller
         }
 
         if ($order) {
-            if ($order->paid) {
-                return redirect()->back()->with('error', 'Cannot add item for paid orders.');
+            if ($order->cancelled) {
+                return redirect()->back()->with('error', 'Cannot add item for cancelled orders.');
+            }
+
+            if ($order->completed) {
+                return redirect()->back()->with('error', 'Cannot add item for completed orders.');
             }
 
             $menus = Menu::with('category')->where(function ($q1) use ($order) {
@@ -517,7 +521,7 @@ class OrderController extends Controller
                 $discount_type = $order->discount_type;
                 $discount_unit = $order->discount_unit ?? 0;
                 $fees = $order->fees ?? 0;
-                $deposit = $order->deposil_bal ?? 0;
+                $deposit = $order->deposit_bal ?? 0;
                 $cash_given = $order->amount_given + $amount_given;
 
                 $invoice = $orderService->calculateOrderInvoice($subtotal, $discount_type, $discount_unit, $fees, $deposit, $cash_given);
@@ -581,7 +585,7 @@ class OrderController extends Controller
             $fees = $request->fees ?? 0;
             $deposit = $request->deposit ?? 0;
 
-            $invoice = $orderService->calculateOrderInvoice($subtotal, $discount_type, $discount_unit, $fees, $deposit, 0);
+            $invoice = $orderService->calculateOrderInvoice($subtotal, $discount_type, $discount_unit, $fees, $deposit, $order->amount_given);
 
             if ($invoice['discount'] > ($invoice['subtotal'] + $invoice['fees'])) {
                 return back()->with('error', "Discount amount cannot be greater than the order total.");
@@ -824,7 +828,7 @@ class OrderController extends Controller
             $discount_type = $order->discount_type;
             $discount_unit = $order->discount_unit ?? 0;
             $fees = $order->fees ?? 0;
-            $deposit = $order->deposil_bal ?? 0;
+            $deposit = $order->deposit_bal ?? 0;
             $cash_given = $order->amount_given;
 
             $invoice = $orderService->calculateOrderInvoice($subtotal, $discount_type, $discount_unit, $fees, $deposit, $cash_given);
